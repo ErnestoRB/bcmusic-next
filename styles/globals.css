@@ -1,26 +1,40 @@
-html,
-body {
-  padding: 0;
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
-}
+@import url("https://fonts.googleapis.com/css2?family=Cookie&family=Dosis&family=Quicksand:wght@300&family=Raleway&family=Schoolbell&display=swap");
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 * {
-  box-sizing: border-box;
+  font-family: "Raleway", sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
-  body {
-    color: white;
-    background: black;
-  }
+input,
+select {
+  border-radius: 0;
+  outline: none;
+  border: none;
+  padding: 10px 5px;
+  background-color: white;
+  border: 1px solid gray;
+  border-left: 4px solid black;
+}
+
+button {
+  padding: 15px 7.5px;
+}
+
+nav > *,
+div[nav-options] {
+  display: flex;
+  place-items: center;
+}
+
+nav {
+  border-image: radial-gradient(
+      circle,
+      rgba(63, 94, 251, 1) 0%,
+      rgba(252, 70, 107, 1) 100%
+    )
+    30 stretch;
+  border-top-width: 5px;
 }

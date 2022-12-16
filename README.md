@@ -1,3 +1,7 @@
+```
+Server=localhost,2020;Database=musica;User Id=sa;Password=b4\$hcr4\$h3rs; TrustServerCertificate=True;
+```
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
