@@ -1,6 +1,32 @@
+# Levantar app (desarrollo)
+
+1. Levantar base de datos MySQL para desarrollo con docker:
+
 ```
-Server=localhost,2020;Database=musica;User Id=sa;Password=b4\$hcr4\$h3rs; TrustServerCertificate=True;
+docker compose up
 ```
+
+2. Generar .local.env
+
+Ejemplo .local.env para desarrollo:
+
+```
+NEXTAUTH_SECRET=aquivaloquesea
+CLIENT_SECRET=clave_secreta_spotify
+CLIENT_ID=clave_id_spotify
+GMAIL_PASS=
+GMAIL_ADDRESS=
+DATABASE_PORT=2020
+DATABASE_PASS=b4\$hcr4\$h3rs
+```
+
+3. Levantar app
+
+```
+npm run dev
+```
+
+---
 
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
