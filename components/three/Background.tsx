@@ -129,6 +129,7 @@ export function Background() {
           {springs.map((item, index) => {
             const circle = circles[index];
             return (
+              // @ts-ignore
               <animated.mesh key={index} visible={visible} {...item}>
                 <sphereGeometry
                   args={[sceneSizes.spheresSize]}

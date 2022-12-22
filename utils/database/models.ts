@@ -1,7 +1,13 @@
 import { models } from "@next-auth/sequelize-adapter";
-import { DataTypes } from "sequelize";
+import { DataTypes, Model } from "sequelize";
 import { sequelize } from "./connection";
-export const Pais = sequelize.define(
+export const Pais = sequelize.define<
+  Model<{
+    ID: string;
+    Nombre_Corto: string;
+    Nombre: string;
+  }>
+>(
   "pais",
   {
     ID: DataTypes.INTEGER,
@@ -11,7 +17,18 @@ export const Pais = sequelize.define(
   { tableName: "paises", createdAt: false, updatedAt: false }
 );
 
-export const User = sequelize.define("user", {
+export const User = sequelize.define<
+  Model<{
+    id?: string;
+    name: string;
+    email: string;
+    password: string;
+    nacimiento: string | Date;
+    apellido: string;
+    image?: string;
+    idPais: number;
+  }>
+>("user", {
   ...models.User,
   password: DataTypes.STRING(65),
   nacimiento: DataTypes.DATE,

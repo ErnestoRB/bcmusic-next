@@ -142,7 +142,7 @@ export const authOptions: (
         if (user.idPais) {
           const pais = await Pais.findOne({ where: { ID: user.idPais } });
           if (pais) {
-            otherSession.user.pais = pais.Nombre;
+            otherSession.user.pais = pais.dataValues.Nombre;
           }
         }
         const { name, nacimiento, image, apellido } = user;

@@ -11,9 +11,7 @@ export function Dropdown({
   children: ReactNode;
 }) {
   const divRef = useRef<HTMLDivElement>(null);
-
   const [menuPos, setMenuPos] = useState({});
-
   const [open, setOpen] = useState(false);
 
   usePosition(
@@ -56,6 +54,7 @@ export function Dropdown({
     },
     { callOnResize: true } // pretty expensive
   );
+
   return (
     <div
       ref={divRef}
@@ -64,8 +63,9 @@ export function Dropdown({
     >
       Menú
       <div
+        data-testid="menu-wrapper"
         className="flex flex-col p-5 w-max fixed right-0 z-10 bg-white"
-        style={{ display: open ? "" : "none", ...menuPos }}
+        style={{ display: open ? "flex" : "none", ...menuPos }}
       >
         {children}
       </div>
