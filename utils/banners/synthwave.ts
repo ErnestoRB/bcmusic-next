@@ -1,5 +1,5 @@
 import { createCanvas, loadImage, registerFont } from "canvas";
-import { SpotifyArtist } from "../definitions";
+import { SpotifyArtist } from "../../types/definitions";
 registerFont("./fonts/SF Movie Poster.ttf", { family: "SF Movie Poster" });
 registerFont("./fonts/BLADRMF.ttf", { family: "Blade Runner Movie Font" });
 const width = 1296;

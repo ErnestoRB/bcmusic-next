@@ -1,10 +1,14 @@
 import { useCallback, useEffect, useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
-import { PaisFields } from "../utils/definitions";
-import Alert from "../components/Alert";
-import { useSession } from "next-auth/react";
+import { PaisFields } from "../../types/definitions";
+import Alert from "../../components/Alert";
+import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { Pais } from "../utils/database/models";
+import { Pais } from "../../utils/database/models";
+import { callbackUrl } from "./login";
+import spotifyLogo from "../../images/spotify-white.png";
+import Image from "next/image";
+import { useSpring, animated } from "@react-spring/web";
 
 export default function SignUp({ paises = [] }: { paises: PaisFields[] }) {
   const router = useRouter();
@@ -16,6 +20,19 @@ export default function SignUp({ paises = [] }: { paises: PaisFields[] }) {
     watch,
     formState: { errors },
   } = useForm();
+
+  const { backgroundColor } = useSpring({
+    from: {
+      backgroundColor: "#bfdbfe",
+    },
+    to: { backgroundColor: "#3d92fe" },
+    loop: {
+      reverse: true,
+    },
+    config: {
+      duration: 5000,
+    },
+  });
 
   const { status } = useSession();
 
@@ -33,14 +50,35 @@ export default function SignUp({ paises = [] }: { paises: PaisFields[] }) {
         "Content-Type": "application/json",
       },
     });
-    const { msg } = await response.json();
-    setResponse(msg);
+    const { message } = await response.json();
+    setResponse(message);
     setError(!response.ok);
   }, []);
 
   return (
-    <div className="container max-w-3xl">
-      <form className="flex flex-col gap-y-2" onSubmit={handleSubmit(onSubmit)}>
+    <animated.div
+      style={{ backgroundColor }}
+      className="w-full flex flex-col items-center justify-center bg-blue-200"
+    >
+      <form
+        className="max-w-sm flex flex-col gap-y-2 p-2 md:p-4 rounded-sm bg-white"
+        onSubmit={handleSubmit(onSubmit)}
+      >
+        <h1 className="text-3xl">¡Regístrate!</h1>
+        <button
+          type="button"
+          className="flex items-center gap-2 bg-spotify-green text-white"
+          onClick={() => signIn("spotify", { callbackUrl })}
+        >
+          <Image
+            src={spotifyLogo}
+            width={32}
+            height={32}
+            alt={"spotify logo"}
+          ></Image>
+          Registrarse usando Spotify
+        </button>
+        <hr />
         {response && isError && <Alert>{response}</Alert>}
         {response && !isError && <Alert type="success">{response}</Alert>}
         <label htmlFor="Email">Email</label>
@@ -101,7 +139,7 @@ export default function SignUp({ paises = [] }: { paises: PaisFields[] }) {
           Registrarse
         </button>
       </form>
-    </div>
+    </animated.div>
   );
 }
 

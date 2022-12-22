@@ -1,5 +1,5 @@
 import { CLIENT_ID, CLIENT_SECRET } from "../credentials";
-import { SpotifyData } from "../definitions";
+import { SpotifyData } from "../../types/definitions";
 
 export const availableSpotifyTimeRanges = [
   "medium_term",

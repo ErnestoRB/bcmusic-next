@@ -41,9 +41,11 @@ export default function Politicas() {
         </h2>
         <p>
           Usted, podrá en todo momento visualizar sus datos en el panel de
-          usuario. La modificación y eliminación será exclusiva de las
-          credenciales de servicios de streaming.
+          usuario. No podrá modificar o eliminar la información proporcionada.
         </p>
+        <br />
+        Esta política de privacidad podrá cambiar en cualquier momento sin
+        previo aviso.
       </div>
     </div>
   );

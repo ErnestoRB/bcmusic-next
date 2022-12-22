@@ -1,10 +1,18 @@
+import { Canvas } from "@react-three/fiber";
 import Head from "next/head";
-import NavBar from "../components/NavBar";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { Background } from "../components/three/Background";
+import WebGL from "../utils/three/compatibility";
 
 export default function Home() {
+  const [compatibility, setCompatibility] = useState(false);
+
+  useEffect(() => {
+    setCompatibility(WebGL.isWebGLAvailable());
+  }, []);
   return (
-    <div>
-      <NavBar></NavBar>
+    <>
       <Head>
         <title>BashCrashers MusicApp</title>
         <meta
@@ -13,10 +21,39 @@ export default function Home() {
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="w-full h-[90vh] flex flex-col items-center justify-center">
-        <h1 className="text-4xl text-center">BashCrashers Music Aapp</h1>
-        <p>¡Genera tu banner ahora mismo!</p>
-      </main>
-    </div>
+      <div className="w-full flex-1 bg-black">
+        {compatibility && (
+          <Canvas camera={{ position: [0, 0, 5] }}>
+            <Background></Background>
+          </Canvas>
+        )}
+
+        {!compatibility && (
+          <div className="w-full h-full grid place-items-center place-content-center text-white">
+            <h1
+              className={`text-center text-2xl sm:text-4xl font-blade text-bc-pink-1`}
+            >
+              bienvenido a bashcrashers
+            </h1>{" "}
+            <span>
+              Genera tu banner
+              <Link className="text-blue-600" href="/banner">
+                {" "}
+                aquí!
+              </Link>
+            </span>
+          </div>
+        )}
+      </div>
+      <div className="absolute bottom-0 right-0 bg-white bg-opacity-50 text-sm px-2 py-px rounded-sm">
+        Multimedia creada por{" "}
+        <a
+          href="https://ernestorb.com"
+          className="text-blue-300 hover:text-blue-100"
+        >
+          Ernesto Ramírez
+        </a>
+      </div>
+    </>
   );
 }

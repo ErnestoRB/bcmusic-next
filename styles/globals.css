@@ -30,10 +30,11 @@ div[nav-options] {
 }
 
 nav {
-  border-image: radial-gradient(
-      circle,
-      rgba(63, 94, 251, 1) 0%,
-      rgba(252, 70, 107, 1) 100%
+  border-image: linear-gradient(
+      90deg,
+      rgba(245, 26, 54, 1) 0%,
+      rgba(222, 24, 115, 1) 50%,
+      rgba(181, 23, 203, 1) 100%
     )
     30 stretch;
   border-top-width: 5px;

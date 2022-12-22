@@ -29,5 +29,20 @@ export const Session = sequelize.define("session", { ...models.Session });
 export const VerificationToken = sequelize.define("verificationToken", {
   ...models.VerificationToken,
 });
+export const Banner = sequelize.define("banner", {
+  id: {
+    type: DataTypes.UUID,
+    defaultValue: DataTypes.UUIDV4,
+    primaryKey: true,
+  },
+  fecha_generado: DataTypes.DATE,
+  idUsuario: {
+    type: DataTypes.UUID,
+    references: {
+      model: User,
+      key: "id",
+    },
+  },
+});
 
 sequelize.modelManager.models.map((model) => model.sync());

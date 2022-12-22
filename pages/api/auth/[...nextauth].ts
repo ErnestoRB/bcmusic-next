@@ -1,6 +1,6 @@
 import SequelizeAdapter from "@next-auth/sequelize-adapter";
 import { compare } from "bcrypt";
-import NextAuth, { AuthOptions } from "next-auth";
+import NextAuth, { AuthOptions, Session, SpotifyProfile } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Email from "next-auth/providers/email";
 import Spotify from "next-auth/providers/spotify";
@@ -10,8 +10,9 @@ import Cookies from "cookies";
 import {
   User,
   Account,
-  Session,
+  Session as SessionModel,
   VerificationToken,
+  Pais,
 } from "../../../utils/database/models";
 import { randomBytes, randomUUID } from "crypto";
 import { NextApiRequest, NextApiResponse } from "next";
@@ -22,15 +23,10 @@ const generateSessionToken = () => {
 };
 
 export const adapter = SequelizeAdapter(sequelize, {
-  models: { User, Account, Session, VerificationToken },
+  // @ts-ignore
+  models: { User, Account, Session: SessionModel, VerificationToken },
   synchronize: true,
 });
-
-declare global {
-  interface Session {
-    id: string;
-  }
-}
 
 export const authOptions: (
   req: NextApiRequest,
@@ -60,6 +56,7 @@ export const authOptions: (
           console.log(newProfile);
           return newProfile;
         },
+        allowDangerousEmailAccountLinking: true,
         authorization:
           "https://accounts.spotify.com/authorize?scope=user-top-read&scope=user-read-email",
       }),
@@ -80,12 +77,11 @@ export const authOptions: (
         },
         async authorize(credentials, req) {
           try {
-            let usuario = await User.findOne({
+            let usuario: any = await User.findOne({
               where: { email: credentials?.email },
             });
             if (!usuario) return null;
             usuario = usuario.dataValues;
-            console.log(usuario);
             if (!usuario.password)
               throw new Error(
                 "Esta cuenta no fue registrada con una contraseña."
@@ -103,39 +99,57 @@ export const authOptions: (
     ],
     callbacks: {
       signIn: async function ({ account, user, credentials, email, profile }) {
-        if (account?.provider === "credentials") {
-          const cookies = new Cookies(req, res);
-          const expires = new Date(Date.now() + 1000 * 60 * 60 * 25);
-          const sessionToken = generateSessionToken();
-          await adapter.createSession({
-            userId: user.id,
-            expires,
-            sessionToken,
-          });
-          cookies.set("next-auth.session-token", sessionToken, {
-            expires,
-          });
+        try {
+          if (account?.provider === "credentials") {
+            const cookies = new Cookies(req, res);
+            const expires = new Date(Date.now() + 1000 * 60 * 60 * 25);
+            const sessionToken = generateSessionToken();
+            await adapter.createSession({
+              userId: user.id,
+              expires,
+              sessionToken,
+            });
+            cookies.set("next-auth.session-token", sessionToken, {
+              expires,
+            });
+            return true;
+          }
+          if (
+            account?.provider === "spotify" &&
+            (profile as SpotifyProfile)?.images?.length > 0
+          ) {
+            await User.update(
+              {
+                image: (profile as SpotifyProfile)?.images[0].url,
+              },
+              {
+                where: { id: user.id },
+              }
+            );
+            return true;
+          }
           return true;
+        } catch (err) {
+          console.log(err);
+          return false;
         }
-        if (account?.provider === "spotify" && profile?.images?.length > 0) {
-          await User.update(
-            {
-              image: profile?.images[0].url,
-            },
-            {
-              where: { id: user.id },
-            }
-          );
-          return true;
-        }
-        return true;
       },
-
-      session: function ({ session, token, user }) {
-        console.log({ user });
-
-        const otherSession = { ...session, ...user };
-        otherSession.user.id = user.id;
+      session: async function ({ session, token, user }) {
+        const otherSession: Session = {
+          user: { id: user.id, email: user.email },
+          expires: session.expires,
+        };
+        if (user.idPais) {
+          const pais = await Pais.findOne({ where: { ID: user.idPais } });
+          if (pais) {
+            otherSession.user.pais = pais.Nombre;
+          }
+        }
+        const { name, nacimiento, image, apellido } = user;
+        otherSession.user.name = name;
+        otherSession.user.apellido = apellido;
+        otherSession.user.nacimiento = nacimiento;
+        otherSession.user.image = image;
         return otherSession;
       },
     },
@@ -144,10 +158,10 @@ export const authOptions: (
     },
     jwt: {
       // Customize the JWT encode and decode functions to overwrite the default behaviour of storing the JWT token in the session cookie when using credentials providers. Instead we will store the session token reference to the session in the database.
-      encode: async (token, secret, maxAge) => {
+      encode: async ({ token, secret, maxAge }) => {
         if (
-          req.query.nextauth.includes("callback") &&
-          req.query.nextauth.includes("credentials") &&
+          req.query.nextauth?.includes("callback") &&
+          req.query.nextauth?.includes("credentials") &&
           req.method === "POST"
         ) {
           const cookies = new Cookies(req, res);
@@ -156,18 +170,18 @@ export const authOptions: (
           else return "";
         }
         // Revert to default behaviour when not in the credentials provider callback flow
-        return encode(token, secret, maxAge);
+        return encode({ token, secret, maxAge });
       },
-      decode: async (token, secret) => {
+      decode: async ({ token, secret }) => {
         if (
-          req.query.nextauth.includes("callback") &&
-          req.query.nextauth.includes("credentials") &&
+          req.query.nextauth?.includes("callback") &&
+          req.query.nextauth?.includes("credentials") &&
           req.method === "POST"
         ) {
           return null;
         }
         // Revert to default behaviour when not in the credentials provider callback flow
-        return decode(token, secret);
+        return decode({ token, secret });
       },
     },
   };

@@ -1,57 +1,54 @@
-import mssql from "mssql";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { CLIENT_ID, CLIENT_SECRET } from "../../../utils/credentials";
-import { SpotifyData } from "../../../utils/definitions";
-import { updateTokenCredential } from "../../../utils/database";
-
-type Data = {
-  message: string;
-};
+import { unstable_getServerSession } from "next-auth";
+import { Account } from "../../../utils/database/models";
+import { ResponseData } from "../../../types/definitions";
+import { refreshToken } from "../../../utils/spotify";
+import { authOptions } from "../auth/[...nextauth]";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Data>
+  res: NextApiResponse<ResponseData>
 ) {
-  const { token, redirect } = req.query;
-  if (
-    !token ||
-    typeof token !== "string" ||
-    !redirect ||
-    typeof redirect !== "string"
-  ) {
-    res.send({ message: "No colocaste token o dirección de redirección" });
-    return;
-  }
-  const form = new URLSearchParams();
-  form.append("refresh_token", token as string);
-  form.append("grant_type", "refresh_token");
-  const data = (await fetch("https://accounts.spotify.com/api/token", {
-    headers: {
-      Authorization: `Basic ${Buffer.from(
-        `${CLIENT_ID}:${CLIENT_SECRET}`
-      ).toString("base64")}`,
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    method: "POST",
-    body: form,
-  }).then((res) => res.json())) as Omit<SpotifyData, "refresh_token">;
-  if (data.error) {
-    res.status(500).send({ message: "Error con la API de Spotify " });
-    return;
-  }
-  const { access_token } = data;
-  const response = await new mssql.Request()
-    .input("id", req.session.userID)
-    .input("token", access_token)
-    .query(updateTokenCredential);
-
-  const exito = response.rowsAffected[0] > 0;
-  if (!exito) {
-    res.status(500).send({
-      message:
-        "Error con la API de Spotify. No se pudieron actualizar tus credenciales",
+  try {
+    const session = await unstable_getServerSession(
+      req,
+      res,
+      authOptions(req, res)
+    );
+    if (!session) {
+      res.status(401).json({ message: "Debes iniciar sesión" });
+      return;
+    }
+    const spotifyToken = await Account.findOne({
+      attributes: ["id", "refresh_token"],
+      where: {
+        userId: session?.user.id,
+        provider: "spotify",
+      },
     });
-    return;
+    if (!spotifyToken) {
+      res
+        .status(400)
+        .send({ message: "No has vinculado ninguna cuenta de spotify!" });
+      return;
+    }
+    const { refresh_token, id } = spotifyToken?.dataValues;
+    const { access_token, error } = await refreshToken(refresh_token);
+    if (error) {
+      res.status(400).send({ message: "Error con la API de Spotify " });
+      return;
+    }
+    await Account.update(
+      { access_token },
+      {
+        where: {
+          id,
+        },
+      }
+    );
+    res.status(200).send({ message: "Token actualizado" });
+  } catch (err: any) {
+    console.log(err);
+    res.status(500).send({ message: "Error al guardar el token" });
   }
-  res.redirect(redirect);
 }

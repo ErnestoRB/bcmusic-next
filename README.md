@@ -6,9 +6,9 @@
 docker compose up
 ```
 
-2. Generar .local.env
+2. Generar .env.local
 
-Ejemplo .local.env para desarrollo:
+Ejemplo .env.local para desarrollo:
 
 ```
 NEXTAUTH_SECRET=aquivaloquesea
@@ -20,7 +20,13 @@ DATABASE_PORT=2020
 DATABASE_PASS=b4\$hcr4\$h3rs
 ```
 
-3. Levantar app
+3. Instalar dependencias (sólo primera vez)
+
+```
+npm install
+```
+
+4. Levantar app
 
 ```
 npm run dev

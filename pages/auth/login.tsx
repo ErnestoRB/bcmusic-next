@@ -1,18 +1,33 @@
 import { NextPageContext } from "next";
 import { getCsrfToken, getProviders, signIn } from "next-auth/react";
+import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import spotifyLogo from "../../images/spotify-white.png";
 import Alert from "../../components/Alert";
+import { useSpring, animated } from "@react-spring/web";
 
-const callbackUrl = "/";
+export const callbackUrl = "/";
 export default function AuthError({
-  providers,
   csrfToken,
 }: {
   providers: Awaited<ReturnType<typeof getProviders>>;
   csrfToken: string;
 }) {
+  const { backgroundColor } = useSpring({
+    from: {
+      backgroundColor: "#a114e4",
+    },
+    to: { backgroundColor: "#31a7cb" },
+    loop: {
+      reverse: true,
+    },
+    config: {
+      duration: 5000,
+    },
+  });
   const { query } = useRouter();
   const {
     register,
@@ -24,8 +39,11 @@ export default function AuthError({
   const [loginMethod, setLoginMethod] = useState("");
 
   return (
-    <div className="w-full min-h-screen flex justify-center items-center bg-black">
-      <div className="max-w-md md:p-4 rounded-sm bg-white flex flex-col">
+    <animated.div
+      style={{ backgroundColor }}
+      className="w-full flex justify-center items-center"
+    >
+      <div className="max-w-md p-2 md:p-4 rounded-sm bg-white flex flex-col">
         {query.error && <Alert>{query.error}</Alert>}
         <h1 className="text-2xl my-2">Iniciar sesión</h1>
         <form
@@ -84,23 +102,34 @@ export default function AuthError({
         </button>
 
         <button
-          className="bg-spotify-green text-white"
+          className="flex items-center gap-2 justify-center bg-spotify-green text-white"
           onClick={() => signIn("spotify", { callbackUrl })}
         >
+          <Image
+            src={spotifyLogo}
+            width={32}
+            height={32}
+            alt={"spotify logo"}
+          ></Image>
           Iniciar sesión con Spotify
         </button>
+        <span>
+          ¿Aún no tienes cuenta? ¡Puedes crear una{" "}
+          <Link href="/auth/signup" className="text-blue-500">
+            aquí
+          </Link>
+          !
+        </span>
       </div>
-    </div>
+    </animated.div>
   );
 }
 
 export async function getServerSideProps(context: NextPageContext) {
   const csrfToken = await getCsrfToken(context);
-  const providers = await getProviders();
   return {
     props: {
       csrfToken,
-      providers,
     },
   };
 }
