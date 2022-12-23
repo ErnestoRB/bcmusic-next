@@ -12,6 +12,7 @@ Ejemplo .env.local para desarrollo:
 
 ```
 NEXTAUTH_SECRET=aquivaloquesea
+NEXTAUTH_URL=http://localhost:3000
 CLIENT_SECRET=clave_secreta_spotify
 CLIENT_ID=clave_id_spotify
 GMAIL_PASS=

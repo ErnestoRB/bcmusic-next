@@ -1,0 +1,21 @@
+services:
+  database:
+    image: mysql
+    restart: always
+    ports:
+      - ${DATABASE_PORT_EXPOSE}:3306
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_spanish_ci
+    volumes:
+      - ./data/mysql:/var/lib/mysql
+      - ./backups:/docker-entrypoint-initdb.d
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DATABASE_PASS}
+      - MYSQL_DATABASE=musica
+  app:
+    build: .
+    restart: always
+    env_file:
+      - compose.env
+    ports:
+      - 80:80
+
