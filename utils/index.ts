@@ -17,7 +17,14 @@ export const getSpotifyData = async (
       },
     }
   );
-  return await res.json();
+  if (!res.ok) {
+    return {
+      error: {
+        status: res.status,
+      },
+    };
+  }
+  return res.json();
 };
 
 export const meses = [

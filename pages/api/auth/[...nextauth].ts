@@ -58,7 +58,10 @@ export const authOptions: (
         },
         allowDangerousEmailAccountLinking: true,
         authorization:
-          "https://accounts.spotify.com/authorize?scope=user-top-read&scope=user-read-email",
+          "https://accounts.spotify.com/authorize?" +
+          new URLSearchParams({
+            scope: "user-top-read user-read-email",
+          }).toString(),
       }),
       Credentials({
         // The name to display on the sign in form (e.g. "Sign in with...")
