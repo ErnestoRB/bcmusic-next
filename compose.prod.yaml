@@ -12,10 +12,12 @@ services:
       - MYSQL_ROOT_PASSWORD=${DATABASE_PASS}
       - MYSQL_DATABASE=musica
   app:
+    depends_on:
+      - database
     build: .
     restart: always
     env_file:
       - compose.env
     ports:
-      - 80:80
+      - ${APP_EXPOSE}:80
 
