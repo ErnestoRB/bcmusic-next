@@ -62,18 +62,28 @@ export function Background() {
 
   const smMatches = useMediaQuery("(min-width:600px)");
   const mdMatches = useMediaQuery("(min-width:768px)");
+  const lgMatches = useMediaQuery("(min-width:1000px)");
 
   useEffect(() => {
-    if (mdMatches)
+    if (lgMatches)
       mergeScene({
         textSize: 0.5,
+        minZoom: 2,
+        spheresSize: 0.4,
+        descriptionOffset: -1,
+      });
+    else if (mdMatches)
+      mergeScene({
+        textSize: 0.4,
+        minZoom: 6,
         spheresSize: 0.3,
         descriptionOffset: -1,
       });
     else if (smMatches)
       mergeScene({
         spheresSize: 0.3,
-        textSize: 0.35,
+        minZoom: 2,
+        textSize: 0.3,
         descriptionOffset: -0.7,
       });
     else
@@ -84,7 +94,7 @@ export function Background() {
         textSize: 0.2,
         descriptionOffset: -0.5,
       });
-  }, [smMatches, mdMatches, mergeScene]);
+  }, [smMatches, mdMatches, lgMatches, mergeScene]);
 
   const centerRef = useRef<Group>(null);
 
