@@ -14,7 +14,6 @@ import Image from "next/image";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 
-let isLoading = false;
 let downloaded = false;
 export default function BannerPage({
   banners,
@@ -22,6 +21,7 @@ export default function BannerPage({
   banners: { mes: number; cantidad: number }[];
 }) {
   const session = useSession();
+  const [isLoading, setLoading] = useState(false);
 
   const [objectUrl, setObjectUrl] = useState<string>("");
   const [error, setError] = useState("");
@@ -71,13 +71,15 @@ export default function BannerPage({
 
         {session?.status === "authenticated" && (
           <>
+            {isLoading && <Alert type="info">Cargando...</Alert>}
+
             <h1 className="text-3xl">Generar banner</h1>
             {error && <Alert>{error}</Alert>}
             <button
               className="bg-green-400 text-black"
               onClick={() => {
                 if (isLoading) return;
-                isLoading = true;
+                setLoading(true);
                 fetch("/api/spotify/banner", { credentials: "include" })
                   .then(async (res) => {
                     if (res.status === 200) {
@@ -90,7 +92,7 @@ export default function BannerPage({
                     const data = await res.json();
                     setError(data?.message || "");
                   })
-                  .finally(() => (isLoading = false));
+                  .finally(() => setLoading(false));
               }}
             >
               Crear banner
@@ -101,18 +103,23 @@ export default function BannerPage({
               la pestaña, tendrás que generarla más tarde.
             </span>
 
-            {objectUrl && <hr className="my-4" />}
-            <span style={{ display: objectUrl ? "" : "none" }}>
-              <b>¡Gracias!</b> ¿No se descargó automáticamente?{" "}
-              <a
-                className="text-blue-700"
-                href={objectUrl}
-                ref={linkRef}
-                download="banner.png"
-              >
-                Volver a descargar
-              </a>
-            </span>
+            {objectUrl && (
+              <>
+                <hr className="my-4" />
+                <Alert type="info">
+                  <b>¡Gracias!</b> ¿No se descargó automáticamente?{" "}
+                  <a
+                    className="text-blue-700"
+                    href={objectUrl}
+                    ref={linkRef}
+                    download="banner.png"
+                  >
+                    Volver a descargar
+                  </a>
+                </Alert>
+              </>
+            )}
+
             {banners && (
               <>
                 <hr className="my-4" />

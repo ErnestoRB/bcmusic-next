@@ -17,6 +17,7 @@ import {
 import { randomBytes, randomUUID } from "crypto";
 import { NextApiRequest, NextApiResponse } from "next";
 import { decode, encode } from "next-auth/jwt";
+import { sendVerificationRequest } from "../../../utils/email";
 
 const generateSessionToken = () => {
   return randomUUID?.() ?? randomBytes(32).toString("hex");
@@ -36,6 +37,7 @@ export const authOptions: (
     pages: {
       error: "/auth/login",
       signIn: "/auth/login",
+      verifyRequest: "/auth/emailSent",
     },
     adapter,
     providers: [
@@ -47,6 +49,8 @@ export const authOptions: (
             pass: process.env.GMAIL_PASS,
           },
         },
+        from: "BashCrashers MusicApp <dev.ernestorb@gmail.com>",
+        sendVerificationRequest,
       }),
       Spotify({
         clientId: CLIENT_ID!,
