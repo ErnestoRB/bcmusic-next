@@ -4,13 +4,24 @@ import signup from "../../utils/validation/signup";
 import { hash } from "bcrypt";
 import { User } from "../../utils/database/models";
 import { isDuplicateError } from "../../utils/database";
+import { validateRecaptchaToken } from "../../utils/recaptcha";
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseData>
 ) {
   try {
-    const { Apellido, Email, Nombre, Nacimiento, Pais, Contraseña } =
+    const { Apellido, Email, Nombre, Nacimiento, Pais, Contraseña, token } =
       (await signup.validateAsync(req.body)) as SignUpInput;
+
+    //validar token
+    const gResponse = await validateRecaptchaToken(token);
+
+    if (!gResponse.success || gResponse.score < 0.7) {
+      res.status(400).send({
+        message: "Identificamos actividad sospechosa. Intenta más tarde",
+      });
+      return;
+    }
 
     const hashed = await hash(Contraseña, 10);
 

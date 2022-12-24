@@ -1,3 +1,9 @@
+declare global {
+  interface Window {
+    grecaptcha: any;
+  }
+}
+
 export interface SpotifyData {
   error?: string;
   error_description?: string;
@@ -49,6 +55,7 @@ export interface SignUpInput {
   Contraseña: string;
   Nacimiento: Date;
   Pais: number;
+  token: string;
 }
 
 export interface Usuario {

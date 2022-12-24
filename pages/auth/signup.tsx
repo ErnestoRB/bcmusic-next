@@ -9,6 +9,7 @@ import { callbackUrl } from "./login";
 import spotifyLogo from "../../images/spotify-white.png";
 import Image from "next/image";
 import { useSpring, animated } from "@react-spring/web";
+import Script from "next/script";
 
 export default function SignUp({ paises = [] }: { paises: PaisFields[] }) {
   const router = useRouter();
@@ -43,16 +44,25 @@ export default function SignUp({ paises = [] }: { paises: PaisFields[] }) {
   }, [status, router]);
 
   const onSubmit = useCallback(async (data: FieldValues) => {
-    const response = await fetch("/api/signup", {
-      method: "POST",
-      body: JSON.stringify(data),
-      headers: {
-        "Content-Type": "application/json",
-      },
+    window.grecaptcha.ready(function () {
+      window.grecaptcha
+        .execute(process.env.NEXT_PUBLIC_RECAPTCHA_CLIENT, {
+          action: "submit",
+        })
+        .then(async function (token: string) {
+          const dataWithToken = { ...data, token };
+          const response = await fetch("/api/signup", {
+            method: "POST",
+            body: JSON.stringify(dataWithToken),
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+          const { message } = await response.json();
+          setResponse(message);
+          setError(!response.ok);
+        });
     });
-    const { message } = await response.json();
-    setResponse(message);
-    setError(!response.ok);
   }, []);
 
   return (
@@ -60,6 +70,13 @@ export default function SignUp({ paises = [] }: { paises: PaisFields[] }) {
       style={{ backgroundColor }}
       className="w-full flex flex-col items-center justify-center bg-blue-200"
     >
+      <Script
+        async
+        src={
+          "https://www.google.com/recaptcha/api.js?render=" +
+          process.env.NEXT_PUBLIC_RECAPTCHA_CLIENT
+        }
+      ></Script>
       <form
         className="max-w-sm flex flex-col gap-y-2 p-2 md:p-4 rounded-sm bg-white"
         onSubmit={handleSubmit(onSubmit)}

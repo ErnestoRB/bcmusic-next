@@ -18,6 +18,7 @@ import { randomBytes, randomUUID } from "crypto";
 import { NextApiRequest, NextApiResponse } from "next";
 import { decode, encode } from "next-auth/jwt";
 import { sendVerificationRequest } from "../../../utils/email";
+import { validateRecaptchaToken } from "../../../utils/recaptcha";
 
 const generateSessionToken = () => {
   return randomUUID?.() ?? randomBytes(32).toString("hex");
@@ -83,10 +84,17 @@ export const authOptions: (
         },
         async authorize(credentials, req) {
           try {
+            const gToken = (credentials as any).token;
+            const gResponse = await validateRecaptchaToken(gToken);
+            if (!gResponse.success || gResponse.score < 0.7) {
+              throw new Error(
+                "Detectamos actividad sospechosa. Por favor, trata de iniciar sesión con Spotify o a través de verificación de correo."
+              );
+            }
             let usuario: any = await User.findOne({
               where: { email: credentials?.email },
             });
-            if (!usuario) return null;
+            if (!usuario) throw new Error("Credenciales inválidas");
             usuario = usuario.dataValues;
             if (!usuario.password)
               throw new Error(

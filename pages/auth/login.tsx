@@ -8,6 +8,7 @@ import { useForm } from "react-hook-form";
 import spotifyLogo from "../../images/spotify-white.png";
 import Alert from "../../components/Alert";
 import { useSpring, animated } from "@react-spring/web";
+import Script from "next/script";
 
 export const callbackUrl = "/";
 export default function AuthError({
@@ -43,6 +44,13 @@ export default function AuthError({
       style={{ backgroundColor }}
       className="w-full flex justify-center items-center"
     >
+      <Script
+        async
+        src={
+          "https://www.google.com/recaptcha/api.js?render=" +
+          process.env.NEXT_PUBLIC_RECAPTCHA_CLIENT
+        }
+      ></Script>
       <div className="max-w-md p-2 md:p-4 rounded-sm bg-white flex flex-col">
         {query.error && <Alert>{query.error}</Alert>}
         <h1 className="text-2xl my-2">Iniciar sesión</h1>
@@ -52,7 +60,20 @@ export default function AuthError({
             const { contraseña, email } = values;
 
             if (loginMethod == "credentials") {
-              signIn("credentials", { email, contraseña, callbackUrl });
+              window.grecaptcha.ready(function () {
+                window.grecaptcha
+                  .execute(process.env.NEXT_PUBLIC_RECAPTCHA_CLIENT, {
+                    action: "submit",
+                  })
+                  .then(async function (token: string) {
+                    signIn("credentials", {
+                      email,
+                      contraseña,
+                      callbackUrl,
+                      token,
+                    });
+                  });
+              });
               return;
             }
             signIn("email", { email, callbackUrl });
