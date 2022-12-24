@@ -39,7 +39,7 @@ export default function BannerPage({
       <Head>
         <title>Generar banner</title>
       </Head>
-      <figure className="bg-white bg-opacity-40 p-4 w-64 md:w-72 lg:w-96">
+      <figure className="bg-white bg-opacity-40 p-4 max-w-xs sm:w-64 md:w-72 lg:w-96">
         <Image src={bannerImage} alt="Ejemplo de banner a generar"></Image>
         <figcaption className="text-center">Ejemplo de banner</figcaption>
       </figure>

@@ -99,7 +99,10 @@ export default function NavBar() {
             .flatMap((item) => item.items)
             .map((item, index) => item)}
         {!desktopNavbar && (
-          <Dropdown className="p-2">
+          <Dropdown
+            classNameButton="p-2"
+            classNameDropdown="w-min md:w-max p-2"
+          >
             {menuItems
               .filter((item) => !item.type || item.type === session.status)
               .flatMap((item) => item.items)
