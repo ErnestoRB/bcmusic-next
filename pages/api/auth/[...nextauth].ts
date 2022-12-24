@@ -53,7 +53,6 @@ export const authOptions: (
         clientSecret: CLIENT_SECRET!,
         profile: function (profile, tokens) {
           const newProfile = { ...profile };
-          console.log(newProfile);
           return newProfile;
         },
         allowDangerousEmailAccountLinking: true,

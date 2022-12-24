@@ -8,6 +8,7 @@ import { meses } from "../utils/";
 import { authOptions } from "./api/auth/[...nextauth]";
 import { Op } from "sequelize";
 import Alert from "../components/Alert";
+import Head from "next/head";
 
 let isLoading = false;
 let downloaded = false;
@@ -29,6 +30,9 @@ export default function BannerPage({
 
   return (
     <div className="w-full bg-gradient-to-tr from-bc-purple-1 via-blue-300 to-stone-100 flex justify-center items-center">
+      <Head>
+        <title>Generar banner</title>
+      </Head>
       <div className="max-w-md p-2 md:p-4 rounded-sm bg-white flex flex-col gap-y-2 shadow-lg">
         <h1 className="text-3xl">Generar banners</h1>
         {error && <Alert>{error}</Alert>}

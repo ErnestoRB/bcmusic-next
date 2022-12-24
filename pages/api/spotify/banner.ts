@@ -55,8 +55,6 @@ export default async function handler(
       return;
     }
     const { refresh_token, access_token, id } = spotifyToken.dataValues;
-    console.log(spotifyToken.dataValues);
-
     let data: any;
     for (const time of availableSpotifyTimeRanges) {
       data = await getSpotifyData(access_token as string, time);

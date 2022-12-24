@@ -1,4 +1,5 @@
 import { useSession } from "next-auth/react";
+import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Alert from "../components/Alert";
@@ -16,11 +17,12 @@ export default function Panel() {
     return <div>Cargando...</div>;
   }
 
-  console.log(session.data);
-
   return (
     <div className="w-full bg-gradient-to-tr from-bc-purple-1 via-blue-300 to-stone-100 flex justify-center items-center">
       <div className="max-w-md p-2 md:p-4 rounded-sm bg-white flex flex-col gap-y-2 shadow-lg">
+        <Head>
+          <title>Panel de usuario</title>
+        </Head>
         <h1 className="text-3xl">Panel de usuario</h1>
         <Alert type="warning">
           Si no aparece información extra en este panel quiere decir que no

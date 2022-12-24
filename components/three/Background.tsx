@@ -173,8 +173,6 @@ export function Background() {
           onClick={() => {
             router.push("/banner");
             document.body.classList.remove("cursor-pointer");
-
-            console.log("Clicked");
           }}
           onPointerEnter={() => document.body.classList.add("cursor-pointer")}
           onPointerLeave={() =>

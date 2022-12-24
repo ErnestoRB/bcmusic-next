@@ -1,6 +1,11 @@
+import Head from "next/head";
+
 export default function Politicas() {
   return (
     <div className="flex flex-col items-center justify-center w-full bg-stone-300">
+      <Head>
+        <title>Política de privacidad</title>
+      </Head>
       <div className="max-w-lg bg-white p-2 md:p-4 shadow-lg rounded">
         <h1 className="text-3xl">Política de privacidad</h1>
         <p>
