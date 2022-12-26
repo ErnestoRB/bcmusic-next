@@ -42,7 +42,7 @@
     "react-dom": "18.2.0",
     "react-hook-form": "^7.40.0",
     "sequelize": "^6.27.0",
-    "three": "0.141.0",
+    "three": "0.139.2",
     "three-stdlib": "^2.20.5",
     "typescript": "4.9.4"
   },

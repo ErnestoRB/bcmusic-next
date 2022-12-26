@@ -16,9 +16,9 @@ RUN apk add --update --no-cache \
     automake
 WORKDIR /app
 
-COPY . /app/
-
+COPY package.json ./
 RUN npm install
+COPY . .
 RUN npm run build
 
 ENV PORT=80
