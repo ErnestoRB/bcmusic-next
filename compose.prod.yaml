@@ -15,7 +15,6 @@ services:
     build: .
     restart: unless-stopped
     env_file:
-      - compose.env
+      - .env.production
     ports:
       - ${APP_EXPOSE}:80
-
