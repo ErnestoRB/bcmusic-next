@@ -9,6 +9,7 @@ import spotifyLogo from "../../images/spotify-white.png";
 import Alert from "../../components/Alert";
 import { useSpring, animated } from "@react-spring/web";
 import Script from "next/script";
+import Head from "next/head";
 
 export const callbackUrl = "/";
 export default function AuthError({
@@ -44,6 +45,9 @@ export default function AuthError({
       style={{ backgroundColor }}
       className="w-full flex justify-center items-center"
     >
+      <Head>
+        <title>Iniciar sesión</title>
+      </Head>
       <Script
         async
         src={
@@ -52,7 +56,16 @@ export default function AuthError({
         }
       ></Script>
       <div className="max-w-md p-2 md:p-4 rounded-sm bg-white flex flex-col">
-        {query.error && <Alert>{query.error}</Alert>}
+        {query.error && (
+          <>
+            {(query.error == "OAuthCallback" && (
+              <Alert>No fue posible este metodo de autentificación</Alert>
+            )) ||
+              (query.error == "SIGNIN_EMAIL_ERROR" && (
+                <Alert>No se pudo iniciar sesión con email</Alert>
+              )) || <Alert>{query.error}</Alert>}
+          </>
+        )}
         <h1 className="text-2xl my-2">Iniciar sesión</h1>
         <form
           className="flex flex-col"

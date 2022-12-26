@@ -31,8 +31,8 @@ export default function NavBar() {
           <NavBarLink key="crearBanner" href={"/banner"}>
             Crear banner
           </NavBarLink>,
-          <NavBarLink key="privacidad" href={"/politicas"}>
-            Política de privacidad
+          <NavBarLink key="acerca" href={"/about"}>
+            Acerca
           </NavBarLink>,
         ],
       },
@@ -44,6 +44,9 @@ export default function NavBar() {
           </NavBarLink>,
           <NavBarLink key="signup" href="/auth/signup">
             Registrarse
+          </NavBarLink>,
+          <NavBarLink key="privacidad" href={"/politicas"}>
+            Política de privacidad
           </NavBarLink>,
         ],
       },
@@ -88,6 +91,9 @@ export default function NavBar() {
         href={"/"}
       >
         BCMusic App
+        <span className="bg-red-600 text-white rounded px-1 text-sm m-1">
+          BETA
+        </span>
       </Link>
       <div
         nav-options="true"

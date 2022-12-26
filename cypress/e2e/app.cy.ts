@@ -34,7 +34,7 @@ describe("Navigation", () => {
     cy.contains(/[pP]rivacidad/);
   });
 
-  it("/banner should redirect to /login the root when no session has started", () => {
+  it("/banner should be accessible even if not logged", () => {
     // Start from the index page
     cy.visit("http://localhost:3000/");
 
@@ -42,9 +42,17 @@ describe("Navigation", () => {
     cy.get('[nav-options] > a[href*="banner"]').click();
 
     // The new url should include "/about"
-    cy.url().should("include", "/login");
+    cy.url().should("include", "/banner");
 
     // The new page should contain an h1 with "About page"
     cy.contains(/[pP]rivacidad/);
+  });
+
+  it("/about is rendered", () => {
+    // Start from the index page
+    cy.visit("http://localhost:3000/about");
+
+    // The new page should contain an h1 with "About page"
+    cy.contains(/BashCrashers MusicApp/);
   });
 });

@@ -9,6 +9,8 @@ import { ResponseData } from "../../../types/definitions";
 import { sequelize } from "../../../utils/database/connection";
 import { Op, Transaction } from "sequelize";
 
+export const MIN_ARTISTS = 5;
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseData | Buffer>
@@ -37,32 +39,36 @@ export default async function handler(
       return;
     }
     const banner = await Banner.findOne({
-      where: sequelize.where(
-        sequelize.fn(
-          "TIMESTAMPDIFF",
-          sequelize.literal("MINUTE"),
-          sequelize.col("fecha_generado"),
-          sequelize.fn("NOW")
-        ),
-        Op.lte,
-        60
-      ),
+      where: {
+        [Op.and]: [
+          sequelize.where(
+            sequelize.fn(
+              "TIMESTAMPDIFF",
+              sequelize.literal("MINUTE"),
+              sequelize.col("fecha_generado"),
+              sequelize.fn("NOW")
+            ),
+            Op.lte,
+            60
+          ),
+          { idUsuario: session.user?.id },
+        ],
+      },
     });
     if (banner) {
       res
         .status(400)
-        .send({ message: "Sólo puedes crear un banner por hora. " });
+        .send({ message: "Sólo puedes crear un banner por hora." });
       return;
     }
     const { refresh_token, access_token, id } = spotifyToken.dataValues;
     let data: any;
     for (const time of availableSpotifyTimeRanges) {
       data = await getSpotifyData(access_token as string, time);
-      if (data.error || (!data.error && data.total > 0)) {
+      if (data.error || (!data.error && data.total >= MIN_ARTISTS)) {
         break;
       }
     }
-
     if (data.error && data.error.status == 401) {
       try {
         const { access_token } = await refreshToken(refresh_token);
@@ -76,7 +82,7 @@ export default async function handler(
         );
         for (const time of availableSpotifyTimeRanges) {
           data = await getSpotifyData(access_token as string, time);
-          if (data.error || (!data.error && data.total > 0)) {
+          if (data.error || (!data.error && data.total >= MIN_ARTISTS)) {
             break;
           }
         }
@@ -85,25 +91,44 @@ export default async function handler(
         return;
       }
     }
+    if (!data.error && data.total < MIN_ARTISTS) {
+      res.status(400).send({
+        message:
+          "Para generar un banner se necesitan al menos " +
+          MIN_ARTISTS +
+          " artistas y tú sólo tienes " +
+          data.total,
+      });
+      return;
+    }
     if (data.error) {
       console.error(data);
+      if (data.error.status === 403) {
+        res.status(400).send({
+          message:
+            "No pudimos obtener permisos necesarios para crear el banner",
+        });
+        return;
+      }
       res.status(400).send({ message: "Error al contactar la API De Spotify" });
       return;
     }
     let t: Transaction = await sequelize.transaction();
     try {
       const img = await createBannerBuffer(data.items);
-      const banner = await Banner.create(
+      await Banner.create(
         { idUsuario: session?.user.id, fecha_generado: new Date() },
         { transaction: t }
       );
-      const imgId = banner.dataValues.id;
-      //await fs.writeFile("./public/" + imgId, img);
       await t.commit();
       res.send(img);
-      //res.send({ message: "Banner creado" });
     } catch (err: any) {
+      console.log(err);
       await t.rollback();
+      if (err.isBanner) {
+        res.status(400).send({ message: err.message });
+        return;
+      }
       res.status(400).send({ message: "Error" });
     }
   } catch (err) {
