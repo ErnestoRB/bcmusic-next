@@ -2,8 +2,29 @@ import { Canvas } from "@react-three/fiber";
 import Head from "next/head";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { ErrorBoundary } from "../components/errors/ErrorBoundary";
+import Throwing from "../components/errors/Throwing";
 import { Background } from "../components/three/Background";
 import WebGL from "../utils/three/compatibility";
+
+const FallbackCanvas = function () {
+  return (
+    <div className="w-full h-full grid place-items-center place-content-center text-white">
+      <h1
+        className={`text-center text-2xl sm:text-4xl font-blade text-bc-pink-1`}
+      >
+        bienvenido a bashcrashers
+      </h1>{" "}
+      <span>
+        Genera tu banner
+        <Link className="text-blue-600" href="/banner">
+          {" "}
+          aquí!
+        </Link>
+      </span>
+    </div>
+  );
+};
 
 export default function Home() {
   const [compatibility, setCompatibility] = useState(false);
@@ -23,27 +44,13 @@ export default function Home() {
       </Head>
       <div className="w-full flex-1 bg-black">
         {compatibility && (
-          <Canvas camera={{ position: [0, 0, 5] }}>
-            <Background></Background>
-          </Canvas>
+          <ErrorBoundary fallback={<FallbackCanvas></FallbackCanvas>}>
+            <Canvas camera={{ position: [0, 0, 5] }}>
+              <Background></Background>
+            </Canvas>
+          </ErrorBoundary>
         )}
-
-        {!compatibility && (
-          <div className="w-full h-full grid place-items-center place-content-center text-white">
-            <h1
-              className={`text-center text-2xl sm:text-4xl font-blade text-bc-pink-1`}
-            >
-              bienvenido a bashcrashers
-            </h1>{" "}
-            <span>
-              Genera tu banner
-              <Link className="text-blue-600" href="/banner">
-                {" "}
-                aquí!
-              </Link>
-            </span>
-          </div>
-        )}
+        {!compatibility && <FallbackCanvas></FallbackCanvas>}
       </div>
       <div className="absolute bottom-0 right-0 bg-white bg-opacity-50 text-sm px-2 py-px rounded-sm">
         Multimedia creada por{" "}

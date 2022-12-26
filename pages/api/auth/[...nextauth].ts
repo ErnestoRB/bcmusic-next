@@ -57,6 +57,8 @@ export const authOptions: (
         clientId: CLIENT_ID!,
         clientSecret: CLIENT_SECRET!,
         profile: function (profile, tokens) {
+          console.log(profile);
+
           const newProfile = { ...profile };
           return newProfile;
         },
@@ -128,6 +130,13 @@ export const authOptions: (
             });
             return true;
           }
+          if (account?.provider === "spotify" && !profile?.email) {
+            const error = new Error(
+              "Tu cuenta de Spotify no tiene un email asociado!"
+            ) as Error & { isEmail: true };
+            error.isEmail = true;
+            throw error;
+          }
           if (
             account?.provider === "spotify" &&
             (profile as SpotifyProfile)?.images?.length > 0
@@ -143,7 +152,10 @@ export const authOptions: (
             return true;
           }
           return true;
-        } catch (err) {
+        } catch (err: any) {
+          if (err.isEmail) {
+            throw err;
+          }
           console.log(err);
           return false;
         }

@@ -36,9 +36,8 @@ export default async function handler(
     res.send({ message: "Registro exitoso" });
   } catch (err: any) {
     console.log(err);
-
     if (err.isJoi) {
-      res.send(err.details);
+      res.status(400).send({ message: err.details[0].message });
       return;
     }
     if (isDuplicateError(err)) {
