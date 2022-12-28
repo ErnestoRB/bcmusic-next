@@ -116,6 +116,7 @@ export default function BannerPage({
                           const data = await res.blob();
                           const file = window.URL.createObjectURL(data);
                           setObjectUrl(file);
+                          setError("");
                           // https://stackoverflow.com/questions/41947735/custom-name-for-blob-url/56923508#56923508
                           return;
                         }

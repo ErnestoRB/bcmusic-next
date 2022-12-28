@@ -1,0 +1,7 @@
+{
+    "width": 1296,
+    "height": 1920,
+    "author": "Iker Jiménez",
+    "fonts": [ { "src": "SF Movie Poster.ttf", "family": "SF Movie Poster" },  { "src": "BLADRMF.ttf", "family": "Blade Runner Movie Font" }],
+    "images": ["background_text.jpg", "background.jpg"]
+}
