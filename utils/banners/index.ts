@@ -27,10 +27,10 @@ export default async function executeBanner(
   const { width, height, author, description, images, fonts } =
     validatedJson as BannerConfig;
   fonts.forEach(({ src, family }) => {
-    registerFont(path.join(basePath, "fonts", src), { family });
+    registerFont(path.join(basePath, "designs", "fonts", src), { family });
   });
   const promises = images.map((element) => {
-    return loadImage(path.join(basePath, "images", element));
+    return loadImage(path.join(basePath, "designs", "images", element));
   });
   const imagesArray = await Promise.all(promises);
   const canvas = createCanvas(width, height);
