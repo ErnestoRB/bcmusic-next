@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { availableSpotifyTimeRanges, getSpotifyData } from "../../../utils";
-import executeBanner from "../../../utils/banners";
+import executeBanner, { getAvailableBanners } from "../../../utils/banners";
 import { unstable_getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
 import { refreshToken } from "../../../utils/spotify";
@@ -16,6 +16,25 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseData | Buffer>
 ) {
+  const { nombre = "synthwave" } = req.query;
+  console.log(nombre);
+  if (nombre instanceof Array) {
+    res.status(400).json({ message: "Sólo especifica un valor para banner" });
+    return;
+  }
+  const availableBanners = (await getAvailableBanners())?.map(
+    (bannerConfig) => bannerConfig.fileName
+  );
+  console.log(availableBanners);
+
+  if (
+    !availableBanners ||
+    !availableBanners.find((banner) => banner === nombre)
+  ) {
+    res.status(400).json({ message: "No se encontró ese banner" });
+    return;
+  }
+
   try {
     const session = await unstable_getServerSession(
       req,
@@ -122,10 +141,18 @@ export default async function handler(
       return;
     }
     const img = await executeBanner(
-      "synthwave",
+      nombre,
       data.items,
+      session.user,
       path.join(process.cwd(), "./utils/banners")
     );
+    if (!img) {
+      res.status(400).send({
+        message:
+          "No fue posible crear el banner solcitado, ¿probablemente no existe?",
+      });
+      return;
+    }
     if (process.env.NODE_ENV === "production") {
       let t: Transaction = await sequelize.transaction();
       try {

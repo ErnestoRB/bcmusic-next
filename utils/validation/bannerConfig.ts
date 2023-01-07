@@ -5,6 +5,8 @@ export default Joi.object({
   height: Joi.number().required(),
   description: Joi.string(),
   author: Joi.string().required(),
+  example: Joi.string().uri(),
+  name: Joi.string().required(),
   images: Joi.array().items(Joi.string()).required(),
   fonts: Joi.array()
     .items(
@@ -22,8 +24,10 @@ export default Joi.object({
 export interface BannerConfig {
   width: number;
   height: number;
-  description: string;
+  description?: string;
+  example?: string;
   author: string;
+  name: string;
   images: string[];
   fonts: {
     src: string;
