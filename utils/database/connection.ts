@@ -9,7 +9,7 @@ import {
 export const sequelize = new Sequelize({
   dialect: "mysql",
   host: DATABASE_HOST ?? "127.0.0.1",
-  port: Number(DATABASE_PORT) ?? 2020,
+  port: DATABASE_PORT ? Number(DATABASE_PORT) : 2020,
   username: DATABASE_USER ?? "root",
   database: DATABASE_NAME ?? "musica",
   password: DATABASE_PASS,
