@@ -15,7 +15,7 @@ jobs:
         with:
           path: dev
       - name: Package source code
-        run: tar -cvzf dev-${{ github.sha }}.tar.gz dev
+        run: tar -cvzf dev-${{ github.sha }}.tar.gz -C dev .
       - name: Copy file via SSH
         uses: appleboy/scp-action@master
         with:
@@ -36,7 +36,7 @@ jobs:
             cd
             mv -f development/code development/code_old
             mkdir -p development/code
-            tar -xvzf development/development-${{ github.sha }}.tar.gz -C development/code
+            tar -xvzf development/dev-${{ github.sha }}.tar.gz -C development/code
             rm -f development/development-*.tar.gz
             cd development/utils
             ./rebuild.sh
