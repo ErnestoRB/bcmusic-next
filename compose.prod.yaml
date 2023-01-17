@@ -15,7 +15,7 @@ services:
     build: .
     restart: unless-stopped
     env_file:
-      - .env.production
+      - ../.env.production
     ports:
       - ${APP_EXPOSE}:80
   pma:

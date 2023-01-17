@@ -43,3 +43,4 @@ jobs:
             cd development/utils
             ./rebuild.sh
             ./start.sh
+            docker system prune -f
