@@ -12,6 +12,8 @@ services:
     depends_on:
       - database
     build: .
+    env_file:
+      - ../.env.development
     restart: unless-stopped
     ports:
       - 4040:80
