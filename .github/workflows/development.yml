@@ -13,6 +13,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
+          token: ${{ env.PAT }}
           path: dev
           submodules: "recursive"
       - name: Package source code
