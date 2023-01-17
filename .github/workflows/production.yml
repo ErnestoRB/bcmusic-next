@@ -13,6 +13,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           path: production
+          submodules: "recursive"
       - name: Package source code
         run: tar -cvzf production-${{ github.sha }}.tar.gz -C production .
       - name: Copy file via SSH
