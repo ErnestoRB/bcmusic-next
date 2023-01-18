@@ -1,6 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { availableSpotifyTimeRanges, getSpotifyData } from "../../../utils";
-import executeBanner, { getAvailableBanners } from "../../../utils/banners";
+import { getSpotifyData } from "../../../utils";
+import executeBanner, {
+  bannerExists,
+  getBannerConfig,
+} from "../../../utils/banners";
 import { unstable_getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
 import { refreshToken } from "../../../utils/spotify";
@@ -8,7 +11,6 @@ import { Account, Banner } from "../../../utils/database/models";
 import { ResponseData } from "../../../types/definitions";
 import { sequelize } from "../../../utils/database/connection";
 import { Op, Transaction } from "sequelize";
-import path from "path";
 
 export const MIN_ARTISTS = 3;
 
@@ -16,25 +18,18 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseData | Buffer>
 ) {
-  const { nombre = "synthwave" } = req.query;
-  console.log(nombre);
+  const { nombre = "synthwave" } = req.query; // nombre debe ser el nombre del archivo
   if (nombre instanceof Array) {
     res.status(400).json({ message: "Sólo especifica un valor para banner" });
     return;
   }
-  const availableBanners = (await getAvailableBanners())?.map(
-    (bannerConfig) => bannerConfig.fileName
-  );
-  console.log(availableBanners);
+  console.log(nombre);
 
-  if (
-    !availableBanners ||
-    !availableBanners.find((banner) => banner === nombre)
-  ) {
+  if (!(await bannerExists(nombre))) {
     res.status(400).json({ message: "No se encontró ese banner" });
     return;
   }
-
+  const bannerConfig = await getBannerConfig(nombre);
   try {
     const session = await unstable_getServerSession(
       req,
@@ -83,18 +78,19 @@ export default async function handler(
         return;
       }
     }
-
     const { refresh_token, access_token, id } = spotifyToken.dataValues;
-    let data: any;
-    for (const time of availableSpotifyTimeRanges) {
-      data = await getSpotifyData(access_token as string, time);
-      if (data.error || (!data.error && data.total >= MIN_ARTISTS)) {
-        break;
-      }
-    }
+
+    let data = await getSpotifyData(
+      access_token as string,
+      bannerConfig.time_range
+    );
+    console.log(data);
+
     if (data.error && data.error.status == 401) {
       try {
         const { access_token } = await refreshToken(refresh_token);
+        console.log("Tratando de renovar", { access_token });
+
         await Account.update(
           { access_token },
           {
@@ -103,28 +99,18 @@ export default async function handler(
             },
           }
         );
-        for (const time of availableSpotifyTimeRanges) {
-          data = await getSpotifyData(access_token as string, time);
-          if (data.error || (!data.error && data.total >= MIN_ARTISTS)) {
-            break;
-          }
-        }
+        data = await getSpotifyData(
+          access_token as string,
+          bannerConfig.time_range
+        );
       } catch (error: any) {
         res.send({ message: "Error al renovar el token de acceso" });
         return;
       }
     }
-    if (
-      !data.error &&
-      data.total < MIN_ARTISTS &&
-      process.env.NODE_ENV === "production"
-    ) {
+    if (!data.error && data.total < MIN_ARTISTS) {
       res.status(400).send({
-        message:
-          "Para generar un banner se necesitan al menos " +
-          MIN_ARTISTS +
-          " artistas y tú sólo tienes " +
-          data.total,
+        message: `Para generar un banner '${bannerConfig.name}' se necesitan al menos ${MIN_ARTISTS} artistas y tú sólo tienes ${data.total}`,
       });
       return;
     }
@@ -140,12 +126,7 @@ export default async function handler(
       res.status(400).send({ message: "Error al contactar la API De Spotify" });
       return;
     }
-    const img = await executeBanner(
-      nombre,
-      data.items,
-      session.user,
-      path.join(process.cwd(), "./utils/banners")
-    );
+    const img = await executeBanner(nombre, data.items, session.user);
     if (!img) {
       res.status(400).send({
         message:
@@ -176,7 +157,6 @@ export default async function handler(
     res.send(img);
   } catch (err) {
     console.log(err);
-
     res.status(500).send({ message: "Error interno" });
   }
 }

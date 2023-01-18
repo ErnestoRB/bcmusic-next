@@ -85,7 +85,7 @@ export default function NavBar() {
   );
 
   return (
-    <nav className=" bg-black flex flex-wrap w-full h-[10vh] text-white gap-x-4 items-stretch place-items-center px-1 md:px-4">
+    <nav className=" bg-black flex flex-col sm:flex-row flex-wrap w-full h-[10vh] text-white gap-x-4 items-center sm:items-stretch place-items-center px-1 md:px-4">
       <Link
         className="justify-self-start flex-initial w-max text-lg font-bold"
         href={"/"}

@@ -18,11 +18,15 @@ export const getSpotifyData = async (
     }
   );
   if (!res.ok) {
-    return {
-      error: {
-        status: res.status,
-      },
-    };
+    try {
+      return res.json();
+    } catch (e) {
+      return {
+        error: {
+          status: res.status,
+        },
+      };
+    }
   }
   return res.json();
 };
@@ -41,3 +45,7 @@ export const meses = [
   "noviembre",
   "diciembre",
 ] as const;
+
+export class BannerError extends Error {
+  isBanner = true;
+}

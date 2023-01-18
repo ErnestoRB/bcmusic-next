@@ -1,11 +1,10 @@
 {
-    "compilerOptions": {
-      "noEmit": true,
-      // be explicit about types included
-      // to avoid clashing with Jest types
-      "types": ["jest"],
-      "isolatedModules": false,
-      "jsx": "preserve"
-    },
+  "compilerOptions": {
+    "noEmit": true,
+    // be explicit about types included
+    // to avoid clashing with Jest types
+    "types": ["jest"],
+    "isolatedModules": false,
+    "jsx": "preserve"
   }
-  
+}

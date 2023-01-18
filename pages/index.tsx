@@ -49,16 +49,18 @@ export default function Home() {
             </Canvas>
           </ErrorBoundary>
         )}
+        {compatibility && (
+          <div className="absolute bottom-0 right-0 bg-white bg-opacity-70 text-sm px-2 py-px rounded-sm">
+            Multimedia creada por{" "}
+            <a
+              href="https://ernestorb.com"
+              className="text-red-700 hover:text-red-800"
+            >
+              Ernesto Ramírez
+            </a>
+          </div>
+        )}
         {!compatibility && <FallbackCanvas></FallbackCanvas>}
-      </div>
-      <div className="absolute bottom-0 right-0 bg-white bg-opacity-50 text-sm px-2 py-px rounded-sm">
-        Multimedia creada por{" "}
-        <a
-          href="https://ernestorb.com"
-          className="text-blue-300 hover:text-blue-100"
-        >
-          Ernesto Ramírez
-        </a>
       </div>
     </>
   );

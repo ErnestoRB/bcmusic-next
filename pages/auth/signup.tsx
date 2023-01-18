@@ -10,6 +10,7 @@ import spotifyLogo from "../../images/spotify-white.png";
 import Image from "next/image";
 import { useSpring, animated } from "@react-spring/web";
 import Script from "next/script";
+import { backgroundGradient } from "../../utils/styles";
 
 export default function SignUp({ paises = [] }: { paises: PaisFields[] }) {
   const router = useRouter();
@@ -21,19 +22,6 @@ export default function SignUp({ paises = [] }: { paises: PaisFields[] }) {
     watch,
     formState: { errors },
   } = useForm();
-
-  const { backgroundColor } = useSpring({
-    from: {
-      backgroundColor: "#bfdbfe",
-    },
-    to: { backgroundColor: "#3d92fe" },
-    loop: {
-      reverse: true,
-    },
-    config: {
-      duration: 5000,
-    },
-  });
 
   const { status } = useSession();
 
@@ -66,9 +54,8 @@ export default function SignUp({ paises = [] }: { paises: PaisFields[] }) {
   }, []);
 
   return (
-    <animated.div
-      style={{ backgroundColor }}
-      className="w-full flex flex-col items-center justify-center bg-blue-200"
+    <div
+      className={`w-full flex flex-col items-center justify-center py-8 ${backgroundGradient}`}
     >
       <Script
         async
@@ -78,7 +65,7 @@ export default function SignUp({ paises = [] }: { paises: PaisFields[] }) {
         }
       ></Script>
       <form
-        className="max-w-sm flex flex-col gap-y-2 p-2 md:p-4 rounded-sm bg-white"
+        className="max-w-sm w-full flex flex-col gap-y-2 p-2 md:p-4 rounded-sm bg-white"
         onSubmit={handleSubmit(onSubmit)}
       >
         <h1 className="text-3xl">¡Regístrate!</h1>
@@ -156,7 +143,7 @@ export default function SignUp({ paises = [] }: { paises: PaisFields[] }) {
           Registrarse
         </button>
       </form>
-    </animated.div>
+    </div>
   );
 }
 

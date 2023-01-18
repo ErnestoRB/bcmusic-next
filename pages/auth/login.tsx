@@ -10,6 +10,7 @@ import Alert from "../../components/Alert";
 import { useSpring, animated } from "@react-spring/web";
 import Script from "next/script";
 import Head from "next/head";
+import { backgroundGradient } from "../../utils/styles";
 
 export const callbackUrl = "/";
 export default function AuthError({
@@ -18,18 +19,6 @@ export default function AuthError({
   providers: Awaited<ReturnType<typeof getProviders>>;
   csrfToken: string;
 }) {
-  const { backgroundColor } = useSpring({
-    from: {
-      backgroundColor: "#a114e4",
-    },
-    to: { backgroundColor: "#31a7cb" },
-    loop: {
-      reverse: true,
-    },
-    config: {
-      duration: 5000,
-    },
-  });
   const { query } = useRouter();
   const {
     register,
@@ -41,9 +30,8 @@ export default function AuthError({
   const [loginMethod, setLoginMethod] = useState("");
 
   return (
-    <animated.div
-      style={{ backgroundColor }}
-      className="w-full flex justify-center items-center"
+    <div
+      className={`w-full flex justify-center items-center ${backgroundGradient}`}
     >
       <Head>
         <title>Iniciar sesión</title>
@@ -55,7 +43,7 @@ export default function AuthError({
           process.env.NEXT_PUBLIC_RECAPTCHA_CLIENT
         }
       ></Script>
-      <div className="max-w-md p-2 md:p-4 rounded-sm bg-white flex flex-col">
+      <div className="max-w-md p-2 md:p-4 rounded-sm bg-white flex flex-col gap-y-2">
         {query.error && (
           <>
             {(query.error == "OAuthCallback" && (
@@ -67,86 +55,86 @@ export default function AuthError({
           </>
         )}
         <h1 className="text-2xl my-2">Iniciar sesión</h1>
-        <form
-          className="flex flex-col"
-          onSubmit={handleSubmit((values) => {
-            const { contraseña, email } = values;
+        <div className="flex flex-col">
+          <form
+            className="flex flex-col"
+            onSubmit={handleSubmit((values) => {
+              const { contraseña, email } = values;
 
-            if (loginMethod == "credentials") {
-              window.grecaptcha.ready(function () {
-                window.grecaptcha
-                  .execute(process.env.NEXT_PUBLIC_RECAPTCHA_CLIENT, {
-                    action: "submit",
-                  })
-                  .then(async function (token: string) {
-                    signIn("credentials", {
-                      email,
-                      contraseña,
-                      callbackUrl,
-                      token,
+              if (loginMethod == "credentials") {
+                window.grecaptcha.ready(function () {
+                  window.grecaptcha
+                    .execute(process.env.NEXT_PUBLIC_RECAPTCHA_CLIENT, {
+                      action: "submit",
+                    })
+                    .then(async function (token: string) {
+                      signIn("credentials", {
+                        email,
+                        contraseña,
+                        callbackUrl,
+                        token,
+                      });
                     });
-                  });
-              });
-              return;
-            }
-            signIn("email", { email, callbackUrl });
-          })}
-        >
-          {loginMethod && (
-            <>
-              <input
-                autoComplete="email"
-                name="csrfToken"
-                type="hidden"
-                defaultValue={csrfToken}
-              />
-              <label htmlFor="email">Correo</label>
-              <input
-                type="email"
-                {...register("email", { required: true })}
-                required
-              />
-            </>
-          )}
-          {loginMethod === "credentials" && (
-            <>
-              <label htmlFor="contraseña">Contraseña</label>
-              <input type="password" {...register("contraseña")} />
-            </>
-          )}
-          {loginMethod && (
-            <button className="bg-blue-600 text-white" type="submit">
-              Enviar
-            </button>
-          )}
-        </form>
-        {loginMethod && <hr className="my-4" />}
-        <button
-          className="bg-stone-700 text-white"
-          onClick={() => setLoginMethod("credentials")}
-        >
-          Iniciar sesión con contraseña
-        </button>
-
-        <button
-          className="bg-black text-white"
-          onClick={() => setLoginMethod("email")}
-        >
-          Iniciar sesión con Email
-        </button>
-
-        <button
-          className="flex items-center gap-2 justify-center bg-spotify-green text-white"
-          onClick={() => signIn("spotify", { callbackUrl })}
-        >
-          <Image
-            src={spotifyLogo}
-            width={32}
-            height={32}
-            alt={"spotify logo"}
-          ></Image>
-          Iniciar sesión con Spotify
-        </button>
+                });
+                return;
+              }
+              signIn("email", { email, callbackUrl });
+            })}
+          >
+            {loginMethod && (
+              <>
+                <input
+                  autoComplete="email"
+                  name="csrfToken"
+                  type="hidden"
+                  defaultValue={csrfToken}
+                />
+                <label htmlFor="email">Correo</label>
+                <input
+                  type="email"
+                  {...register("email", { required: true })}
+                  required
+                />
+              </>
+            )}
+            {loginMethod === "credentials" && (
+              <>
+                <label htmlFor="contraseña">Contraseña</label>
+                <input type="password" {...register("contraseña")} />
+              </>
+            )}
+            {loginMethod && (
+              <button className="bg-blue-600 text-white" type="submit">
+                Enviar
+              </button>
+            )}
+          </form>
+          {loginMethod && <hr className="my-4" />}
+          <button
+            className="bg-stone-700 text-white"
+            onClick={() => setLoginMethod("credentials")}
+          >
+            Iniciar sesión con contraseña
+          </button>
+          <button
+            className="bg-black text-white"
+            onClick={() => setLoginMethod("email")}
+          >
+            Iniciar sesión con Email
+          </button>
+          <button
+            className="flex items-center gap-2 justify-center bg-spotify-green text-white"
+            onClick={() => signIn("spotify", { callbackUrl })}
+          >
+            <Image
+              src={spotifyLogo}
+              width={32}
+              height={32}
+              alt={"spotify logo"}
+            ></Image>
+            Iniciar sesión con Spotify
+          </button>
+        </div>
         <span>
           ¿Aún no tienes cuenta? ¡Puedes crear una{" "}
           <Link href="/auth/signup" className="text-blue-500">
@@ -155,7 +143,7 @@ export default function AuthError({
           !
         </span>
       </div>
-    </animated.div>
+    </div>
   );
 }
 

@@ -3,6 +3,7 @@ import type { AppProps } from "next/app";
 import { SessionProvider } from "next-auth/react";
 import NavBar from "../components/NavBar";
 import { bladeRunner } from "../fonts";
+import { Footer } from "../components/Footer";
 
 export default function App({
   Component,
@@ -16,12 +17,7 @@ export default function App({
           <Component {...pageProps}></Component>
         </div>
       </div>
-      <footer className="text-center py-4 bg-stone-100">
-        Aplicación creada por{" "}
-        <span className="text-bc-pink-1">Ernesto Ramírez</span>. Banner creado
-        por <span className="text-bc-purple-1">Iker Jiménez</span>.
-        <p>Con datos de la API de Spotify.</p>
-      </footer>
+      <Footer></Footer>
     </SessionProvider>
   );
 }

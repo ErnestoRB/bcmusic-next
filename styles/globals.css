@@ -30,6 +30,7 @@ div[nav-options] {
 }
 
 nav {
+  @apply border-t-8;
   border-image: linear-gradient(
       90deg,
       rgba(245, 26, 54, 1) 0%,
@@ -37,5 +38,4 @@ nav {
       rgba(181, 23, 203, 1) 100%
     )
     30 stretch;
-  border-top-width: 5px;
 }
