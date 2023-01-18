@@ -4,7 +4,7 @@ services:
     restart: always
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_spanish_ci
     volumes:
-      - ./data/mysql:/var/lib/mysql
+      - ../data/mysql:/var/lib/mysql
       - ./backups:/docker-entrypoint-initdb.d
     environment:
       - MYSQL_ROOT_PASSWORD=${DATABASE_PASS}
