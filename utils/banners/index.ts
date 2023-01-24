@@ -3,6 +3,7 @@ import { BannerError } from "..";
 import { readFile, readdir } from "fs/promises";
 import {
   bindDrawImage,
+  bindDrawRoundedImage,
   bindMeasureText,
   bindMultilineSupport,
 } from "./designs/utils";
@@ -24,7 +25,7 @@ export interface SanboxedPlayer {
   image?: Image;
 }
 
-export type FilteredArtistsData = Pick<SpotifyArtist, "name">;
+export type FilteredArtistsData = Pick<SpotifyArtist, "name" | "images">;
 
 const bannerPath = path.join(process.cwd(), "utils", "banners", "designs");
 const bannerCode = path.join(bannerPath, "list");
@@ -98,6 +99,7 @@ export default async function executeBanner(
     measureText: bindMeasureText(canvas),
     fillMultilineText: bindMultilineSupport(canvas),
     drawImage: bindDrawImage(canvas),
+    drawRoundedImage: bindDrawRoundedImage(canvas),
     BannerError,
     images: imagesArray,
     user: modifiedUser,
@@ -158,5 +160,5 @@ export async function getSanboxedPlayer(user: User & { [key: string]: any }) {
 export async function filterArtistsData(
   data: SpotifyArtist[] | FilteredArtistsData[]
 ): Promise<FilteredArtistsData[]> {
-  return data.map((artist) => ({ name: artist.name }));
+  return data.map((artist) => ({ name: artist.name, images: artist.images }));
 }

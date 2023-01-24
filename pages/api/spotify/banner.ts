@@ -84,13 +84,9 @@ export default async function handler(
       access_token as string,
       bannerConfig.time_range
     );
-    console.log(data);
-
     if (data.error && data.error.status == 401) {
       try {
         const { access_token } = await refreshToken(refresh_token);
-        console.log("Tratando de renovar", { access_token });
-
         await Account.update(
           { access_token },
           {

@@ -29,13 +29,11 @@ export interface SpotifyArtist {
   genres: string[];
   href: string;
   id: string;
-  images: [
-    {
-      url: string;
-      height: number;
-      width: number;
-    }
-  ];
+  images: {
+    url: string;
+    height: number;
+    width: number;
+  }[];
   name: string;
   popularity: number;
   type: string;
