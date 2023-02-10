@@ -3,7 +3,6 @@ import Head from "next/head";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ErrorBoundary } from "../components/errors/ErrorBoundary";
-import Throwing from "../components/errors/Throwing";
 import { Background } from "../components/three/Background";
 import WebGL from "../utils/three/compatibility";
 

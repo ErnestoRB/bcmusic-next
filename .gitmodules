@@ -1,0 +1,3 @@
+[submodule "utils/banners/designs"]
+	path = utils/banners/designs
+	url = git@github.com:ErnestoRB/bcmusic-banners.git

@@ -1,6 +1,6 @@
 import SequelizeAdapter from "@next-auth/sequelize-adapter";
 import { compare } from "bcrypt";
-import NextAuth, { AuthOptions, Session, SpotifyProfile } from "next-auth";
+import NextAuth, { AuthOptions, Session, User as IUser } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Email from "next-auth/providers/email";
 import Spotify from "next-auth/providers/spotify";
@@ -56,10 +56,14 @@ export const authOptions: (
       Spotify({
         clientId: CLIENT_ID!,
         clientSecret: CLIENT_SECRET!,
-        profile: function (profile, tokens) {
+        profile: function (profile) {
           console.log(profile);
-
-          const newProfile = { ...profile };
+          const newProfile: IUser = {
+            id: profile.id,
+            image: profile.images?.[0]?.url,
+            email: profile.email,
+            name: profile.display_name,
+          };
           return newProfile;
         },
         allowDangerousEmailAccountLinking: true,
@@ -114,7 +118,7 @@ export const authOptions: (
       }),
     ],
     callbacks: {
-      signIn: async function ({ account, user, credentials, email, profile }) {
+      signIn: async function ({ account, user, profile }) {
         try {
           if (account?.provider === "credentials") {
             const cookies = new Cookies(req, res);
@@ -136,20 +140,6 @@ export const authOptions: (
             ) as Error & { isEmail: true };
             error.isEmail = true;
             throw error;
-          }
-          if (
-            account?.provider === "spotify" &&
-            (profile as SpotifyProfile)?.images?.length > 0
-          ) {
-            await User.update(
-              {
-                image: (profile as SpotifyProfile)?.images[0].url,
-              },
-              {
-                where: { id: user.id },
-              }
-            );
-            return true;
           }
           return true;
         } catch (err: any) {

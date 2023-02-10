@@ -13,15 +13,19 @@ import bannerImage from "../images/banner.png";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
+import { BannerConfigAndFile, getAvailableBanners } from "../utils/banners";
 
 let downloaded = false;
 export default function BannerPage({
   banners,
+  availableBanners,
 }: {
+  availableBanners: BannerConfigAndFile[] | undefined;
   banners: { mes: number; cantidad: number }[];
 }) {
   const session = useSession();
   const [isLoading, setLoading] = useState(false);
+  const [selected, setSelected] = useState<string>();
 
   const [objectUrl, setObjectUrl] = useState<string>("");
   const [error, setError] = useState("");
@@ -44,6 +48,7 @@ export default function BannerPage({
       <Head>
         <title>Generar banner</title>
       </Head>
+
       {!isCompatible && (
         <Alert>
           Tu navegador es antiguo y no será posible descargar el banner
@@ -72,6 +77,9 @@ export default function BannerPage({
             </figcaption>
           </figure>
           <div className="max-w-md p-2 md:p-4 rounded-sm bg-white flex flex-col gap-y-2 shadow-lg">
+            <div className="text-blue-600">
+              <Link href="/banners">Ver todos los banners disponibles</Link>
+            </div>
             {session?.status !== "authenticated" && (
               <>
                 <h1 className="text-3xl">
@@ -102,20 +110,45 @@ export default function BannerPage({
             {session?.status === "authenticated" && (
               <>
                 {isLoading && <Alert type="info">Cargando...</Alert>}
-
                 <h1 className="text-3xl">Generar banner</h1>
+                <h3 className="text-xl">Diseños disponibles</h3>
+                {availableBanners && (
+                  <select
+                    onChange={(evt) => {
+                      setSelected(evt.target.value);
+                    }}
+                  >
+                    <option>Selecciona un diseño</option>
+                    {availableBanners.map((bannerConfig) => (
+                      <option
+                        key={bannerConfig.name}
+                        value={bannerConfig.fileName}
+                      >
+                        {bannerConfig.name}
+                      </option>
+                    ))}
+                  </select>
+                )}
                 {error && <Alert>{error}</Alert>}
                 <button
                   className="bg-green-400 text-black"
                   onClick={() => {
                     if (isLoading) return;
+                    if (!selected) return;
+
                     setLoading(true);
-                    fetch("/api/spotify/banner", { credentials: "include" })
+                    fetch(
+                      `/api/spotify/banner?${new URLSearchParams({
+                        nombre: selected,
+                      })}`,
+                      { credentials: "include" }
+                    )
                       .then(async (res) => {
                         if (res.status === 200) {
                           const data = await res.blob();
                           const file = window.URL.createObjectURL(data);
                           setObjectUrl(file);
+                          setError("");
                           // https://stackoverflow.com/questions/41947735/custom-name-for-blob-url/56923508#56923508
                           return;
                         }
@@ -195,6 +228,8 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     // @ts-ignore
     authOptions(req, res)
   );
+  const availableBanners = await getAvailableBanners();
+
   if (session) {
     const bannerModels = await Banner.findAll({
       attributes: [
@@ -218,8 +253,9 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     return {
       props: {
         banners: JSON.parse(JSON.stringify(banners)),
+        availableBanners,
       },
     };
   }
-  return { props: {} };
+  return { props: { availableBanners } };
 };
