@@ -20,7 +20,10 @@ export const refreshToken = async (token: string) => {
     },
     method: "POST",
     body: form,
-  }).then((res) => res.json())) as Omit<SpotifyData, "refresh_token">;
+  }).then(async (res) => {
+    const object = await res.json();
+    return object;
+  })) as Omit<SpotifyData, "refresh_token">;
 };
 
 export const validateToken = async (token: string) => {

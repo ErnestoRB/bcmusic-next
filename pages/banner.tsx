@@ -1,12 +1,5 @@
 import { GetServerSideProps } from "next";
-import { unstable_getServerSession } from "next-auth";
 import { useEffect, useRef, useState } from "react";
-import { sequelize } from "../utils/database/connection";
-import { Banner } from "../utils/database/models";
-import { meses } from "../utils/";
-
-import { authOptions } from "./api/auth/[...nextauth]";
-import { Op } from "sequelize";
 import Alert from "../components/Alert";
 import Head from "next/head";
 import bannerImage from "../images/banner.png";
@@ -95,15 +88,6 @@ export default function BannerPage({
                   </Link>{" "}
                   para iniciar sesión
                 </p>
-                <p>
-                  De paso, lee nuestra{" "}
-                  <Link
-                    href="politicas"
-                    className="text-bc-purple-2 hover:text-bc-purple-1"
-                  >
-                    política de privacidad!
-                  </Link>
-                </p>
               </>
             )}
 
@@ -182,37 +166,6 @@ export default function BannerPage({
                     </Alert>
                   </>
                 )}
-
-                {banners && (
-                  <>
-                    <hr className="my-4" />
-
-                    <h2 className="text-xl">
-                      Historial de banners generados ({new Date().getFullYear()}
-                      )
-                    </h2>
-                    <table className="text-center border border-black">
-                      <thead className="bg-black text-white ">
-                        <tr>
-                          <td>Mes</td>
-                          <td>Cantidad</td>
-                        </tr>
-                      </thead>
-                      <tbody className="even:bg-stone-50 odd:bg-stone-100 hover:bg-stone-300">
-                        {banners.map((item) => {
-                          return (
-                            <tr key={item.mes}>
-                              <td>{meses[item.mes - 1]}</td>
-                              <td>
-                                <b>{item.cantidad}</b>
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  </>
-                )}
               </>
             )}
           </div>
@@ -221,41 +174,8 @@ export default function BannerPage({
     </div>
   );
 }
-export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
-  const session = await unstable_getServerSession(
-    req,
-    res,
-    // @ts-ignore
-    authOptions(req, res)
-  );
+export const getServerSideProps: GetServerSideProps = async () => {
   const availableBanners = await getAvailableBanners();
 
-  if (session) {
-    const bannerModels = await Banner.findAll({
-      attributes: [
-        [sequelize.fn("COUNT", sequelize.col("*")), "cantidad"],
-        [sequelize.fn("MONTH", sequelize.col("fecha_generado")), "mes"],
-      ],
-      group: "mes",
-      order: ["mes"],
-      where: {
-        [Op.and]: [
-          { idUsuario: session?.user.id },
-          sequelize.where(
-            sequelize.fn("YEAR", sequelize.fn("CURDATE")),
-            sequelize.fn("YEAR", sequelize.col("fecha_generado"))
-          ),
-        ],
-      },
-    });
-    const banners = bannerModels.map((banner) => banner.dataValues);
-
-    return {
-      props: {
-        banners: JSON.parse(JSON.stringify(banners)),
-        availableBanners,
-      },
-    };
-  }
   return { props: { availableBanners } };
 };

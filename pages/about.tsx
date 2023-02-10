@@ -1,48 +1,29 @@
-import { GetStaticProps } from "next";
 import Head from "next/head";
-import { MIN_ARTISTS } from "./api/spotify/banner";
+import { backgroundGradient } from "../utils/styles";
 
-export default function About({ MIN_ARTISTS }: { MIN_ARTISTS: number }) {
+export default function About() {
   return (
-    <div className="flex flex-col items-center justify-center w-full bg-stone-300">
+    <div
+      className={`flex flex-col items-center justify-center w-full ${backgroundGradient}`}
+    >
       <Head>
         <title>Sobre la aplicación</title>
       </Head>
       <div className="max-w-lg bg-white p-2 md:p-4 shadow-lg rounded">
-        <h1 className="text-3xl">BashCrashers MusicApp </h1>
+        <h1 className="text-3xl font-semibold">BashCrashers MusicApp </h1>
         <p>
-          Al momento, la aplicación sólo genera banners a partir de los artistas
-          favoritos de un usuario registrado en Spotify. Para ello, necesitas
-          vincular tu cuenta de Spotify.
+          Es una plataforma que permite generar diseños (banners) apartir de
+          información proporcionada por la API de Spotify.
         </p>
-        <h2 className="text-2xl">¿Como funciona?</h2>
+        <br />
+        <h2 className="text-2xl font-semibold">¿Como funciona?</h2>
         <p>
-          Se obtienen los artistas &quot;favoritos&quot; del usuario y se busca
-          dentro de los rangos de tiempo: <b>corto, mediano y largo plazo</b>.
-          <br />
-          Primero se intenta generar uno de corto plazo, si no hay información
-          suficiente al respecto (al menos {MIN_ARTISTS}) se intentan con los
-          siguientes, en orden.
-          <br /> Es decir,{" "}
-          <b>siempre genera el banner con la información más reciente</b>{" "}
-          (actualizada aproximadamente cada 4 semanas{" "}
-          <a
-            className="text-blue-600 hover:text-blue-400"
-            href="https://developer.spotify.com/documentation/web-api/reference/#/operations/get-users-top-artists-and-tracks"
-          >
-            según la API de Spotify
-          </a>
-          )
+          Cada diseño declara qué y cuanta información es necesaria para poder
+          generarlo. De esta manera, ¡BCMusicApp permite que tú desarrolles un
+          diseño y que sea integrado en esta página!{" "}
+          <i>Próximamente más información</i>.
         </p>
       </div>
     </div>
   );
 }
-
-export const getStaticProps: GetStaticProps = async () => {
-  return {
-    props: {
-      MIN_ARTISTS: MIN_ARTISTS,
-    },
-  };
-};

@@ -7,7 +7,7 @@ export default function BannerPreview({
   bannerConfig: BannerConfigAndFile;
 }) {
   return (
-    <div className="border border-stone-400 w-64 bg-white rounded shadow-lg">
+    <div className="border border-stone-400 w-full max-w-xs bg-white rounded shadow-lg">
       <div className="flex flex-col gap-y-4 items-center justify-center w-full h-64 bg-black">
         {(bannerConfig.example && (
           <picture className="w-full h-full">
@@ -17,10 +17,10 @@ export default function BannerPreview({
               alt={`Banner de ejemplo para: ${bannerConfig.name}`}
             />
           </picture>
-        )) || <Alert>No hay vista previa</Alert>}
+        )) || <Alert type="error-darker">No hay vista previa</Alert>}
       </div>
       <div className="p-2">
-        <h3 className="text-xl font-bold decoration-blue-600 decoration-4 underline">
+        <h3 className="text-xl font-bold decoration-red-600 decoration-4 underline">
           {bannerConfig.name}
         </h3>
         <p>{`Autor: ${bannerConfig.author}`}</p>

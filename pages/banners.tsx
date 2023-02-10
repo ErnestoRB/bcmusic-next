@@ -16,7 +16,7 @@ export default function BannerPage({
       </Head>
       <div className="flex flex-col gap-y-8 bg-white max-w-7xl w-full bg-opacity-70 p-2 md:p-4">
         <h1 className="text-center text-3xl font-bold">Banners disponibles</h1>
-        <div className="grid grid-cols-3 place-items-center">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 place-items-center">
           {availableBanners &&
             availableBanners.map((bannerConfig) => (
               <BannerPreview

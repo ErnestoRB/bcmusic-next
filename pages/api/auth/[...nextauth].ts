@@ -15,7 +15,11 @@ import {
   Pais,
 } from "../../../utils/database/models";
 import { randomBytes, randomUUID } from "crypto";
-import { NextApiRequest, NextApiResponse } from "next";
+import {
+  GetServerSidePropsContext,
+  NextApiRequest,
+  NextApiResponse,
+} from "next";
 import { decode, encode } from "next-auth/jwt";
 import { sendVerificationRequest } from "../../../utils/email";
 import { validateRecaptchaToken } from "../../../utils/recaptcha";
@@ -31,8 +35,8 @@ export const adapter = SequelizeAdapter(sequelize, {
 });
 
 export const authOptions: (
-  req: NextApiRequest,
-  res: NextApiResponse
+  req: NextApiRequest | GetServerSidePropsContext["req"],
+  res: NextApiResponse | GetServerSidePropsContext["res"]
 ) => AuthOptions = function (req, res) {
   return {
     pages: {
@@ -176,6 +180,7 @@ export const authOptions: (
       // Customize the JWT encode and decode functions to overwrite the default behaviour of storing the JWT token in the session cookie when using credentials providers. Instead we will store the session token reference to the session in the database.
       encode: async ({ token, secret, maxAge }) => {
         if (
+          "query" in req &&
           req.query.nextauth?.includes("callback") &&
           req.query.nextauth?.includes("credentials") &&
           req.method === "POST"
@@ -190,6 +195,7 @@ export const authOptions: (
       },
       decode: async ({ token, secret }) => {
         if (
+          "query" in req &&
           req.query.nextauth?.includes("callback") &&
           req.query.nextauth?.includes("credentials") &&
           req.method === "POST"
