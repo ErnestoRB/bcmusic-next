@@ -1,12 +1,12 @@
 import { GetServerSideProps } from "next";
 import Head from "next/head";
-import { BannerConfigAndFile, getAvailableBanners } from "../utils/banners";
+import { BannerRecord, BannerRecordType } from "../utils/database/models";
 import BannerPreview from "../components/BannerPreview";
 
 export default function BannerPage({
   availableBanners,
 }: {
-  availableBanners: BannerConfigAndFile[] | undefined;
+  availableBanners: BannerRecordType["dataValues"][] | undefined;
   banners: { mes: number; cantidad: number }[];
 }) {
   return (
@@ -18,10 +18,10 @@ export default function BannerPage({
         <h1 className="text-center text-3xl font-bold">Banners disponibles</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 place-items-center">
           {availableBanners &&
-            availableBanners.map((bannerConfig) => (
+            availableBanners.map((banner) => (
               <BannerPreview
-                key={bannerConfig.name}
-                bannerConfig={bannerConfig}
+                key={banner.id}
+                bannerData={banner}
               ></BannerPreview>
             ))}
         </div>
@@ -30,7 +30,9 @@ export default function BannerPage({
   );
 }
 export const getServerSideProps: GetServerSideProps = async () => {
-  const availableBanners = await getAvailableBanners();
-
-  return { props: { availableBanners } };
+  const availableBanners: BannerRecordType[] =
+    await BannerRecord.findAll(); /*  await getAvailableBanners(); */
+  return {
+    props: { availableBanners: availableBanners.map((a) => a.dataValues) },
+  };
 };

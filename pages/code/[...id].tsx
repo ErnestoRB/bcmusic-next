@@ -1,0 +1,79 @@
+import Head from "next/head";
+import Editor from "../../components/Editor";
+import { backgroundGradient } from "../../utils/styles";
+import { useRouter } from "next/router";
+import { GetServerSideProps } from "next";
+import {
+  BannerRecord,
+  BannerRecordType,
+  Fonts,
+  FontsType,
+} from "../../utils/database/models";
+
+import { useSession } from "next-auth/react";
+
+export default function CodeEditor({
+  banner = null,
+}: {
+  banner: BannerRecordWithFonts | null;
+}) {
+  const { query, push } = useRouter();
+  const session = useSession({
+    required: true,
+    onUnauthenticated: () => {
+      push("/");
+    },
+  });
+
+  return (
+    <div
+      className={`flex flex-col items-center justify-center w-full ${backgroundGradient}`}
+    >
+      <Head>
+        <title>Crear código de banner</title>
+      </Head>
+      <div className="bg-white p-2 md:p-4 shadow-lg rounded max-w-7xl w-full">
+        {banner && (
+          <>
+            <div className="w-full flex flex-col">
+              <Editor id={banner.id}></Editor>
+            </div>
+          </>
+        )}
+        {!banner && (
+          <h1 className="text-center">
+            Banner {`"${query?.id?.[0]}"`} no encontrado!
+          </h1>
+        )}
+      </div>
+    </div>
+  );
+}
+
+type BannerRecordWithFonts = BannerRecordType["dataValues"] & {
+  fonts: FontsType["dataValues"][];
+};
+
+export const getServerSideProps: GetServerSideProps = async ({ params }) => {
+  const idParam = params!.id;
+  let id = "";
+  if (Array.isArray(idParam)) {
+    id = idParam[0];
+  } else {
+    id = idParam as string;
+  }
+  const bannerRecord = await BannerRecord.findByPk(id, {
+    include: {
+      model: Fonts,
+      through: {
+        attributes: [],
+      },
+    },
+  });
+
+  return {
+    props: {
+      banner: JSON.parse(JSON.stringify(bannerRecord || null)),
+    },
+  };
+};

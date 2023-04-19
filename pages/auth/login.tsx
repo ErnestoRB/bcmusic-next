@@ -7,7 +7,6 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import spotifyLogo from "../../images/spotify-white.png";
 import Alert from "../../components/Alert";
-import { useSpring, animated } from "@react-spring/web";
 import Script from "next/script";
 import Head from "next/head";
 import { backgroundGradient } from "../../utils/styles";

@@ -1,0 +1,44 @@
+name: Deveploment deploy
+on:
+  push:
+    branches:
+      - dev*
+      - ci-cd*
+    tags:
+      - staging*
+
+jobs:
+  build:
+    name: Build staging
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          path: dev
+      - name: Package source code
+        run: tar -cvzf dev-${{ github.sha }}.tar.gz -C dev .
+      - name: Copy file via SSH
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.HOST_STAGING }}
+          username: ${{ secrets.USER_STAGING }}
+          key: ${{ secrets.SSH_KEY_STAGING }}
+          source: "dev-${{ github.sha }}.tar.gz"
+          target: "staging"
+      - name: Unpack source code & setup environment
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.HOST_STAGING }}
+          username: ${{ secrets.USER_STAGING }}
+          key: ${{ secrets.SSH_KEY_STAGING }}
+          script: |
+            cd staging
+            rm -rf code_old
+            mv -f code code_old
+            tar -xvzf dev-${{ github.sha }}.tar.gz -C code
+            cp .env.staging code/.env
+            rm -f development/development-*.tar.gz
+            cd code
+            npm i --omit=dev
+            npm run build

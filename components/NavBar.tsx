@@ -5,12 +5,18 @@ import React, { useMemo } from "react";
 import { useMediaQuery } from "../utils/hooks/useMediaQuery";
 import { Dropdown } from "./Dropdown";
 
-function NavBarLink(props: React.ComponentProps<typeof Link>) {
+function NavBarLink(
+  props: React.ComponentProps<typeof Link> & { visible?: "true" | "false" }
+) {
   return (
-    <Link
-      {...props}
-      className="px-2 py-1 bg-white hover:bg-stone-200 text-black"
-    ></Link>
+    <>
+      {(props.visible === undefined || props.visible === "true") && (
+        <Link
+          {...props}
+          className="px-2 py-1 bg-white hover:bg-stone-200 text-black"
+        ></Link>
+      )}
+    </>
   );
 }
 
@@ -29,7 +35,7 @@ export default function NavBar() {
       {
         items: [
           <NavBarLink key="crearBanner" href={"/banner"}>
-            Crear banner
+            Generar banner
           </NavBarLink>,
           <NavBarLink key="acerca" href={"/about"}>
             Acerca
@@ -70,6 +76,18 @@ export default function NavBar() {
                 alt="user photo"
               ></Image>
             )}
+          </NavBarLink>,
+          <NavBarLink
+            href="/code"
+            key="crear"
+            visible={
+              /* For DOM purposes */
+              session.data?.user?.tipo_usuario?.nombre === "admin"
+                ? "true"
+                : "false"
+            }
+          >
+            <span>Crear banner</span>
           </NavBarLink>,
           <button
             key="logout"

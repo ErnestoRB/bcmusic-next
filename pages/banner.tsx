@@ -6,14 +6,13 @@ import bannerImage from "../images/banner.png";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { BannerConfigAndFile, getAvailableBanners } from "../utils/banners";
+import { BannerRecord, BannerRecordType } from "../utils/database/models";
 
 let downloaded = false;
 export default function BannerPage({
-  banners,
   availableBanners,
 }: {
-  availableBanners: BannerConfigAndFile[] | undefined;
+  availableBanners: BannerRecordType["dataValues"][] | undefined;
   banners: { mes: number; cantidad: number }[];
 }) {
   const session = useSession();
@@ -104,10 +103,7 @@ export default function BannerPage({
                   >
                     <option>Selecciona un diseño</option>
                     {availableBanners.map((bannerConfig) => (
-                      <option
-                        key={bannerConfig.name}
-                        value={bannerConfig.fileName}
-                      >
+                      <option key={bannerConfig.id} value={bannerConfig.id}>
                         {bannerConfig.name}
                       </option>
                     ))}
@@ -123,7 +119,7 @@ export default function BannerPage({
                     setLoading(true);
                     fetch(
                       `/api/spotify/banner?${new URLSearchParams({
-                        nombre: selected,
+                        id: selected,
                       })}`,
                       { credentials: "include" }
                     )
@@ -175,7 +171,8 @@ export default function BannerPage({
   );
 }
 export const getServerSideProps: GetServerSideProps = async () => {
-  const availableBanners = await getAvailableBanners();
-
-  return { props: { availableBanners } };
+  const availableBanners: BannerRecordType[] = await BannerRecord.findAll();
+  return {
+    props: { availableBanners: availableBanners.map((a) => a.dataValues) },
+  };
 };

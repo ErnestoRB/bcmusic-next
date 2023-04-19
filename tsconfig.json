@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "types": ["jest"],
+    "target": "es6",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
@@ -14,7 +15,14 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "utils/banners/designs/synthwave.js"],
-  "exclude": ["node_modules", "cypress", "utils/banners/designs"]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "exclude": [
+    "node_modules",
+    "cypress",
+    "utils/banners/designs",
+    "cypress.config.ts"
+  ]
 }

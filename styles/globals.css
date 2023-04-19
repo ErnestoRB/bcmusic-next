@@ -4,19 +4,18 @@
 @tailwind components;
 @tailwind utilities;
 
-* {
+body {
   font-family: "Raleway", sans-serif;
 }
 
-input,
+input[type="text"],
+input[type="password"],
+input[type="number"],
 select {
   border-radius: 0;
   outline: none;
-  border: none;
-  padding: 10px 5px;
   background-color: white;
-  border: 1px solid gray;
-  border-left: 4px solid black;
+  @apply border-gray-500 border border-l-8 border-l-black pl-2 py-1;
 }
 
 button {

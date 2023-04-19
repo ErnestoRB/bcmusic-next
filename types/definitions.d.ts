@@ -4,8 +4,14 @@ declare global {
   }
 }
 
-export interface SpotifyData {
-  error?: string;
+export interface SpotifyErrorResponse {
+  error?: {
+    status: number;
+    message: string;
+  };
+}
+
+export interface SpotifyData extends SpotifyErrorResponse {
   error_description?: string;
   access_token: string;
   token_type: string;
@@ -14,8 +20,9 @@ export interface SpotifyData {
   scope: string;
 }
 
-export interface SpotifyTopArtistData {
-  items: SpotifyArtist[];
+export interface SpotifyTopArtistData extends SpotifyErrorResponse {
+  items?: SpotifyArtist[];
+  total?: number;
 }
 
 export interface SpotifyArtist {

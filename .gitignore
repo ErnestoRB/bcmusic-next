@@ -38,6 +38,7 @@ next-env.d.ts
 #production data
 data
 *.env
+.runtime
 
 #testing videos
 cypress/videos

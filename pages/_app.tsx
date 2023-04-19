@@ -4,6 +4,8 @@ import { SessionProvider } from "next-auth/react";
 import NavBar from "../components/NavBar";
 import { bladeRunner } from "../fonts";
 import { Footer } from "../components/Footer";
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from "react-toastify";
 
 export default function App({
   Component,
@@ -17,6 +19,7 @@ export default function App({
           <Component {...pageProps}></Component>
         </div>
       </div>
+      <ToastContainer></ToastContainer>
       <Footer></Footer>
     </SessionProvider>
   );

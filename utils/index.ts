@@ -1,3 +1,10 @@
+import { SpotifyTopArtistData } from "../types/definitions";
+
+export const perserveStatus = async (res: Response) => ({
+  ok: res.ok,
+  json: await res.json(),
+});
+
 export const availableSpotifyTimeRanges = [
   "medium_term",
   "short_term",
@@ -7,7 +14,7 @@ export const availableSpotifyTimeRanges = [
 export const getSpotifyData = async (
   Token: string,
   time: "medium_term" | "short_term" | "long_term"
-) => {
+): Promise<SpotifyTopArtistData> => {
   const res = await fetch(
     "https://api.spotify.com/v1/me/top/artists?time_range=" + time,
     {
@@ -24,6 +31,7 @@ export const getSpotifyData = async (
       return {
         error: {
           status: res.status,
+          message: "",
         },
       };
     }

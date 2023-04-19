@@ -8,9 +8,10 @@ import { Op } from "sequelize";
 import Alert from "../components/Alert";
 import { BannerHistorial } from "../components/BannerHistorial";
 import { sequelize } from "../utils/database/connection";
-import { Banner } from "../utils/database/models";
+import { GeneratedBanner } from "../utils/database/models";
 import { backgroundGradient } from "../utils/styles";
 import { authOptions } from "./api/auth/[...nextauth]";
+import Link from "next/link";
 
 export default function Panel({
   banners,
@@ -38,6 +39,14 @@ export default function Panel({
           <title>Panel de usuario</title>
         </Head>
         <h1 className="text-3xl font-bold">Panel de usuario</h1>
+        <h2>Tipo de usuario: {session?.data.user.tipo_usuario?.nombre}</h2>
+        {session?.data.user.tipo_usuario?.nombre === "admin" && (
+          <div className="flex flex-wrap">
+            <Link href="/code/1" className="text-blue-600 underline">
+              Crear nuevo banner
+            </Link>
+          </div>
+        )}
         <Alert type="warning">
           Si no aparece información extra en este panel quiere decir que no
           hemos recolectado información al respecto
@@ -85,8 +94,10 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     res,
     authOptions(req, res)
   );
+  let userType = "";
   if (session) {
-    const bannerModels = await Banner.findAll({
+    const idUsuario = session?.user.id;
+    const bannerModels = await GeneratedBanner.findAll({
       attributes: [
         [sequelize.fn("COUNT", sequelize.col("*")), "cantidad"],
         [sequelize.fn("MONTH", sequelize.col("fecha_generado")), "mes"],
@@ -95,7 +106,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
       order: ["mes"],
       where: {
         [Op.and]: [
-          { idUsuario: session?.user.id },
+          { idUsuario },
           sequelize.where(
             sequelize.fn("YEAR", sequelize.fn("CURDATE")),
             sequelize.fn("YEAR", sequelize.col("fecha_generado"))

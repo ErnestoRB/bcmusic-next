@@ -10,12 +10,113 @@ export const Pais = sequelize.define<
 >(
   "pais",
   {
-    ID: DataTypes.INTEGER,
+    ID: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     Nombre_Corto: DataTypes.STRING(2),
     Nombre: DataTypes.STRING,
   },
   { tableName: "paises", createdAt: false, updatedAt: false }
 );
+export const TipoUsuario = sequelize.define<
+  Model<{
+    id: number;
+    nombre: string;
+  }>
+>(
+  "tipoUsuario",
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    nombre: DataTypes.STRING,
+  },
+  { tableName: "tipo_usuario", createdAt: false, updatedAt: false }
+);
+
+export const TimeRanges = sequelize.define<
+  Model<{
+    id: number;
+    nombre: string;
+  }>
+>(
+  "timeRanges",
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    nombre: DataTypes.STRING,
+  },
+  { tableName: "time_ranges", createdAt: false, updatedAt: false }
+);
+
+export type FontsType = Model<{
+  id?: string;
+  nombre: string;
+  fileName: string;
+}>;
+
+export const Fonts = sequelize.define<FontsType>(
+  "fonts",
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    nombre: { type: DataTypes.STRING(150), allowNull: false, unique: true },
+    fileName: { type: DataTypes.STRING(100), allowNull: false },
+  },
+  { tableName: "fonts", createdAt: false, updatedAt: false }
+);
+
+export type BannerRecordTypeObject = {
+  id: string;
+  minItems: number; // número minimo de items de datos, por defecto, 1.
+  width: number; // ancho en px del banner
+  height: number; // altura del banner
+  exampleUrl?: string; // url de imagen de ejemplo
+  description?: string; // descripción del banner
+  name: string; // nombre del banner
+  script: string;
+};
+export type BannerRecordType = Model<BannerRecordTypeObject>;
+
+export const BannerRecord = sequelize.define<BannerRecordType>(
+  "bannerRecord",
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    minItems: DataTypes.INTEGER,
+    exampleUrl: DataTypes.STRING(500),
+    width: { type: DataTypes.INTEGER, allowNull: false },
+    height: { type: DataTypes.INTEGER, allowNull: false },
+    description: DataTypes.STRING(500),
+    name: { type: DataTypes.STRING, allowNull: false },
+    script: DataTypes.STRING(5000),
+  },
+  { tableName: "banner_record", createdAt: false, updatedAt: false }
+);
+
+BannerRecord.hasOne(TimeRanges, {
+  foreignKey: { allowNull: false, defaultValue: 1 },
+});
+TimeRanges.belongsTo(BannerRecord);
+export const BannerFonts = sequelize.define<Model<{}>>(
+  "banner_fonts",
+  {},
+  { timestamps: false }
+);
+BannerRecord.belongsToMany(Fonts, {
+  through: BannerFonts,
+  foreignKey: { name: "bannerId", allowNull: false, defaultValue: 1 },
+});
+Fonts.belongsToMany(BannerRecord, { through: BannerFonts });
 
 export const User = sequelize.define<
   Model<{
@@ -27,6 +128,7 @@ export const User = sequelize.define<
     apellido: string;
     image?: string;
     idPais: number;
+    tipoUsuarioId?: number;
   }>
 >("user", {
   ...models.User,
@@ -41,12 +143,27 @@ export const User = sequelize.define<
     },
   },
 });
+
+TipoUsuario.hasMany(User);
+User.belongsTo(TipoUsuario, {
+  foreignKey: { name: "tipoUsuarioId", defaultValue: 1, allowNull: true },
+});
+
+User.belongsToMany(BannerRecord, {
+  through: "user_banner",
+  foreignKey: "authorId",
+});
+
+BannerRecord.belongsToMany(User, {
+  through: "user_banner",
+});
+
 export const Account = sequelize.define("account", { ...models.Account });
 export const Session = sequelize.define("session", { ...models.Session });
 export const VerificationToken = sequelize.define("verificationToken", {
   ...models.VerificationToken,
 });
-export const Banner = sequelize.define("banner", {
+export const GeneratedBanner = sequelize.define("banner", {
   id: {
     type: DataTypes.UUID,
     defaultValue: DataTypes.UUIDV4,
@@ -62,4 +179,5 @@ export const Banner = sequelize.define("banner", {
   },
 });
 
-sequelize.modelManager.models.map((model) => model.sync());
+// sequelize.sync({ force: true });
+// sequelize.sync({ force: true });

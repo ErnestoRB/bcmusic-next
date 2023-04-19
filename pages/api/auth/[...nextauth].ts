@@ -13,6 +13,7 @@ import {
   Session as SessionModel,
   VerificationToken,
   Pais,
+  TipoUsuario,
 } from "../../../utils/database/models";
 import { randomBytes, randomUUID } from "crypto";
 import {
@@ -165,11 +166,18 @@ export const authOptions: (
             otherSession.user.pais = pais.dataValues.Nombre;
           }
         }
+        if (user.tipoUsuarioId) {
+          const tipo = await TipoUsuario.findByPk(user.tipoUsuarioId);
+          if (tipo) {
+            otherSession.user.tipo_usuario = tipo.dataValues;
+          }
+        }
         const { name, nacimiento, image, apellido } = user;
         otherSession.user.name = name;
         otherSession.user.apellido = apellido;
         otherSession.user.nacimiento = nacimiento;
         otherSession.user.image = image;
+
         return otherSession;
       },
     },
