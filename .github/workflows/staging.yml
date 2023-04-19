@@ -1,9 +1,6 @@
 name: Deveploment deploy
 on:
   push:
-    branches:
-      - dev*
-      - ci-cd*
     tags:
       - staging*
 
