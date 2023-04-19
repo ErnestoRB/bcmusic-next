@@ -31,11 +31,4 @@ jobs:
           key: ${{ secrets.SSH_KEY_STAGING }}
           script: |
             cd staging
-            rm -rf code_old
-            mv -f code code_old
-            tar -xvzf dev-${{ github.sha }}.tar.gz -C code
-            cp .env.staging code/.env
-            rm -f development/development-*.tar.gz
-            cd code
-            npm i --omit=dev
-            npm run build
+            ./build.sh

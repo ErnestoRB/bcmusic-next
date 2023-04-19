@@ -1,5 +1,4 @@
 import { usePosition } from "@ernestorb/useposition";
-import { last } from "cypress/types/lodash";
 import { ReactNode, useRef, useState } from "react";
 
 type Position = { key: "top" | "bottom" | "left" | "right"; value: number };
