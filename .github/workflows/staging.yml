@@ -31,4 +31,4 @@ jobs:
           key: ${{ secrets.SSH_KEY_STAGING }}
           script: |
             cd staging
-            ./build.sh
+            ./build.sh ${{ github.sha }}
