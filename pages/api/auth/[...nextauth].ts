@@ -24,6 +24,7 @@ import {
 import { decode, encode } from "next-auth/jwt";
 import { sendVerificationRequest } from "../../../utils/email";
 import { validateRecaptchaToken } from "../../../utils/recaptcha";
+import logError from "../../../utils/log";
 
 const generateSessionToken = () => {
   return randomUUID?.() ?? randomBytes(32).toString("hex");
@@ -116,8 +117,8 @@ export const authOptions: (
               return usuario;
             }
             return null;
-          } catch (err: any) {
-            throw err;
+          } catch (error: any) {
+            throw error;
           }
         },
       }),
@@ -147,11 +148,11 @@ export const authOptions: (
             throw error;
           }
           return true;
-        } catch (err: any) {
-          if (err.isEmail) {
-            throw err;
+        } catch (error: any) {
+          if (error.isEmail) {
+            throw error;
           }
-          console.log(err);
+          logError(error);
           return false;
         }
       },

@@ -103,10 +103,10 @@ export const BannerRecord = sequelize.define<BannerRecordType>(
   { tableName: "banner_record", createdAt: false, updatedAt: false }
 );
 
-BannerRecord.hasOne(TimeRanges, {
-  foreignKey: { allowNull: false, defaultValue: 1 },
+BannerRecord.belongsTo(TimeRanges, {
+  foreignKey: { name: "timeRangeId", allowNull: false, defaultValue: 1 },
 });
-TimeRanges.belongsTo(BannerRecord);
+TimeRanges.hasMany(BannerRecord);
 export const BannerFonts = sequelize.define<Model<{}>>(
   "banner_fonts",
   {},
@@ -118,19 +118,19 @@ BannerRecord.belongsToMany(Fonts, {
 });
 Fonts.belongsToMany(BannerRecord, { through: BannerFonts });
 
-export const User = sequelize.define<
-  Model<{
-    id?: string;
-    name: string;
-    email: string;
-    password: string;
-    nacimiento: string | Date;
-    apellido: string;
-    image?: string;
-    idPais: number;
-    tipoUsuarioId?: number;
-  }>
->("user", {
+export interface UserType {
+  id?: string;
+  name: string;
+  email: string;
+  password: string;
+  nacimiento: string | Date;
+  apellido: string;
+  image?: string;
+  idPais: number;
+  tipoUsuarioId?: number;
+}
+
+export const User = sequelize.define<Model<UserType>>("user", {
   ...models.User,
   password: DataTypes.STRING(65),
   nacimiento: DataTypes.DATE,
@@ -155,6 +155,7 @@ User.belongsToMany(BannerRecord, {
 });
 
 BannerRecord.belongsToMany(User, {
+  as: "authors",
   through: "user_banner",
 });
 
@@ -179,5 +180,5 @@ export const GeneratedBanner = sequelize.define("banner", {
   },
 });
 
-// sequelize.sync({ force: true });
+// sequelize.sync({ alter: true });
 // sequelize.sync({ force: true });

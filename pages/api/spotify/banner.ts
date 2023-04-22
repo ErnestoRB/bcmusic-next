@@ -13,6 +13,7 @@ import { ResponseData } from "../../../types/definitions";
 import { sequelize } from "../../../utils/database/connection";
 import { Op, Transaction } from "sequelize";
 import { executeBanner } from "../../../utils/banners/vm";
+import logError from "../../../utils/log";
 
 export default async function handler(
   req: NextApiRequest,
@@ -146,11 +147,11 @@ export default async function handler(
         );
         await t.commit();
         res.send(img);
-      } catch (err: any) {
-        console.log(err);
+      } catch (error: any) {
+        logError(error);
         await t.rollback();
-        if (err.isBanner) {
-          res.status(400).send({ message: err.message });
+        if (error.isBanner) {
+          res.status(400).send({ message: error.message });
           return;
         }
         res.status(400).send({ message: "Error" });
@@ -158,8 +159,8 @@ export default async function handler(
       return;
     }
     res.send(img);
-  } catch (err) {
-    console.log(err);
+  } catch (error: any) {
+    logError(error);
     res.status(500).send({ message: "Error interno" });
   }
 }

@@ -1,10 +1,11 @@
+import { BannerRecordWithAuthors } from "../pages/banners";
 import { BannerRecordType } from "../utils/database/models";
 import Alert from "./Alert";
 
 export default function BannerPreview({
   bannerData,
 }: {
-  bannerData: BannerRecordType["dataValues"];
+  bannerData: BannerRecordWithAuthors;
 }) {
   return (
     <div className="border border-stone-400 w-full max-w-xs bg-white rounded shadow-lg">
@@ -23,7 +24,17 @@ export default function BannerPreview({
         <h3 className="text-xl font-bold decoration-red-600 decoration-4 underline">
           {bannerData.name}
         </h3>
-        <p>{`Autor: ${bannerData.name}`}</p>
+        {bannerData.authors && bannerData.authors.length >= 1 && (
+          <p>
+            Autores:
+            <ul className="list-disc list-inside">
+              {bannerData.authors?.map((author) => (
+                <li key={author}>{`${author}`}</li>
+              ))}
+            </ul>
+          </p>
+        )}
+
         {bannerData.description && (
           <p>{`Descripción: ${bannerData.description}`}</p>
         )}

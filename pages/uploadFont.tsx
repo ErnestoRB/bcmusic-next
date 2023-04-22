@@ -3,6 +3,7 @@ import { useSession } from "next-auth/react";
 import { BannerRecord, BannerRecordType } from "../utils/database/models";
 import UploadFont from "../components/UploadFont";
 import { useRouter } from "next/router";
+import Head from "next/head";
 
 export default function UploadPage({}: {
   availableBanners: BannerRecordType["dataValues"][] | undefined;
@@ -18,6 +19,9 @@ export default function UploadPage({}: {
 
   return (
     <div className="w-full bg-gradient-to-tr from-bc-purple-1 via-blue-300 to-stone-100 flex flex-col md:flex-row justify-center gap-8 items-center">
+      <Head>
+        <title>Subir fuente</title>
+      </Head>
       <div className="container bg-white p-2 md:p-4 lg:p-8 rounded-md">
         <h1 className="text-2xl font-bold">Subir fuente</h1>
         <hr className="mb-4" />

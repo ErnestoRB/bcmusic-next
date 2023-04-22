@@ -11,6 +11,7 @@ import {
 } from "../../utils/database/models";
 
 import { useSession } from "next-auth/react";
+import Link from "next/link";
 
 export default function CodeEditor({
   banner = null,
@@ -36,6 +37,12 @@ export default function CodeEditor({
         {banner && (
           <>
             <div className="w-full flex flex-col">
+              <Link
+                href={`/admin/banner/${banner.id}`}
+                className="bg-purple-700 hover:bg-purple-800 text-white p-2 inline-block"
+              >
+                Editar metadatos
+              </Link>
               <Editor id={banner.id}></Editor>
             </div>
           </>

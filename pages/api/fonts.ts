@@ -9,6 +9,8 @@ import { onlyAllowAdmins } from "../../utils/validation/user";
 import { unstable_getServerSession } from "next-auth";
 import { authOptions } from "./auth/[...nextauth]";
 import { PaginationValidation } from "../../utils/validation/pagination";
+import { isDuplicateError } from "../../utils/database";
+import logError from "../../utils/log";
 
 const parser = formidable();
 const parse = (req: Parameters<typeof parser.parse>[0]) =>
@@ -107,8 +109,13 @@ export default async function handler(
         .send({ message: (error as ValidationError).details[0].message });
       return;
     }
-    console.log(error);
-
+    if (isDuplicateError(error)) {
+      res
+        .status(400)
+        .send({ message: `Ya existe una fuente con esas propiedades!` });
+      return;
+    }
+    logError(error);
     res.status(500).send({ message: "Error interno" });
   }
 }

@@ -45,7 +45,24 @@ export default function AddFont({
         )}
         {bannerFonts.map((font) => (
           <li className="" key={font.nombre}>
-            {font.nombre}
+            {font.nombre}{" "}
+            <button
+              type="button"
+              className="bg-red-600 hover:bg-red-700 text-white"
+              onClick={() => {
+                fetch(`/api/banner/${id}?deleteFont=${font.id}`, {
+                  method: "DELETE",
+                })
+                  .then(perserveStatus)
+                  .then((res) => {
+                    toast(res.json.message, {
+                      type: res.ok ? "success" : "error",
+                    });
+                  });
+              }}
+            >
+              Eliminar
+            </button>
           </li>
         ))}
       </ul>

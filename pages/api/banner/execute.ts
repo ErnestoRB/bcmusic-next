@@ -4,6 +4,7 @@ import { BannerRecord, Fonts } from "../../../utils/database/models";
 import { unstable_getServerSession } from "next-auth";
 import { onlyAllowAdmins } from "../../../utils/validation/user";
 import { authOptions } from "../auth/[...nextauth]";
+import logError from "../../../utils/log";
 
 const artistSample = [
   { name: "Duck Fizz", images: [] },
@@ -73,9 +74,8 @@ export default async function handler(
       });
       return;
     }
-    console.log("Error al ejecutar banner!");
-    console.log(error);
-
+    logError("Error al ejecutar banner!");
+    logError(error);
     res.status(500).send({ message: `¡Ocurrió un error en tu script!` });
   }
 }

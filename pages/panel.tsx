@@ -41,9 +41,12 @@ export default function Panel({
         <h1 className="text-3xl font-bold">Panel de usuario</h1>
         <h2>Tipo de usuario: {session?.data.user.tipo_usuario?.nombre}</h2>
         {session?.data.user.tipo_usuario?.nombre === "admin" && (
-          <div className="flex flex-wrap">
-            <Link href="/code/1" className="text-blue-600 underline">
+          <div className="flex flex-col flex-wrap">
+            <Link href="/new" className="text-blue-600 underline">
               Crear nuevo banner
+            </Link>
+            <Link href="/uploadFont" className="text-blue-600 underline">
+              Subir nueva fuente
             </Link>
           </div>
         )}

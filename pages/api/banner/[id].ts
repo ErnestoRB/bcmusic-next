@@ -93,6 +93,48 @@ export default async function handler(
       );
       res.send({ message: `Banner ${id} actualizado!` });
       return;
+    } else if (req.method?.toLowerCase() === "delete") {
+      if (onlyAllowAdmins(session, res)) {
+        return;
+      }
+      const record = await BannerRecord.findByPk(id, {
+        attributes: { exclude: ["script"] },
+      });
+      if (!record) {
+        res.status(400).send({ message: `Banner ${id} no existe!` });
+        return;
+      }
+      if (req.query.deleteFont) {
+        const fontId = Array.isArray(req.query.deleteFont)
+          ? req.query.deleteFont[0]
+          : req.query.deleteFont;
+        const font = await Fonts.findByPk(fontId);
+        if (!font) {
+          res
+            .status(400)
+            .send({ message: `Fuente  con id "${id}" no existe!` });
+          return;
+        }
+        /// @ts-ignore
+        await record!.removeFont(font);
+        res.send({
+          message: `Se eliminado la fuente ${font.dataValues.nombre} al banner ${record.dataValues.name}`,
+        });
+        return;
+      }
+      const updateRecord = (await UpdateScriptValidation.validateAsync(
+        req.body
+      )) as { script: string };
+      BannerRecord.update(
+        { script: updateRecord.script },
+        {
+          where: {
+            id,
+          },
+        }
+      );
+      res.send({ message: `Banner ${id} actualizado!` });
+      return;
     } else {
       res.status(400).send({ message: `Método no implementado!` });
     }

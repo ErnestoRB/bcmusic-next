@@ -78,7 +78,7 @@ export default function NavBar() {
             )}
           </NavBarLink>,
           <NavBarLink
-            href="/code"
+            href="/new"
             key="crear"
             visible={
               /* For DOM purposes */

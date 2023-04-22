@@ -11,6 +11,15 @@ export const availableSpotifyTimeRanges = [
   "long_term",
 ] as const;
 
+export const stringIsAValidUrl = (url: string): boolean => {
+  try {
+    new URL(url);
+    return true;
+  } catch (err) {
+    return false;
+  }
+};
+
 export const getSpotifyData = async (
   Token: string,
   time: "medium_term" | "short_term" | "long_term"
