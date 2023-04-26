@@ -91,35 +91,42 @@ export default function Panel({
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
-  let banners = null;
   const session = await unstable_getServerSession(
     req,
     res,
     authOptions(req, res)
   );
-  let userType = "";
-  if (session) {
-    const idUsuario = session?.user.id;
-    const bannerModels = await GeneratedBanner.findAll({
-      attributes: [
-        [sequelize.fn("COUNT", sequelize.col("*")), "cantidad"],
-        [sequelize.fn("MONTH", sequelize.col("fecha_generado")), "mes"],
-      ],
-      group: "mes",
-      order: ["mes"],
-      where: {
-        [Op.and]: [
-          { idUsuario },
-          sequelize.where(
-            sequelize.fn("YEAR", sequelize.fn("CURDATE")),
-            sequelize.fn("YEAR", sequelize.col("fecha_generado"))
-          ),
-        ],
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
       },
-    });
-    banners = bannerModels.map((banner) => banner.dataValues);
-    banners = JSON.parse(JSON.stringify(banners));
+    };
   }
+  let banners = null;
+
+  const idUsuario = session?.user.id;
+  const bannerModels = await GeneratedBanner.findAll({
+    attributes: [
+      [sequelize.fn("COUNT", sequelize.col("*")), "cantidad"],
+      [sequelize.fn("MONTH", sequelize.col("fecha_generado")), "mes"],
+    ],
+    group: "mes",
+    order: ["mes"],
+    where: {
+      [Op.and]: [
+        { idUsuario },
+        sequelize.where(
+          sequelize.fn("YEAR", sequelize.fn("CURDATE")),
+          sequelize.fn("YEAR", sequelize.col("fecha_generado"))
+        ),
+      ],
+    },
+  });
+  banners = bannerModels.map((banner) => banner.dataValues);
+  banners = JSON.parse(JSON.stringify(banners));
   return {
     props: {
       banners,

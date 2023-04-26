@@ -1,12 +1,14 @@
 import { GetServerSideProps } from "next";
 import { useSession } from "next-auth/react";
-import { BannerRecord, BannerRecordType } from "../utils/database/models";
+import { BannerRecord, BannerRecordModel } from "../utils/database/models";
 import UploadFont from "../components/UploadFont";
 import { useRouter } from "next/router";
 import Head from "next/head";
+import { unstable_getServerSession } from "next-auth";
+import { authOptions } from "./api/auth/[...nextauth]";
 
 export default function UploadPage({}: {
-  availableBanners: BannerRecordType["dataValues"][] | undefined;
+  availableBanners: BannerRecordModel["dataValues"][] | undefined;
   banners: { mes: number; cantidad: number }[];
 }) {
   const router = useRouter();
@@ -32,8 +34,23 @@ export default function UploadPage({}: {
     </div>
   );
 }
-export const getServerSideProps: GetServerSideProps = async () => {
-  const availableBanners: BannerRecordType[] = await BannerRecord.findAll();
+export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
+  const session = await unstable_getServerSession(
+    req,
+    res,
+    authOptions(req, res)
+  );
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  }
+
+  const availableBanners: BannerRecordModel[] = await BannerRecord.findAll();
   return {
     props: { availableBanners: availableBanners.map((a) => a.dataValues) },
   };

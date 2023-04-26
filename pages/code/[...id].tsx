@@ -3,15 +3,12 @@ import Editor from "../../components/Editor";
 import { backgroundGradient } from "../../utils/styles";
 import { useRouter } from "next/router";
 import { GetServerSideProps } from "next";
-import {
-  BannerRecord,
-  BannerRecordType,
-  Fonts,
-  FontsType,
-} from "../../utils/database/models";
-
+import { BannerRecord, Fonts } from "../../utils/database/models";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
+import { BannerRecordWithFonts } from "../../types/definitions";
+import { unstable_getServerSession } from "next-auth";
+import { authOptions } from "../api/auth/[...nextauth]";
 
 export default function CodeEditor({
   banner = null,
@@ -28,24 +25,24 @@ export default function CodeEditor({
 
   return (
     <div
-      className={`flex flex-col items-center justify-center w-full ${backgroundGradient}`}
+      className={`flex flex-col items-center justify-center w-full ${backgroundGradient} py-4 md:py-8`}
     >
       <Head>
         <title>Crear código de banner</title>
       </Head>
       <div className="bg-white p-2 md:p-4 shadow-lg rounded max-w-7xl w-full">
         {banner && (
-          <>
-            <div className="w-full flex flex-col">
+          <div className="w-full flex flex-col gap-2">
+            <div className="div flex  justify-end">
               <Link
                 href={`/admin/banner/${banner.id}`}
-                className="bg-purple-700 hover:bg-purple-800 text-white p-2 inline-block"
+                className="bg-purple-700 hover:bg-purple-800 text-white p-2 inline-block w-max"
               >
                 Editar metadatos
               </Link>
-              <Editor id={banner.id}></Editor>
             </div>
-          </>
+            <Editor id={banner.id}></Editor>
+          </div>
         )}
         {!banner && (
           <h1 className="text-center">
@@ -57,11 +54,25 @@ export default function CodeEditor({
   );
 }
 
-type BannerRecordWithFonts = BannerRecordType["dataValues"] & {
-  fonts: FontsType["dataValues"][];
-};
+export const getServerSideProps: GetServerSideProps = async ({
+  params,
+  req,
+  res,
+}) => {
+  const session = await unstable_getServerSession(
+    req,
+    res,
+    authOptions(req, res)
+  );
 
-export const getServerSideProps: GetServerSideProps = async ({ params }) => {
+  if (!session) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  }
   const idParam = params!.id;
   let id = "";
   if (Array.isArray(idParam)) {

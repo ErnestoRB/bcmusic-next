@@ -1,11 +1,11 @@
 import Head from "next/head";
 import { backgroundGradient } from "../../utils/styles";
 import { useRouter } from "next/router";
-import { useForm } from "react-hook-form";
-import { toast } from "react-toastify";
-import Alert from "../../components/Alert";
 import { useSession } from "next-auth/react";
 import BannerForm from "../../components/BannerForm";
+import { unstable_getServerSession } from "next-auth";
+import { authOptions } from "../api/auth/[...nextauth]";
+import { GetServerSideProps } from "next";
 
 export default function CreateBannerCode() {
   const { push } = useRouter();
@@ -35,3 +35,24 @@ export default function CreateBannerCode() {
     </div>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
+  const session = await unstable_getServerSession(
+    req,
+    res,
+    authOptions(req, res)
+  );
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: {},
+  };
+};

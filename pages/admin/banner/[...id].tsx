@@ -1,24 +1,22 @@
-import { useEffect, useRef, useState } from "react";
-import Alert from "../../../components/Alert";
 import Head from "next/head";
-import bannerImage from "../images/banner.png";
-import Image from "next/image";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import {
   BannerRecord,
-  BannerRecordType,
+  BannerRecordModel,
   Fonts,
 } from "../../../utils/database/models";
 import { GetServerSideProps } from "next";
 import BannerForm from "../../../components/BannerForm";
+import { unstable_getServerSession } from "next-auth";
+import { authOptions } from "../../api/auth/[...nextauth]";
 
 export default function BannerPage({
   banner,
 }: {
-  banner: BannerRecordType["dataValues"];
+  banner: BannerRecordModel["dataValues"];
 }) {
-  const session = useSession({ required: true });
+  useSession({ required: true });
 
   return (
     <div className="w-full bg-gradient-to-tr from-bc-purple-1 via-blue-300 to-stone-100 flex flex-col md:flex-row justify-center gap-8 items-center">
@@ -45,9 +43,28 @@ export default function BannerPage({
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async ({ query }) => {
+export const getServerSideProps: GetServerSideProps = async ({
+  query,
+  req,
+  res,
+}) => {
   if (!query.id) {
     return { props: { banner: null } };
+  }
+
+  const session = await unstable_getServerSession(
+    req,
+    res,
+    authOptions(req, res)
+  );
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
   }
   let id: string | null = null;
   if (Array.isArray(query.id)) {
@@ -56,7 +73,7 @@ export const getServerSideProps: GetServerSideProps = async ({ query }) => {
     id = query.id;
   }
 
-  const banner: BannerRecordType | null = await BannerRecord.findByPk(id, {
+  const banner: BannerRecordModel | null = await BannerRecord.findByPk(id, {
     include: {
       model: Fonts,
       through: {
