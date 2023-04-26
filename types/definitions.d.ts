@@ -1,8 +1,18 @@
+import { BannerRecordModel } from "../utils/database/models";
+
 declare global {
   interface Window {
     grecaptcha: any;
   }
 }
+
+export type BannerRecordWithFonts = BannerRecordModel["dataValues"] & {
+  fonts: FontsType["dataValues"][];
+};
+
+export type BannerRecordWithAuthors = BannerRecordModel["dataValues"] & {
+  authors: string[];
+};
 
 export interface SpotifyErrorResponse {
   error?: {

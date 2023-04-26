@@ -82,9 +82,9 @@ export type BannerRecordTypeObject = {
   name: string; // nombre del banner
   script: string;
 };
-export type BannerRecordType = Model<BannerRecordTypeObject>;
+export type BannerRecordModel = Model<BannerRecordTypeObject>;
 
-export const BannerRecord = sequelize.define<BannerRecordType>(
+export const BannerRecord = sequelize.define<BannerRecordModel>(
   "bannerRecord",
   {
     id: {
