@@ -33,6 +33,14 @@ export default async function handler(
   res: NextApiResponse<{ message: string; data?: any }>
 ) {
   try {
+    const session = await unstable_getServerSession(
+      req,
+      res,
+      authOptions(req, res)
+    );
+    if (onlyAllowAdmins(session, res)) {
+      return;
+    }
     if (req.method?.toLowerCase() === "get") {
       const { page } = (await PaginationValidation.validateAsync(
         req.query

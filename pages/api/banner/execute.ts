@@ -15,6 +15,8 @@ const artistSample = [
   { name: "The Strokes", images: [] },
 ];
 
+const requestHistory: { id: string; executed: Date }[] = [];
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<{ message: string; data?: any }>
@@ -46,7 +48,21 @@ export default async function handler(
     return;
   }
   try {
-    const { width, height } = record.dataValues;
+    const { width, height, id } = record.dataValues;
+
+    const executedRecord = requestHistory.find((value) => value.id === id);
+    if (
+      executedRecord &&
+      executedRecord.executed.getTime() >= Date.now() - 60000
+    ) {
+      res.status(400).json({
+        message: "Hey, calma! Ya ejecutaste ese banner hace menos de un minuto",
+      });
+      return;
+    }
+    if (!executedRecord) {
+      requestHistory.push({ id, executed: new Date() });
+    }
 
     const data = await executeBanner(
       record.dataValues.script,
@@ -56,7 +72,6 @@ export default async function handler(
       /// @ts-ignore
       record.dataValues.fonts.map((font) => font.dataValues)
     );
-    console.log(data);
 
     if (!data) {
       res.status(400).send({ message: "Tu script no regresó nada!" });

@@ -5,6 +5,10 @@ import { UpdateScriptValidation } from "../../../utils/validation/bannerRecords"
 import { unstable_getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
 import { onlyAllowAdmins } from "../../../utils/validation/user";
+import type { Model } from "sequelize";
+import logError from "../../../utils/log";
+
+const MAX_FONTS_PER_BANNER = 10;
 
 export default async function handler(
   req: NextApiRequest,
@@ -35,6 +39,7 @@ export default async function handler(
         const record = await BannerRecord.findByPk(id, {
           include: {
             model: Fonts,
+            attributes: ["id", "nombre"],
             through: {
               attributes: [],
             },
@@ -47,9 +52,35 @@ export default async function handler(
         res.send({ message: "Registro encontrado", data: record?.dataValues });
         return;
       }
+      if (req.query.fonts) {
+        const record = (await BannerRecord.findByPk(id, {
+          include: {
+            model: Fonts,
+            attributes: ["id", "nombre"],
+
+            through: {
+              attributes: [],
+            },
+          },
+        })) as Model;
+        if (!record) {
+          res.status(400).send({ message: `Banner ${id} no existe!` });
+          return;
+        }
+        const recordFonts = record.dataValues.fonts;
+        res.send({
+          message: `Fuentes del banner "${record.dataValues.name}"`,
+          data: recordFonts,
+        });
+        return;
+      }
       const record = await BannerRecord.findByPk(id, {
         attributes: { exclude: ["script"] },
       });
+      if (!record) {
+        res.status(400).send({ message: `Banner ${id} no existe!` });
+        return;
+      }
       res.send({ message: "Registro encontrado", data: record?.dataValues });
     } else if (req.method?.toLowerCase() === "patch") {
       if (onlyAllowAdmins(session, res)) {
@@ -63,6 +94,14 @@ export default async function handler(
         return;
       }
       if (req.query.addFont) {
+        /// @ts-ignore
+        const fountsCount = await record.countFonts();
+        if (fountsCount >= MAX_FONTS_PER_BANNER) {
+          res.status(400).send({
+            message: `Ya no puedes agregar más fuentes a este banner!`,
+          });
+          return;
+        }
         const fontName = req.query.addFont;
         const font = await Fonts.findOne({
           where: {
@@ -145,6 +184,8 @@ export default async function handler(
         .send({ message: (error as ValidationError).details[0].message });
       return;
     }
+
+    logError(error);
     res.status(500).send({ message: "Error interno" });
   }
 }

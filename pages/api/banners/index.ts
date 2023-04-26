@@ -38,7 +38,7 @@ export default async function handler(
       })) as Model<BannerRecordTypeObject & { authors: UserType[] }>[];
 
       // aplanar para que sea un arreglo de strings en vez de un objeto de usuarios
-      const flatAuthors = records.forEach((banner) => {
+      records.forEach((banner) => {
         /// @ts-ignore
         banner.dataValues.authors = banner.dataValues.authors.map(
           (author) => author.name
