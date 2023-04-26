@@ -6,13 +6,13 @@ import bannerImage from "../images/banner.png";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { BannerRecord, BannerRecordType } from "../utils/database/models";
+import { BannerRecord, BannerRecordModel } from "../utils/database/models";
 
 let downloaded = false;
 export default function BannerPage({
   availableBanners,
 }: {
-  availableBanners: BannerRecordType["dataValues"][] | undefined;
+  availableBanners: BannerRecordModel["dataValues"][] | undefined;
   banners: { mes: number; cantidad: number }[];
 }) {
   const session = useSession();
@@ -171,7 +171,7 @@ export default function BannerPage({
   );
 }
 export const getServerSideProps: GetServerSideProps = async () => {
-  const availableBanners: BannerRecordType[] = await BannerRecord.findAll();
+  const availableBanners: BannerRecordModel[] = await BannerRecord.findAll();
   return {
     props: { availableBanners: availableBanners.map((a) => a.dataValues) },
   };

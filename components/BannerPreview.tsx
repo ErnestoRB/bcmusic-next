@@ -1,5 +1,4 @@
-import { BannerRecordWithAuthors } from "../pages/banners";
-import { BannerRecordType } from "../utils/database/models";
+import { BannerRecordWithAuthors } from "../types/definitions";
 import Alert from "./Alert";
 
 export default function BannerPreview({
@@ -8,7 +7,7 @@ export default function BannerPreview({
   bannerData: BannerRecordWithAuthors;
 }) {
   return (
-    <div className="border border-stone-400 w-full max-w-xs bg-white rounded shadow-lg">
+    <div className="border border-stone-400 w-64  bg-white rounded shadow-lg">
       <div className="flex flex-col gap-y-4 items-center justify-center w-full h-64 bg-black">
         {(bannerData.exampleUrl && (
           <picture className="w-full h-full">

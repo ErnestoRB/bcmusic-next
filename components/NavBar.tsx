@@ -37,6 +37,9 @@ export default function NavBar() {
           <NavBarLink key="crearBanner" href={"/banner"}>
             Generar banner
           </NavBarLink>,
+          <NavBarLink key="verBanners" href={"/banners"}>
+            Ver banners
+          </NavBarLink>,
           <NavBarLink key="acerca" href={"/about"}>
             Acerca
           </NavBarLink>,

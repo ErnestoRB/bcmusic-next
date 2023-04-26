@@ -10,13 +10,19 @@ const colors = {
 
 export default function Alert({
   children,
+  inline = true,
   type = "error",
 }: {
   children: ReactNode;
   type?: keyof typeof colors;
+  inline?: boolean;
 }) {
   return (
-    <span className={`rounded-sm ${colors[type]} border px-4 py-2`}>
+    <span
+      className={`rounded-sm ${colors[type]} ${
+        inline ? "inline" : "inline-block"
+      } border px-4 py-2`}
+    >
       {children}
     </span>
   );

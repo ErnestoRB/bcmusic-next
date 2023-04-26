@@ -12,6 +12,11 @@ export default function UploadFont() {
         className="flex flex-col gap-y-2"
         onSubmit={(evt) => {
           evt.preventDefault();
+
+          if (!files || files.length < 1) {
+            toast("Por favor, agregar un archivo .ttf!", { type: "error" });
+            return;
+          }
           const data = new FormData();
 
           files?.forEach((file) => {
@@ -27,6 +32,8 @@ export default function UploadFont() {
             .then(perserveStatus)
             .then((res) => {
               toast(res.json.message, { type: res.ok ? "success" : "error" });
+              setName("");
+              setFiles([]);
             });
         }}
       >

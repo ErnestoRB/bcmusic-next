@@ -4,15 +4,33 @@ import { FontsType } from "../utils/database/models";
 import { perserveStatus } from "../utils";
 import { toast } from "react-toastify";
 import Alert from "./Alert";
+import { useEffect, useState } from "react";
+
+type FontsArray = FontsType["dataValues"][];
 
 export default function AddFont({
   id,
   bannerFonts,
 }: {
   id: string;
-  bannerFonts: FontsType["dataValues"][];
+  bannerFonts: FontsArray;
 }) {
-  const { data, error, isLoading } = useSWR("/api/fonts", fetcher);
+  const { data, error, isLoading, mutate } = useSWR("/api/fonts", fetcher);
+
+  const [availableFonts, setAvailableFonts] = useState<FontsArray>();
+
+  useEffect(() => {
+    if (bannerFonts && data && data.data && Array.isArray(data.data)) {
+      setAvailableFonts(
+        (data.data as FontsArray).filter(
+          (font) =>
+            bannerFonts.findIndex(
+              (bannerFont) => font.nombre === bannerFont.nombre
+            ) === -1
+        )
+      );
+    }
+  }, [data, bannerFonts]);
 
   return (
     <form
@@ -48,7 +66,7 @@ export default function AddFont({
             {font.nombre}{" "}
             <button
               type="button"
-              className="bg-red-600 hover:bg-red-700 text-white"
+              className="bg-red-600 hover:bg-red-700 text-white p-1"
               onClick={() => {
                 fetch(`/api/banner/${id}?deleteFont=${font.id}`, {
                   method: "DELETE",
@@ -58,6 +76,7 @@ export default function AddFont({
                     toast(res.json.message, {
                       type: res.ok ? "success" : "error",
                     });
+                    mutate();
                   });
               }}
             >
@@ -66,14 +85,19 @@ export default function AddFont({
           </li>
         ))}
       </ul>
-      <select name="font" id="">
-        {data &&
-          data.data?.map((font: any) => (
-            <option key={font.nombre} value={font.nombre}>
-              {font.nombre}
-            </option>
-          ))}
-      </select>
+      {availableFonts && availableFonts.length > 0 && (
+        <>
+          <h3 className="text-lg">Fuentes disponibles para añadir:</h3>
+
+          <select name="font" id="">
+            {availableFonts.map((font) => (
+              <option key={font.nombre} value={font.nombre}>
+                {font.nombre}
+              </option>
+            ))}
+          </select>
+        </>
+      )}
 
       <button
         type="submit"
