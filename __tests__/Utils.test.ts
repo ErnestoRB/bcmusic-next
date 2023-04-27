@@ -1,5 +1,9 @@
 import { PaginationValidation } from "../utils/validation/pagination";
-import { isAdmin } from "../utils/validation/user";
+import {
+  isAdmin,
+  onlyAllowAdmins,
+  sessionRequired,
+} from "../utils/validation/user";
 
 describe("Utility functions", () => {
   describe("utils/validation/user.ts", () => {
@@ -12,6 +16,86 @@ describe("Utility functions", () => {
         expect(isAdmin("Admin")).toBe(true);
         expect(isAdmin("ADMIN")).toBe(true);
         expect(isAdmin("admin")).toBe(true);
+      });
+    });
+    describe("sessionRequired()", () => {
+      it("return true when session is null", () => {
+        const jsonSpy = jest.fn();
+        const reqSpy = {
+          status: jest.fn((status: number) => ({
+            json: jsonSpy,
+          })),
+        };
+        /// @ts-ignore
+        expect(sessionRequired(null, reqSpy)).toBe(true);
+        expect(reqSpy.status).toBeCalledTimes(1);
+        expect(jsonSpy).toBeCalledTimes(1);
+      });
+    });
+
+    describe("onlyAllowAdmins()", () => {
+      it("return true when session is null", () => {
+        const jsonSpy = jest.fn();
+        const reqSpy = {
+          status: jest.fn((status: number) => ({
+            json: jsonSpy,
+          })),
+        };
+        /// @ts-ignore
+        expect(onlyAllowAdmins(null, reqSpy)).toBe(true);
+        expect(jsonSpy).toBeCalledTimes(1);
+        expect(reqSpy.status).toBeCalledTimes(1);
+      });
+      it("return true when user is undefined", () => {
+        const jsonSpy = jest.fn();
+        const reqSpy = {
+          status: jest.fn((status: number) => ({
+            json: jsonSpy,
+          })),
+        };
+        expect(
+          onlyAllowAdmins(
+            /// @ts-ignore
+            {},
+            reqSpy
+          )
+        ).toBe(true);
+        expect(jsonSpy).toBeCalledTimes(1);
+        expect(reqSpy.status).toBeCalledTimes(1);
+      });
+      it("return true when tipo_usuario is undefined", () => {
+        const jsonSpy = jest.fn();
+        const reqSpy = {
+          status: jest.fn((status: number) => ({
+            json: jsonSpy,
+          })),
+        };
+        expect(
+          onlyAllowAdmins(
+            /// @ts-ignore
+            { user: {} },
+            reqSpy
+          )
+        ).toBe(true);
+        expect(jsonSpy).toBeCalledTimes(1);
+        expect(reqSpy.status).toBeCalledTimes(1);
+      });
+      it("return true when tipo_usuario isn't 'admin'", () => {
+        const jsonSpy = jest.fn();
+        const reqSpy = {
+          status: jest.fn((status: number) => ({
+            json: jsonSpy,
+          })),
+        };
+        expect(
+          onlyAllowAdmins(
+            /// @ts-ignore
+            { user: { tipo_usuario: { id: 1, nombre: "lo que sea" } } },
+            reqSpy
+          )
+        ).toBe(true);
+        expect(jsonSpy).toBeCalledTimes(1);
+        expect(reqSpy.status).toBeCalledTimes(1);
       });
     });
   });

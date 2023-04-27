@@ -23,6 +23,23 @@ export const isAdmin = (cadena?: string) => {
 };
 
 /**
+ * Método usado para filtrar peticiones a sólo usuarios con sesión iniciada
+ * @param session Session generada por next-auth
+ * @param res NextResponse
+ * @returns Verdadero cuando se ha enviado una respuesta
+ */
+export const sessionRequired = (
+  session: Session | null,
+  res: NextApiResponse
+): boolean => {
+  if (!session) {
+    res.status(401).json({ message: "Inicia sesión primero!" });
+    return true;
+  }
+  return false;
+};
+
+/**
  * Método usado para filtrar peticiones a sólo administradores
  * @param session Session generada por next-auth
  * @param res NextResponse
@@ -32,13 +49,12 @@ export const onlyAllowAdmins = (
   session: Session | null,
   res: NextApiResponse
 ): boolean => {
-  if (!session) {
-    res.status(401).json({ message: "Inicia sesión primero!" });
+  if (sessionRequired(session, res)) {
     return true;
   }
   if (
-    !session.user.tipo_usuario ||
-    !isAdmin(session.user.tipo_usuario.nombre)
+    !session!.user?.tipo_usuario ||
+    !isAdmin(session!.user.tipo_usuario.nombre)
   ) {
     res.status(403).json({ message: "No eres admin!" });
     return true;
