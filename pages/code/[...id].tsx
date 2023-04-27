@@ -9,6 +9,7 @@ import Link from "next/link";
 import { BannerRecordWithFonts } from "../../types/definitions";
 import { unstable_getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]";
+import { isAdmin } from "../../utils/validation/user";
 
 export default function CodeEditor({
   banner = null,
@@ -65,7 +66,7 @@ export const getServerSideProps: GetServerSideProps = async ({
     authOptions(req, res)
   );
 
-  if (!session) {
+  if (!session || !isAdmin(session.user.tipo_usuario?.nombre)) {
     return {
       redirect: {
         destination: "/",

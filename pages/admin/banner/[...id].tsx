@@ -10,6 +10,7 @@ import { GetServerSideProps } from "next";
 import BannerForm from "../../../components/BannerForm";
 import { unstable_getServerSession } from "next-auth";
 import { authOptions } from "../../api/auth/[...nextauth]";
+import { isAdmin, onlyAllowAdmins } from "../../../utils/validation/user";
 
 export default function BannerPage({
   banner,
@@ -58,7 +59,7 @@ export const getServerSideProps: GetServerSideProps = async ({
     authOptions(req, res)
   );
 
-  if (!session) {
+  if (!session || !isAdmin(session.user.tipo_usuario?.nombre)) {
     return {
       redirect: {
         destination: "/",

@@ -6,6 +6,7 @@ import { useRouter } from "next/router";
 import Head from "next/head";
 import { unstable_getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]";
+import { isAdmin } from "../utils/validation/user";
 
 export default function UploadPage({}: {
   availableBanners: BannerRecordModel["dataValues"][] | undefined;
@@ -41,7 +42,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     authOptions(req, res)
   );
 
-  if (!session) {
+  if (!session || !isAdmin(session.user.tipo_usuario?.nombre)) {
     return {
       redirect: {
         destination: "/",

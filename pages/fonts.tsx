@@ -7,6 +7,7 @@ import { useState } from "react";
 import fetcher from "../utils/swr";
 import Alert from "../components/Alert";
 import { backgroundGradient } from "../utils/styles";
+import { isAdmin } from "../utils/validation/user";
 export default function FontsComponent() {
   const [page, setPage] = useState(1);
   const { data, error, isLoading } = useSWR(`/api/fonts?page=${page}`, (url) =>
@@ -65,7 +66,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     authOptions(req, res)
   );
 
-  if (!session) {
+  if (!session || !isAdmin(session.user.tipo_usuario?.nombre)) {
     return {
       redirect: {
         destination: "/",
