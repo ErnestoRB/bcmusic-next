@@ -39,7 +39,7 @@ describe("Navigation", () => {
     cy.visit("http://localhost:3000/");
 
     // Find a link with an href attribute containing "about" and click it
-    cy.get('[nav-options] > a[href*="banner"]').click();
+    cy.get('[nav-options] > a[href="/banner"]').click();
 
     // The new url should include "/about"
     cy.url().should("include", "/banner");

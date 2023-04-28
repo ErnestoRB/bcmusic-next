@@ -73,6 +73,7 @@ export const authOptions: (
           return newProfile;
         },
         allowDangerousEmailAccountLinking: true,
+        checks: process.env["NODE_ENV"] === "development" ? "none" : "state",
         authorization:
           "https://accounts.spotify.com/authorize?" +
           new URLSearchParams({

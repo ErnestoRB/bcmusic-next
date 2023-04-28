@@ -53,10 +53,10 @@ export default function AuthError({
               )) || <Alert>{query.error}</Alert>}
           </>
         )}
-        <h1 className="text-2xl my-2">Iniciar sesión</h1>
+        <h1 className="text-3xl my-2 font-bold">Iniciar sesión</h1>
         <div className="flex flex-col">
           <form
-            className="flex flex-col"
+            className="flex flex-col gap-y-4"
             onSubmit={handleSubmit((values) => {
               const { contraseña, email } = values;
 
@@ -83,13 +83,14 @@ export default function AuthError({
             {loginMethod && (
               <>
                 <input
-                  autoComplete="email"
                   name="csrfToken"
                   type="hidden"
                   defaultValue={csrfToken}
                 />
                 <label htmlFor="email">Correo</label>
                 <input
+                  autoComplete="email"
+                  id="input-email"
                   type="email"
                   {...register("email", { required: true })}
                   required
@@ -99,29 +100,40 @@ export default function AuthError({
             {loginMethod === "credentials" && (
               <>
                 <label htmlFor="contraseña">Contraseña</label>
-                <input type="password" {...register("contraseña")} />
+                <input
+                  id="input-password"
+                  type="password"
+                  {...register("contraseña")}
+                />
               </>
             )}
             {loginMethod && (
-              <button className="bg-blue-600 text-white" type="submit">
+              <button
+                id="login-button"
+                className="bg-blue-600 text-white"
+                type="submit"
+              >
                 Enviar
               </button>
             )}
           </form>
           {loginMethod && <hr className="my-4" />}
           <button
+            id="password-login"
             className="bg-stone-700 text-white"
             onClick={() => setLoginMethod("credentials")}
           >
             Iniciar sesión con contraseña
           </button>
           <button
+            id="email-login"
             className="bg-black text-white"
             onClick={() => setLoginMethod("email")}
           >
             Iniciar sesión con Email
           </button>
           <button
+            id="spotify-login"
             className="flex items-center gap-2 justify-center bg-spotify-green text-white"
             onClick={() => signIn("spotify", { callbackUrl })}
           >

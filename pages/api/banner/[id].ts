@@ -15,13 +15,16 @@ export default async function handler(
   res: NextApiResponse<{ message: string; data?: any; id?: string }>
 ) {
   try {
-    const id = req.query.id;
-    const script = req.query.script;
     const session = await unstable_getServerSession(
       req,
       res,
       authOptions(req, res)
     );
+    if (onlyAllowAdmins(session, res)) {
+      return;
+    }
+    const id = req.query.id;
+    const script = req.query.script;
     if (!id) {
       res.status(400).send({ message: "Incluye un parametro" });
       return;
@@ -33,9 +36,6 @@ export default async function handler(
 
     if (req.method?.toLowerCase() === "get") {
       if (script) {
-        if (onlyAllowAdmins(session, res)) {
-          return;
-        }
         const record = await BannerRecord.findByPk(id, {
           include: {
             model: Fonts,
@@ -83,9 +83,6 @@ export default async function handler(
       }
       res.send({ message: "Registro encontrado", data: record?.dataValues });
     } else if (req.method?.toLowerCase() === "patch") {
-      if (onlyAllowAdmins(session, res)) {
-        return;
-      }
       const record = await BannerRecord.findByPk(id, {
         attributes: { exclude: ["script"] },
       });
@@ -133,9 +130,6 @@ export default async function handler(
       res.send({ message: `Banner ${id} actualizado!` });
       return;
     } else if (req.method?.toLowerCase() === "delete") {
-      if (onlyAllowAdmins(session, res)) {
-        return;
-      }
       const record = await BannerRecord.findByPk(id, {
         attributes: { exclude: ["script"] },
       });

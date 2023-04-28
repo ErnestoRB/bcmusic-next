@@ -5,7 +5,9 @@
     "database": "musica",
     "host": "127.0.0.1",
     "port": "2020",
-    "dialect": "mysql"
+    "dialect": "mysql",
+    "seederStorage": "json",
+    "seederStoragePath": "sequelizeData.dev.json"
   },
   "test": {
     "username": "root",

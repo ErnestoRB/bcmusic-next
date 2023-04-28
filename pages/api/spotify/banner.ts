@@ -134,7 +134,7 @@ export default async function handler(
     if (!img) {
       res.status(400).send({
         message:
-          "No fue posible crear el banner solcitado, ¿probablemente no existe?",
+          "Este banner no regresó ningun resultado... ¿Probablemente esté en desarrollo?",
       });
       return;
     }

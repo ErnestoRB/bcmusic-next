@@ -58,16 +58,6 @@ export default async function handler(
       return;
     }
     if (req.method?.toLowerCase() === "post") {
-      const session = await unstable_getServerSession(
-        req,
-        res,
-        authOptions(req, res)
-      );
-      console.log({ session });
-
-      if (onlyAllowAdmins(session, res)) {
-        return;
-      }
       const { files, fields } = await parse(req);
       if (!fields.name) {
         res.status(400).send({ message: "No especificaste un nombre" });
@@ -108,7 +98,6 @@ export default async function handler(
       res.send({ message: `Fuente "${fields.name}" registrada` });
       return;
     }
-
     res.status(400).send({ message: "Metodo no implementado" });
   } catch (error: any) {
     if (error.isJoi) {
