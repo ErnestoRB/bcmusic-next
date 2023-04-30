@@ -180,5 +180,11 @@ export const GeneratedBanner = sequelize.define("banner", {
   },
 });
 
+GeneratedBanner.belongsTo(BannerRecord);
+BannerRecord.hasMany(GeneratedBanner, {
+  foreignKey: "bannerRecordId",
+  onDelete: "cascade",
+});
+
 // sequelize.sync({ alter: true });
 // sequelize.sync({ force: true });

@@ -40,9 +40,9 @@ export default async function handler(
       // aplanar para que sea un arreglo de strings en vez de un objeto de usuarios
       records.forEach((banner) => {
         /// @ts-ignore
-        banner.dataValues.authors = banner.dataValues.authors.map(
-          (author) => author.name
-        );
+        banner.dataValues.authors = banner.dataValues.authors
+          .map((author) => author.name)
+          .filter((author) => !!author);
       });
 
       res.send({

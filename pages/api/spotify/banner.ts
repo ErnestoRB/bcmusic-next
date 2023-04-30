@@ -141,10 +141,12 @@ export default async function handler(
     if (process.env.NODE_ENV === "production") {
       let t: Transaction = await sequelize.transaction();
       try {
-        await GeneratedBanner.create(
+        const historyRecord = await GeneratedBanner.create(
           { idUsuario: session?.user.id, fecha_generado: new Date() },
           { transaction: t }
         );
+        /// @ts-ignore
+        historyRecord.setBannerRecord(record);
         await t.commit();
         res.send(img);
       } catch (error: any) {
