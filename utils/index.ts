@@ -63,6 +63,12 @@ export const meses = [
   "diciembre",
 ] as const;
 
+export const shortDateFormat = (date: Date): string => {
+  return `${date.getDate()} de ${
+    meses[date.getMonth()]
+  } del ${date.getFullYear()}`;
+};
+
 export class BannerError extends Error {
   isBanner = true;
 }

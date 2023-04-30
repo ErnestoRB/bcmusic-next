@@ -19,3 +19,14 @@ export const UpdateFontValidation = Joi.object({
   id: Joi.number().required(),
   font: Joi.string(),
 });
+
+export const BannerHistoryDate = Joi.object({
+  month: Joi.number()
+    .min(1)
+    .max(12)
+    .default(() => new Date().getMonth() + 1),
+  year: Joi.number()
+    .min(0)
+    .max(9999)
+    .default(() => new Date().getFullYear()),
+});

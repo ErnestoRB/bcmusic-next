@@ -4,11 +4,8 @@ import { useSession } from "next-auth/react";
 import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Op } from "sequelize";
 import Alert from "../components/Alert";
 import { BannerHistorial } from "../components/BannerHistorial";
-import { sequelize } from "../utils/database/connection";
-import { GeneratedBanner } from "../utils/database/models";
 import { backgroundGradient } from "../utils/styles";
 import { authOptions } from "./api/auth/[...nextauth]";
 import Link from "next/link";
@@ -83,8 +80,7 @@ export default function Panel({
             }`}
         </span>
         <span>País de origen: {`${session?.data?.user?.pais || ""}`}</span>
-        <hr />
-        <BannerHistorial banners={banners}></BannerHistorial>
+        <BannerHistorial></BannerHistorial>
       </div>
     </div>
   );
@@ -105,31 +101,8 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
       },
     };
   }
-  let banners = null;
 
-  const idUsuario = session?.user.id;
-  const bannerModels = await GeneratedBanner.findAll({
-    attributes: [
-      [sequelize.fn("COUNT", sequelize.col("*")), "cantidad"],
-      [sequelize.fn("MONTH", sequelize.col("fecha_generado")), "mes"],
-    ],
-    group: "mes",
-    order: ["mes"],
-    where: {
-      [Op.and]: [
-        { idUsuario },
-        sequelize.where(
-          sequelize.fn("YEAR", sequelize.fn("CURDATE")),
-          sequelize.fn("YEAR", sequelize.col("fecha_generado"))
-        ),
-      ],
-    },
-  });
-  banners = bannerModels.map((banner) => banner.dataValues);
-  banners = JSON.parse(JSON.stringify(banners));
   return {
-    props: {
-      banners,
-    },
+    props: {},
   };
 };

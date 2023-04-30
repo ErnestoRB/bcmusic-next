@@ -1,3 +1,4 @@
+import { BannerHistoryDate } from "../utils/validation/bannerRecords";
 import { PaginationValidation } from "../utils/validation/pagination";
 import {
   isAdmin,
@@ -129,6 +130,42 @@ describe("Utility functions", () => {
       });
       expect(error).toBeDefined();
       expect(error!.message).toMatch(/must be greater/);
+    });
+  });
+
+  describe("BannerHistory", () => {
+    it("Should return the actual year & month if not supplied", () => {
+      const { error, value } = BannerHistoryDate.validate({});
+      expect(error).toBeUndefined();
+      const date = new Date();
+      expect(value).toEqual({
+        month: date.getMonth() + 1,
+        year: date.getFullYear(),
+      });
+    });
+
+    it("Should return the  supplied month & year", () => {
+      const { error, value } = BannerHistoryDate.validate({
+        year: 2002,
+        month: 5,
+      });
+      expect(error).toBeUndefined();
+      expect(value).toEqual({
+        month: 5,
+        year: 2002,
+      });
+    });
+
+    it("Should transform string to number", () => {
+      const { error, value } = BannerHistoryDate.validate({
+        year: "2002",
+        month: "5",
+      });
+      expect(error).toBeUndefined();
+      expect(value).toEqual({
+        month: 5,
+        year: 2002,
+      });
     });
   });
 });
