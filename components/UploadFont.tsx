@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { perserveStatus } from "../utils";
 
 export default function UploadFont() {
   const [files, setFiles] = useState<File[]>();
   const [name, setName] = useState<string>("");
+  const fileRef = useRef<HTMLInputElement>(null);
 
   return (
     <div>
@@ -34,6 +35,7 @@ export default function UploadFont() {
               toast(res.json.message, { type: res.ok ? "success" : "error" });
               setName("");
               setFiles([]);
+              fileRef.current!.value = "";
             });
         }}
       >
@@ -43,6 +45,7 @@ export default function UploadFont() {
           name="font"
           accept=".ttf"
           id=""
+          ref={fileRef}
           onChange={(evt) => setFiles(Array.from(evt.currentTarget.files!))}
         />
         <label htmlFor="name">Nombre de la fuente a usar en los banners</label>

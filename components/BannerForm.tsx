@@ -8,9 +8,11 @@ import Alert from "./Alert";
 export default function BannerForm({
   banner = undefined,
   redirectOnCreate = true,
+  redirectOnUpdate = true,
 }: {
   banner?: BannerRecordModel["dataValues"];
   redirectOnCreate?: boolean;
+  redirectOnUpdate?: boolean;
 }) {
   const {
     register,
@@ -19,7 +21,7 @@ export default function BannerForm({
     formState: { errors },
   } = useForm();
 
-  const { push } = useRouter();
+  const { push, back } = useRouter();
 
   return (
     <form
@@ -40,6 +42,9 @@ export default function BannerForm({
             });
             if (redirectOnCreate && response.ok && response.json.id) {
               push("/code/" + response.json.id);
+            }
+            if (banner && redirectOnUpdate && response.ok) {
+              back();
             }
           });
       })}

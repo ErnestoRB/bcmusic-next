@@ -60,9 +60,6 @@ export default async function handler(
       });
       return;
     }
-    if (!executedRecord) {
-      requestHistory.push({ id, executed: new Date() });
-    }
 
     const data = await executeBanner(
       record.dataValues.script,
@@ -77,6 +74,10 @@ export default async function handler(
       res.status(400).send({ message: "Tu script no regresó nada!" });
       return;
     }
+    if (!executedRecord) {
+      requestHistory.push({ id, executed: new Date() });
+    }
+
     res.status(200).send({
       message: "Script ejecutado correctamente",
       data: (data as Buffer).toString("base64"),

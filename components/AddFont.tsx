@@ -96,16 +96,18 @@ export default function AddFont({
               </option>
             ))}
           </select>
+          <button
+            type="submit"
+            className="bg-green-500 text-white hover:bg-green-600"
+            disabled={isLoading || error}
+          >
+            Añadir
+          </button>
         </>
       )}
-
-      <button
-        type="submit"
-        className="bg-green-500 text-white hover:bg-green-600"
-        disabled={isLoading || error}
-      >
-        Añadir
-      </button>
+      {(!availableFonts || availableFonts.length === 0) && (
+        <b>No hay más fuentes por agregar!</b>
+      )}
     </form>
   );
 }

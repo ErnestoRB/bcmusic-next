@@ -10,11 +10,7 @@ import { backgroundGradient } from "../utils/styles";
 import { authOptions } from "./api/auth/[...nextauth]";
 import Link from "next/link";
 
-export default function Panel({
-  banners,
-}: {
-  banners: { mes: number; cantidad: number }[];
-}) {
+export default function Panel() {
   const router = useRouter();
   const session = useSession({
     required: true,

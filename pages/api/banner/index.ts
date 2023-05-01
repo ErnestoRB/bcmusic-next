@@ -47,11 +47,9 @@ export default async function handler(
       const lastCreatedRecord = createCache.find(
         (record) => userId === record.userId
       );
-      if (!lastCreatedRecord) {
-        createCache.push({ userId, lastCreated: new Date() });
-      } else if (
-        lastCreatedRecord.lastCreated.getTime() >=
-        Date.now() - 3_600_000
+      if (
+        lastCreatedRecord &&
+        lastCreatedRecord.lastCreated.getTime() >= Date.now() - 3_600_000
       ) {
         res.status(400).send({
           message: `Debes esperar 1h antes de crear otro banner!`,
@@ -65,6 +63,9 @@ export default async function handler(
       /// @ts-ignore
       recordInstance.addAuthor(userRecord);
       transaction.commit();
+      if (!lastCreatedRecord) {
+        createCache.push({ userId, lastCreated: new Date() });
+      }
       res.send({ message: `Record creado!`, id: recordInstance.dataValues.id });
     } else if (req.method?.toLowerCase() === "patch") {
       const { body } = req;
@@ -78,11 +79,9 @@ export default async function handler(
       const lastEditedRecord = updateCache.find(
         (record) => userId === record.userId
       );
-      if (!lastEditedRecord) {
-        updateCache.push({ userId, lastUpdated: new Date() });
-      } else if (
-        lastEditedRecord.lastUpdated.getTime() >=
-        Date.now() - 300_000
+      if (
+        lastEditedRecord &&
+        lastEditedRecord.lastUpdated.getTime() >= Date.now() - 300_000
       ) {
         res.status(400).send({
           message: `Debes esperar 5m antes de editar el banner!`,
@@ -95,6 +94,9 @@ export default async function handler(
       });
       if (result[0] >= 1) {
         transaction.commit();
+        if (!lastEditedRecord) {
+          updateCache.push({ userId, lastUpdated: new Date() });
+        }
         res.send({ message: `Banner "${body.id}" actualizado!` });
       } else {
         transaction.rollback();

@@ -27,6 +27,8 @@ export default function BannerEditor({ id }: { id: string }) {
   >(undefined);
   const [blob, setBlob] = useState<string | undefined>(undefined);
   const [fileIndex, setFileIndex] = useState(0);
+  const oldCode = useRef<string | undefined>();
+  const actualCode = useRef<string | undefined>();
 
   const monaco = useMonaco();
 
@@ -43,6 +45,9 @@ export default function BannerEditor({ id }: { id: string }) {
 
   useEffect(() => {
     if (data && data.data) {
+      if (oldCode.current === undefined) {
+        oldCode.current = data.data.script;
+      }
       setEditorText(data.data.script);
     }
   }, [data]);
@@ -93,6 +98,15 @@ export default function BannerEditor({ id }: { id: string }) {
               <button
                 className="bg-green-400 text-sm p-2  rounded-lg"
                 onClick={() => {
+                  if (actualCode.current !== oldCode.current) {
+                    toast(
+                      "El código no ha sido guardado! Guarda antes de ejecutar el código",
+                      {
+                        type: "error",
+                      }
+                    );
+                    return;
+                  }
                   fetch(
                     "/api/banner/execute?" + new URLSearchParams({ id: id! }),
                     {
@@ -128,6 +142,7 @@ export default function BannerEditor({ id }: { id: string }) {
                     });
                     return;
                   }
+
                   fetch("/api/banner/" + id, {
                     method: "PATCH",
                     body: JSON.stringify({
@@ -140,6 +155,7 @@ export default function BannerEditor({ id }: { id: string }) {
                     .then((res) => res.json())
                     .then((response) => {
                       toast(response.message, { type: "success" });
+                      oldCode.current = actualCode.current;
                     });
                 }}
               >
@@ -162,6 +178,7 @@ export default function BannerEditor({ id }: { id: string }) {
                 height="500px"
                 path={file.name}
                 defaultLanguage={file.language}
+                onChange={(value) => (actualCode.current = value)}
                 onMount={handleEditorDidMount}
                 value={editorText}
               />
