@@ -44,8 +44,12 @@ module.exports = {
     await queryInterface.bulkDelete(
       "users",
       {
-        //id: "bc1b0df7-ef43-4343-8ae1-2451c825b549",
-        //"973d26af-d69d-468b-8b54-7280614fb74d",
+        id: {
+          [Op.in]: [
+            "bc1b0df7-ef43-4343-8ae1-2451c825b549",
+            "973d26af-d69d-468b-8b54-7280614fb74d",
+          ],
+        },
       },
       {}
     );
