@@ -56,6 +56,7 @@ export default function BannerEditor({ id }: { id: string }) {
     if (!monaco) return;
     // compiler options
     monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
+      lib: ["es2015"],
       target: monaco.languages.typescript.ScriptTarget.ES2016,
       allowNonTsExtensions: true,
     });

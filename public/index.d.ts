@@ -1,6 +1,627 @@
-/// <reference lib="dom" />
-
 declare module "canvas" {
+  interface CanvasRenderingContext2DSettings {
+    alpha?: boolean;
+    colorSpace?: PredefinedColorSpace;
+    desynchronized?: boolean;
+    willReadFrequently?: boolean;
+  }
+  
+  /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasCaptureMediaStreamTrack) */
+  interface CanvasCaptureMediaStreamTrack extends MediaStreamTrack {
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasCaptureMediaStreamTrack/canvas) */
+    readonly canvas: HTMLCanvasElement;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/APCI/CanvasCaptureMediaStreamTrack/requestFrame) */
+    requestFrame(): void;
+    addEventListener<K extends keyof MediaStreamTrackEventMap>(
+      type: K,
+      listener: (
+        this: CanvasCaptureMediaStreamTrack,
+        ev: MediaStreamTrackEventMap[K]
+      ) => any,
+      options?: boolean | AddEventListenerOptions
+    ): void;
+    addEventListener(
+      type: string,
+      listener: EventListenerOrEventListenerObject,
+      options?: boolean | AddEventListenerOptions
+    ): void;
+    removeEventListener<K extends keyof MediaStreamTrackEventMap>(
+      type: K,
+      listener: (
+        this: CanvasCaptureMediaStreamTrack,
+        ev: MediaStreamTrackEventMap[K]
+      ) => any,
+      options?: boolean | EventListenerOptions
+    ): void;
+    removeEventListener(
+      type: string,
+      listener: EventListenerOrEventListenerObject,
+      options?: boolean | EventListenerOptions
+    ): void;
+  }
+  
+  declare var CanvasCaptureMediaStreamTrack: {
+    prototype: CanvasCaptureMediaStreamTrack;
+    new (): CanvasCaptureMediaStreamTrack;
+  };
+  
+  interface CanvasCompositing {
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/globalAlpha) */
+    globalAlpha: number;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/globalCompositeOperation) */
+    globalCompositeOperation: GlobalCompositeOperation;
+  }
+  
+  interface CanvasDrawImage {
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/drawImage) */
+    drawImage(image: CanvasImageSource, dx: number, dy: number): void;
+    drawImage(
+      image: CanvasImageSource,
+      dx: number,
+      dy: number,
+      dw: number,
+      dh: number
+    ): void;
+    drawImage(
+      image: CanvasImageSource,
+      sx: number,
+      sy: number,
+      sw: number,
+      sh: number,
+      dx: number,
+      dy: number,
+      dw: number,
+      dh: number
+    ): void;
+  }
+  
+  interface CanvasDrawPath {
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/beginPath) */
+    beginPath(): void;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/clip) */
+    clip(fillRule?: CanvasFillRule): void;
+    clip(path: Path2D, fillRule?: CanvasFillRule): void;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/fill) */
+    fill(fillRule?: CanvasFillRule): void;
+    fill(path: Path2D, fillRule?: CanvasFillRule): void;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/isPointInPath) */
+    isPointInPath(x: number, y: number, fillRule?: CanvasFillRule): boolean;
+    isPointInPath(
+      path: Path2D,
+      x: number,
+      y: number,
+      fillRule?: CanvasFillRule
+    ): boolean;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/isPointInStroke) */
+    isPointInStroke(x: number, y: number): boolean;
+    isPointInStroke(path: Path2D, x: number, y: number): boolean;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/stroke) */
+    stroke(): void;
+    stroke(path: Path2D): void;
+  }
+  
+  interface CanvasFillStrokeStyles {
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/fillStyle) */
+    fillStyle: string | CanvasGradient | CanvasPattern;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/strokeStyle) */
+    strokeStyle: string | CanvasGradient | CanvasPattern;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/createConicGradient) */
+    createConicGradient(startAngle: number, x: number, y: number): CanvasGradient;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/createLinearGradient) */
+    createLinearGradient(
+      x0: number,
+      y0: number,
+      x1: number,
+      y1: number
+    ): CanvasGradient;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/createPattern) */
+    createPattern(
+      image: CanvasImageSource,
+      repetition: string | null
+    ): CanvasPattern | null;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/createRadialGradient) */
+    createRadialGradient(
+      x0: number,
+      y0: number,
+      r0: number,
+      x1: number,
+      y1: number,
+      r1: number
+    ): CanvasGradient;
+  }
+  
+  interface CanvasFilters {
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/filter) */
+    filter: string;
+  }
+  
+  /**
+   * An opaque object describing a gradient. It is returned by the methods CanvasRenderingContext2D.createLinearGradient() or CanvasRenderingContext2D.createRadialGradient().
+   *
+   * [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasGradient)
+   */
+  interface CanvasGradient {
+    /**
+     * Adds a color stop with the given color to the gradient at the given offset. 0.0 is the offset at one end of the gradient, 1.0 is the offset at the other end.
+     *
+     * Throws an "IndexSizeError" DOMException if the offset is out of range. Throws a "SyntaxError" DOMException if the color cannot be parsed.
+     *
+     * [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasGradient/addColorStop)
+     */
+    addColorStop(offset: number, color: string): void;
+  }
+  
+  declare var CanvasGradient: {
+    prototype: CanvasGradient;
+    new (): CanvasGradient;
+  };
+  
+  interface CanvasImageData {
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/createImageData) */
+    createImageData(
+      sw: number,
+      sh: number,
+      settings?: ImageDataSettings
+    ): ImageData;
+    createImageData(imagedata: ImageData): ImageData;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/getImageData) */
+    getImageData(
+      sx: number,
+      sy: number,
+      sw: number,
+      sh: number,
+      settings?: ImageDataSettings
+    ): ImageData;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/putImageData) */
+    putImageData(imagedata: ImageData, dx: number, dy: number): void;
+    putImageData(
+      imagedata: ImageData,
+      dx: number,
+      dy: number,
+      dirtyX: number,
+      dirtyY: number,
+      dirtyWidth: number,
+      dirtyHeight: number
+    ): void;
+  }
+  
+  interface CanvasImageSmoothing {
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/imageSmoothingEnabled) */
+    imageSmoothingEnabled: boolean;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/imageSmoothingQuality) */
+    imageSmoothingQuality: ImageSmoothingQuality;
+  }
+  
+  interface CanvasPath {
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/arc) */
+    arc(
+      x: number,
+      y: number,
+      radius: number,
+      startAngle: number,
+      endAngle: number,
+      counterclockwise?: boolean
+    ): void;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/arcTo) */
+    arcTo(x1: number, y1: number, x2: number, y2: number, radius: number): void;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/bezierCurveTo) */
+    bezierCurveTo(
+      cp1x: number,
+      cp1y: number,
+      cp2x: number,
+      cp2y: number,
+      x: number,
+      y: number
+    ): void;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/closePath) */
+    closePath(): void;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/ellipse) */
+    ellipse(
+      x: number,
+      y: number,
+      radiusX: number,
+      radiusY: number,
+      rotation: number,
+      startAngle: number,
+      endAngle: number,
+      counterclockwise?: boolean
+    ): void;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/lineTo) */
+    lineTo(x: number, y: number): void;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/moveTo) */
+    moveTo(x: number, y: number): void;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/quadraticCurveTo) */
+    quadraticCurveTo(cpx: number, cpy: number, x: number, y: number): void;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/rect) */
+    rect(x: number, y: number, w: number, h: number): void;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/roundRect) */
+    roundRect(
+      x: number,
+      y: number,
+      w: number,
+      h: number,
+      radii?: number | DOMPointInit | (number | DOMPointInit)[]
+    ): void;
+  }
+  
+  interface CanvasPathDrawingStyles {
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/lineCap) */
+    lineCap: CanvasLineCap;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/lineDashOffset) */
+    lineDashOffset: number;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/lineJoin) */
+    lineJoin: CanvasLineJoin;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/lineWidth) */
+    lineWidth: number;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/miterLimit) */
+    miterLimit: number;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/getLineDash) */
+    getLineDash(): number[];
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/setLineDash) */
+    setLineDash(segments: number[]): void;
+  }
+  
+  /**
+   * An opaque object describing a pattern, based on an image, a canvas, or a video, created by the CanvasRenderingContext2D.createPattern() method.
+   *
+   * [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasPattern)
+   */
+  interface CanvasPattern {
+    /**
+     * Sets the transformation matrix that will be used when rendering the pattern during a fill or stroke painting operation.
+     *
+     * [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasPattern/setTransform)
+     */
+    setTransform(transform?: DOMMatrix2DInit): void;
+  }
+  
+  declare var CanvasPattern: {
+    prototype: CanvasPattern;
+    new (): CanvasPattern;
+  };
+  
+  interface CanvasRect {
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/clearRect) */
+    clearRect(x: number, y: number, w: number, h: number): void;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/fillRect) */
+    fillRect(x: number, y: number, w: number, h: number): void;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/strokeRect) */
+    strokeRect(x: number, y: number, w: number, h: number): void;
+  }
+  
+  /**
+   * The CanvasRenderingContext2D interface, part of the Canvas API, provides the 2D rendering context for the drawing surface of a <canvas> element. It is used for drawing shapes, text, images, and other objects.
+   *
+   * [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D)
+   */
+  interface CanvasRenderingContext2D
+    extends CanvasCompositing,
+      CanvasDrawImage,
+      CanvasDrawPath,
+      CanvasFillStrokeStyles,
+      CanvasFilters,
+      CanvasImageData,
+      CanvasImageSmoothing,
+      CanvasPath,
+      CanvasPathDrawingStyles,
+      CanvasRect,
+      CanvasShadowStyles,
+      CanvasState,
+      CanvasText,
+      CanvasTextDrawingStyles,
+      CanvasTransform,
+      CanvasUserInterface {
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/canvas) */
+    readonly canvas: HTMLCanvasElement;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/getContextAttributes) */
+    getContextAttributes(): CanvasRenderingContext2DSettings;
+  }
+  
+  declare var CanvasRenderingContext2D: {
+    prototype: CanvasRenderingContext2D;
+    new (): CanvasRenderingContext2D;
+  };
+  
+  interface CanvasShadowStyles {
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/shadowBlur) */
+    shadowBlur: number;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/shadowColor) */
+    shadowColor: string;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/shadowOffsetX) */
+    shadowOffsetX: number;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/shadowOffsetY) */
+    shadowOffsetY: number;
+  }
+  
+  interface CanvasState {
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/reset) */
+    reset(): void;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/restore) */
+    restore(): void;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/save) */
+    save(): void;
+  }
+  
+  interface CanvasText {
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/fillText) */
+    fillText(text: string, x: number, y: number, maxWidth?: number): void;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/measureText) */
+    measureText(text: string): TextMetrics;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/strokeText) */
+    strokeText(text: string, x: number, y: number, maxWidth?: number): void;
+  }
+  
+  interface CanvasTextDrawingStyles {
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/direction) */
+    direction: CanvasDirection;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/font) */
+    font: string;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/fontKerning) */
+    fontKerning: CanvasFontKerning;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/textAlign) */
+    textAlign: CanvasTextAlign;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/textBaseline) */
+    textBaseline: CanvasTextBaseline;
+  }
+  
+  interface CanvasTransform {
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/getTransform) */
+    getTransform(): DOMMatrix;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/resetTransform) */
+    resetTransform(): void;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/rotate) */
+    rotate(angle: number): void;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/scale) */
+    scale(x: number, y: number): void;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/setTransform) */
+    setTransform(
+      a: number,
+      b: number,
+      c: number,
+      d: number,
+      e: number,
+      f: number
+    ): void;
+    setTransform(transform?: DOMMatrix2DInit): void;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/transform) */
+    transform(
+      a: number,
+      b: number,
+      c: number,
+      d: number,
+      e: number,
+      f: number
+    ): void;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/translate) */
+    translate(x: number, y: number): void;
+  }
+  
+  interface CanvasUserInterface {
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D/drawFocusIfNeeded) */
+    drawFocusIfNeeded(element: Element): void;
+    drawFocusIfNeeded(path: Path2D, element: Element): void;
+  }
+  
+  /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/ImageBitmapRenderingContext) */
+  interface ImageBitmapRenderingContext {
+    /** Returns the canvas element that the context is bound to. */
+    readonly canvas: HTMLCanvasElement | OffscreenCanvas;
+    /**
+     * Transfers the underlying bitmap data from imageBitmap to context, and the bitmap becomes the contents of the canvas element to which context is bound.
+     *
+     * [MDN Reference](https://developer.mozilla.org/docs/Web/API/ImageBitmapRenderingContext/transferFromImageBitmap)
+     */
+    transferFromImageBitmap(bitmap: ImageBitmap | null): void;
+  }
+  
+  declare var ImageBitmapRenderingContext: {
+    prototype: ImageBitmapRenderingContext;
+    new (): ImageBitmapRenderingContext;
+  };
+  
+  
+  /**
+   * The underlying pixel data of an area of a <canvas> element. It is created using the ImageData() constructor or creator methods on the CanvasRenderingContext2D object associated with a canvas: createImageData() and getImageData(). It can also be used to set a part of the canvas by using putImageData().
+   *
+   * [MDN Reference](https://developer.mozilla.org/docs/Web/API/ImageData)
+   */
+  interface ImageData {
+      /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/ImageData/colorSpace) */
+      readonly colorSpace: PredefinedColorSpace;
+      /**
+       * Returns the one-dimensional array containing the data in RGBA order, as integers in the range 0 to 255.
+       *
+       * [MDN Reference](https://developer.mozilla.org/docs/Web/API/ImageData/data)
+       */
+      readonly data: Uint8ClampedArray;
+      /**
+       * Returns the actual dimensions of the data in the ImageData object, in pixels.
+       *
+       * [MDN Reference](https://developer.mozilla.org/docs/Web/API/ImageData/height)
+       */
+      readonly height: number;
+      /**
+       * Returns the actual dimensions of the data in the ImageData object, in pixels.
+       *
+       * [MDN Reference](https://developer.mozilla.org/docs/Web/API/ImageData/width)
+       */
+      readonly width: number;
+  }
+  
+  
+  
+  interface OffscreenCanvasEventMap {
+      "contextlost": Event;
+      "contextrestored": Event;
+  }
+  
+  /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/OffscreenCanvas) */
+  interface OffscreenCanvas extends EventTarget {
+      /**
+       * These attributes return the dimensions of the OffscreenCanvas object's bitmap.
+       *
+       * They can be set, to replace the bitmap with a new, transparent black bitmap of the specified dimensions (effectively resizing it).
+       *
+       * [MDN Reference](https://developer.mozilla.org/docs/Web/API/OffscreenCanvas/height)
+       */
+      height: number;
+      oncontextlost: ((this: OffscreenCanvas, ev: Event) => any) | null;
+      oncontextrestored: ((this: OffscreenCanvas, ev: Event) => any) | null;
+      /**
+       * These attributes return the dimensions of the OffscreenCanvas object's bitmap.
+       *
+       * They can be set, to replace the bitmap with a new, transparent black bitmap of the specified dimensions (effectively resizing it).
+       *
+       * [MDN Reference](https://developer.mozilla.org/docs/Web/API/OffscreenCanvas/width)
+       */
+      width: number;
+      /**
+       * Returns a promise that will fulfill with a new Blob object representing a file containing the image in the OffscreenCanvas object.
+       *
+       * The argument, if provided, is a dictionary that controls the encoding options of the image file to be created. The type field specifies the file format and has a default value of "image/png"; that type is also used if the requested type isn't supported. If the image format supports variable quality (such as "image/jpeg"), then the quality field is a number in the range 0.0 to 1.0 inclusive indicating the desired quality level for the resulting image.
+       *
+       * [MDN Reference](https://developer.mozilla.org/docs/Web/API/OffscreenCanvas/convertToBlob)
+       */
+      convertToBlob(options?: ImageEncodeOptions): Promise<Blob>;
+      /**
+       * Returns an object that exposes an API for drawing on the OffscreenCanvas object. contextId specifies the desired API: "2d", "bitmaprenderer", "webgl", or "webgl2". options is handled by that API.
+       *
+       * This specification defines the "2d" context below, which is similar but distinct from the "2d" context that is created from a canvas element. The WebGL specifications define the "webgl" and "webgl2" contexts. [WEBGL]
+       *
+       * Returns null if the canvas has already been initialized with another context type (e.g., trying to get a "2d" context after getting a "webgl" context).
+       *
+       * [MDN Reference](https://developer.mozilla.org/docs/Web/API/OffscreenCanvas/getContext)
+       */
+      getContext(contextId: "2d", options?: any): OffscreenCanvasRenderingContext2D | null;
+      getContext(contextId: "bitmaprenderer", options?: any): ImageBitmapRenderingContext | null;
+      getContext(contextId: "webgl", options?: any): WebGLRenderingContext | null;
+      getContext(contextId: "webgl2", options?: any): WebGL2RenderingContext | null;
+      getContext(contextId: OffscreenRenderingContextId, options?: any): OffscreenRenderingContext | null;
+      /**
+       * Returns a newly created ImageBitmap object with the image in the OffscreenCanvas object. The image in the OffscreenCanvas object is replaced with a new blank image.
+       *
+       * [MDN Reference](https://developer.mozilla.org/docs/Web/API/OffscreenCanvas/transferToImageBitmap)
+       */
+      transferToImageBitmap(): ImageBitmap;
+      addEventListener<K extends keyof OffscreenCanvasEventMap>(type: K, listener: (this: OffscreenCanvas, ev: OffscreenCanvasEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+      addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+      removeEventListener<K extends keyof OffscreenCanvasEventMap>(type: K, listener: (this: OffscreenCanvas, ev: OffscreenCanvasEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+      removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+  }
+  
+  declare var OffscreenCanvas: {
+      prototype: OffscreenCanvas;
+      new(width: number, height: number): OffscreenCanvas;
+  };
+  
+  /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/OffscreenCanvasRenderingContext2D) */
+  interface OffscreenCanvasRenderingContext2D extends CanvasCompositing, CanvasDrawImage, CanvasDrawPath, CanvasFillStrokeStyles, CanvasFilters, CanvasImageData, CanvasImageSmoothing, CanvasPath, CanvasPathDrawingStyles, CanvasRect, CanvasShadowStyles, CanvasState, CanvasText, CanvasTextDrawingStyles, CanvasTransform {
+      readonly canvas: OffscreenCanvas;
+      /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/OffscreenCanvasRenderingContext2D/commit) */
+      commit(): void;
+  }
+  
+  declare var OffscreenCanvasRenderingContext2D: {
+      prototype: OffscreenCanvasRenderingContext2D;
+      new(): OffscreenCanvasRenderingContext2D;
+  };
+  
+  
+  /**
+   * This Canvas 2D API interface is used to declare a path that can then be used on a CanvasRenderingContext2D object. The path methods of the CanvasRenderingContext2D interface are also present on this interface, which gives you the convenience of being able to retain and replay your path whenever desired.
+   *
+   * [MDN Reference](https://developer.mozilla.org/docs/Web/API/Path2D)
+   */
+  interface Path2D extends CanvasPath {
+      /**
+       * Adds to the path the path given by the argument.
+       *
+       * [MDN Reference](https://developer.mozilla.org/docs/Web/API/Path2D/addPath)
+       */
+      addPath(path: Path2D, transform?: DOMMatrix2DInit): void;
+  }
+  
+  declare var Path2D: {
+      prototype: Path2D;
+      new(path?: Path2D | string): Path2D;
+  };
+  
+  
+  /**
+   * The dimensions of a piece of text in the canvas, as created by the CanvasRenderingContext2D.measureText() method.
+   *
+   * [MDN Reference](https://developer.mozilla.org/docs/Web/API/TextMetrics)
+   */
+  interface TextMetrics {
+      /**
+       * Returns the measurement described below.
+       *
+       * [MDN Reference](https://developer.mozilla.org/docs/Web/API/TextMetrics/actualBoundingBoxAscent)
+       */
+      readonly actualBoundingBoxAscent: number;
+      /**
+       * Returns the measurement described below.
+       *
+       * [MDN Reference](https://developer.mozilla.org/docs/Web/API/TextMetrics/actualBoundingBoxDescent)
+       */
+      readonly actualBoundingBoxDescent: number;
+      /**
+       * Returns the measurement described below.
+       *
+       * [MDN Reference](https://developer.mozilla.org/docs/Web/API/TextMetrics/actualBoundingBoxLeft)
+       */
+      readonly actualBoundingBoxLeft: number;
+      /**
+       * Returns the measurement described below.
+       *
+       * [MDN Reference](https://developer.mozilla.org/docs/Web/API/TextMetrics/actualBoundingBoxRight)
+       */
+      readonly actualBoundingBoxRight: number;
+      /**
+       * Returns the measurement described below.
+       *
+       * [MDN Reference](https://developer.mozilla.org/docs/Web/API/TextMetrics/fontBoundingBoxAscent)
+       */
+      readonly fontBoundingBoxAscent: number;
+      /**
+       * Returns the measurement described below.
+       *
+       * [MDN Reference](https://developer.mozilla.org/docs/Web/API/TextMetrics/fontBoundingBoxDescent)
+       */
+      readonly fontBoundingBoxDescent: number;
+      /**
+       * Returns the measurement described below.
+       *
+       * [MDN Reference](https://developer.mozilla.org/docs/Web/API/TextMetrics/width)
+       */
+      readonly width: number;
+  }
+  
+  declare var TextMetrics: {
+      prototype: TextMetrics;
+      new(): TextMetrics;
+  };
+  
+  
+  type CanvasDirection = "inherit" | "ltr" | "rtl";
+  type CanvasFillRule = "evenodd" | "nonzero";
+  type CanvasFontKerning = "auto" | "none" | "normal";
+  type CanvasFontStretch = "condensed" | "expanded" | "extra-condensed" | "extra-expanded" | "normal" | "semi-condensed" | "semi-expanded" | "ultra-condensed" | "ultra-expanded";
+  type CanvasFontVariantCaps = "all-petite-caps" | "all-small-caps" | "normal" | "petite-caps" | "small-caps" | "titling-caps" | "unicase";
+  type CanvasLineCap = "butt" | "round" | "square";
+  type CanvasLineJoin = "bevel" | "miter" | "round";
+  type CanvasTextAlign = "center" | "end" | "left" | "right" | "start";
+  type CanvasTextBaseline = "alphabetic" | "bottom" | "hanging" | "ideographic" | "middle" | "top";
+  type CanvasTextRendering = "auto" | "geometricPrecision" | "optimizeLegibility" | "optimizeSpeed";
+  
+  type RenderingContext =
+    | CanvasRenderingContext2D
+    | ImageBitmapRenderingContext
+    | WebGLRenderingContext
+    | WebGL2RenderingContext;
+
+
+  // NODE CANVAS
   export interface PngConfig {
     /** Specifies the ZLIB compression level. Defaults to 6. */
     compressionLevel?: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
