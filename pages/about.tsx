@@ -1,5 +1,6 @@
 import Head from "next/head";
 import { backgroundGradient } from "../utils/styles";
+import { Loading } from "../components/Loading";
 
 export default function About() {
   return (

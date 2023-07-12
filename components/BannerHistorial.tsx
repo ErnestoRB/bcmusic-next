@@ -3,6 +3,7 @@ import { meses, shortDateFormat } from "../utils";
 import fetcher from "../utils/swr";
 import Alert from "./Alert";
 import useSWR from "swr";
+import { Loading } from "./Loading";
 
 interface BannerHistory {
   id: string;
@@ -23,18 +24,6 @@ export function BannerHistorial() {
     `/api/banners/history?${params.toString()}`,
     fetcher
   );
-
-  if (!isLoading && !data) {
-    return null;
-  }
-
-  if (!isLoading && error) {
-    return <Alert>Error al obtener el historial de banners</Alert>;
-  }
-
-  if (!data) {
-    return null;
-  }
 
   return (
     <>
@@ -71,6 +60,15 @@ export function BannerHistorial() {
           />
         </div>
       </form>
+      {isLoading && (
+        <div className="w-ful flex justify-center">
+          <Loading></Loading>
+          Cargando...
+        </div>
+      )}
+      {!isLoading && error && (
+        <Alert>Error al obtener el historial de banners</Alert>
+      )}
       {data && (data.data as BannerHistory[]) && (
         <>
           {(data.data as BannerHistory[]).length > 0 && (

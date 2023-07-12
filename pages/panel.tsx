@@ -9,6 +9,7 @@ import { BannerHistorial } from "../components/BannerHistorial";
 import { backgroundGradient } from "../utils/styles";
 import { authOptions } from "./api/auth/[...nextauth]";
 import Link from "next/link";
+import { Loading } from "../components/Loading";
 
 export default function Panel() {
   const router = useRouter();
@@ -19,10 +20,6 @@ export default function Panel() {
     },
   });
 
-  if (session.status === "loading") {
-    return <div>Cargando...</div>;
-  }
-
   return (
     <div
       className={`w-full ${backgroundGradient} flex justify-center items-center`}
@@ -31,52 +28,63 @@ export default function Panel() {
         <Head>
           <title>Panel de usuario</title>
         </Head>
-        <h1 className="text-3xl font-bold">Panel de usuario</h1>
-        <h2>Tipo de usuario: {session?.data.user.tipo_usuario?.nombre}</h2>
-        {session?.data.user.tipo_usuario?.nombre === "admin" && (
-          <div className="flex flex-col flex-wrap">
-            <Link href="/new" className="text-blue-600 underline">
-              Crear nuevo banner
-            </Link>
-            <Link href="/uploadFont" className="text-blue-600 underline">
-              Subir nueva fuente
-            </Link>
+        {session.status === "loading" && (
+          <div className="w-ful flex justify-center">
+            <Loading></Loading>
+            Cargando...
           </div>
         )}
-        <Alert type="warning">
-          Si no aparece información extra en este panel quiere decir que no
-          hemos recolectado información al respecto
-        </Alert>
-        <span>
-          Imagen de usuario:{" "}
-          {session?.data?.user?.image && (
-            <Image
-              className="max-w-[64px] inline mx-px"
-              width={32}
-              height={32}
-              src={session.data.user.image}
-              alt="user photo"
-            ></Image>
-          )}
-        </span>
-        <span>
-          Nombre:{" "}
-          {`${session?.data?.user?.name || ""} ${
-            session?.data?.user?.apellido || ""
-          }`}
-        </span>
-        <span>E-mail: {`${session?.data?.user?.email || ""}`}</span>
-        <span>
-          Fecha de nacimiento:{" "}
-          {session?.data?.user?.nacimiento &&
-            `${
-              new Intl.DateTimeFormat().format(
-                new Date(session?.data?.user?.nacimiento || new Date())
-              ) || ""
-            }`}
-        </span>
-        <span>País de origen: {`${session?.data?.user?.pais || ""}`}</span>
-        <BannerHistorial></BannerHistorial>
+        {session && (
+          <>
+            <h1 className="text-3xl font-bold">Panel de usuario</h1>
+            <h2>Tipo de usuario: {session?.data?.user.tipo_usuario?.nombre}</h2>
+            {session?.data?.user.tipo_usuario?.nombre === "admin" && (
+              <div className="flex flex-col flex-wrap">
+                <Link href="/new" className="text-blue-600 underline">
+                  Crear nuevo banner
+                </Link>
+                <Link href="/uploadFont" className="text-blue-600 underline">
+                  Subir nueva fuente
+                </Link>
+              </div>
+            )}
+            <Alert type="warning">
+              Si no aparece información extra en este panel quiere decir que no
+              hemos recolectado información al respecto
+            </Alert>
+            <span>
+              Imagen de usuario:{" "}
+              {session?.data?.user?.image && (
+                <Image
+                  className="max-w-[64px] inline mx-px"
+                  width={32}
+                  height={32}
+                  src={session.data.user.image}
+                  alt="user photo"
+                ></Image>
+              )}
+            </span>
+            <span>
+              Nombre:{" "}
+              {`${session?.data?.user?.name || ""} ${
+                session?.data?.user?.apellido || ""
+              }`}
+            </span>
+            <span>E-mail: {`${session?.data?.user?.email || ""}`}</span>
+            <span>
+              Fecha de nacimiento:{" "}
+              {session?.data?.user?.nacimiento &&
+                `${
+                  new Intl.DateTimeFormat().format(
+                    new Date(session?.data?.user?.nacimiento || new Date())
+                  ) || ""
+                }`}
+            </span>
+            <span>País de origen: {`${session?.data?.user?.pais || ""}`}</span>
+            <hr />
+            <BannerHistorial></BannerHistorial>
+          </>
+        )}
       </div>
     </div>
   );

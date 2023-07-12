@@ -5,6 +5,7 @@ import Link from "next/link";
 import useSWR from "swr";
 import fetcher from "../utils/swr";
 import { BannerRecordWithAuthors } from "../types/definitions";
+import { Loading } from "../components/Loading";
 
 export default function BannerPage({}: {
   banners: { mes: number; cantidad: number }[];
@@ -18,6 +19,12 @@ export default function BannerPage({}: {
         <title>Banners disponibles</title>
       </Head>
       <div className="flex flex-col gap-y-8 bg-white max-w-7xl w-full bg-opacity-70 p-2 md:p-4">
+        {isLoading && (
+          <div className="w-ful flex justify-center">
+            <Loading></Loading>
+            Cargando...
+          </div>
+        )}
         {data && data.data && (
           <div>
             <h1 className="text-center text-3xl font-bold">
