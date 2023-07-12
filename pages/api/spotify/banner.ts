@@ -12,7 +12,7 @@ import {
 import { ResponseData } from "../../../types/definitions";
 import { sequelize } from "../../../utils/database/connection";
 import { Op, Transaction } from "sequelize";
-import { executeBanner } from "../../../utils/banners/vm";
+import { executeBanner } from "../../../vm";
 import logError from "../../../utils/log";
 
 export default async function handler(
@@ -126,7 +126,6 @@ export default async function handler(
     const img = await executeBanner(
       record.dataValues.script,
       { width, height },
-      [],
       data.items!,
       /// @ts-ignore
       record.fonts.map((font) => font.dataValues)
@@ -163,6 +162,6 @@ export default async function handler(
     res.send(img);
   } catch (error: any) {
     logError(error);
-    res.status(500).send({ message: "Error interno" });
+    res.status(500).send({ message: "Error al generar tu banner :(" });
   }
 }

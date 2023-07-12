@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { executeBanner } from "../../../utils/banners/vm";
+import { executeBanner } from "../../../vm";
 import { BannerRecord, Fonts } from "../../../utils/database/models";
 import { unstable_getServerSession } from "next-auth";
 import { onlyAllowAdmins } from "../../../utils/validation/user";
@@ -26,6 +26,7 @@ export default async function handler(
     res,
     authOptions(req, res)
   );
+  const artists = req.body ?? artistSample;
   if (onlyAllowAdmins(session, res)) {
     return;
   }
@@ -51,30 +52,32 @@ export default async function handler(
     const { width, height, id } = record.dataValues;
 
     const executedRecord = requestHistory.find((value) => value.id === id);
-    if (
-      executedRecord &&
-      executedRecord.executed.getTime() >= Date.now() - 60000
-    ) {
-      res.status(400).json({
-        message: "Hey, calma! Ya ejecutaste ese banner hace menos de un minuto",
-      });
-      return;
+    if (process.env.NODE_ENV === "production") {
+      if (
+        executedRecord &&
+        executedRecord.executed.getTime() >= Date.now() - 60000
+      ) {
+        res.status(400).json({
+          message:
+            "Hey, calma! Ya ejecutaste ese banner hace menos de un minuto",
+        });
+        return;
+      }
     }
 
     const data = await executeBanner(
       record.dataValues.script,
       { width, height },
-      [],
-      artistSample,
+      artists,
       /// @ts-ignore
       record.dataValues.fonts.map((font) => font.dataValues)
     );
 
     if (!data) {
-      res.status(400).send({ message: "Tu script no regresó nada!" });
+      res.status(400).send({ message: "Tu script no regresó un Buffer!" });
       return;
     }
-    if (!executedRecord) {
+    if (process.env.NODE_ENV === "production" && !executedRecord) {
       requestHistory.push({ id, executed: new Date() });
     }
 

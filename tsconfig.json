@@ -23,6 +23,7 @@
     "node_modules",
     "cypress",
     "utils/banners/designs",
-    "cypress.config.ts"
+    "cypress.config.ts",
+    "public"
   ]
 }

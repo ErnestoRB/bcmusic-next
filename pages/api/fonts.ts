@@ -4,7 +4,7 @@ import { ValidationError } from "joi";
 import { Fonts } from "../../utils/database/models";
 import { copyFile, rm } from "fs/promises";
 import path from "path";
-import { FONTS_PATH } from "../../utils/banners/path";
+import { FONTS_PATH } from "../../vm/fonts/path";
 import { onlyAllowAdmins } from "../../utils/validation/user";
 import { unstable_getServerSession } from "next-auth";
 import { authOptions } from "./auth/[...nextauth]";
