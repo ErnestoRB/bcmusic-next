@@ -83,7 +83,7 @@ export interface Usuario {
   Pais: string;
 }
 
-type ResponseData = {
+export type ResponseData<T> = {
   message: string;
-  data?: any;
+  data?: T;
 };

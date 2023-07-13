@@ -8,7 +8,7 @@ import Alert from "../components/Alert";
 import { BannerHistorial } from "../components/BannerHistorial";
 import { backgroundGradient } from "../utils/styles";
 import { authOptions } from "./api/auth/[...nextauth]";
-import Link from "next/link";
+import Link from "../components/Link";
 import { Loading } from "../components/Loading";
 
 export default function Panel() {
@@ -40,9 +40,7 @@ export default function Panel() {
             <h2>Tipo de usuario: {session?.data?.user.tipo_usuario?.nombre}</h2>
             {session?.data?.user.tipo_usuario?.nombre === "admin" && (
               <div className="flex flex-col flex-wrap">
-                <Link href="/new" className="text-blue-600 underline">
-                  Crear nuevo banner
-                </Link>
+                <Link href="/new">Crear nuevo banner</Link>
                 <Link href="/uploadFont" className="text-blue-600 underline">
                   Subir nueva fuente
                 </Link>

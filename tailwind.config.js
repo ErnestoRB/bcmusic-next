@@ -31,6 +31,7 @@ module.exports = {
       },
       fontFamily: {
         blade: ["var(--font-blade)"],
+        inconsolata: ["'Inconsolata', monospace"],
       },
     },
   },

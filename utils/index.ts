@@ -1,9 +1,21 @@
 import { SpotifyTopArtistData } from "../types/definitions";
+import { FontsType } from "./database/models";
 
 export const perserveStatus = async (res: Response) => ({
   ok: res.ok,
   json: await res.json(),
 });
+
+export const loadFontsAsync = (
+  fonts: FontsType["dataValues"][]
+): Promise<FontFace[]> => {
+  return Promise.all(
+    fonts.map((f) => {
+      const fontFace = new FontFace(f.nombre, `url('/api/font/${f.nombre}')`);
+      return fontFace.load();
+    })
+  );
+};
 
 export const availableSpotifyTimeRanges = [
   "medium_term",

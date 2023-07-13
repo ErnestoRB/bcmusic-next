@@ -1,12 +1,19 @@
-import useSWR from "swr";
+import useSWRInfinite from "swr/infinite";
 import fetcher from "../utils/swr";
 import { FontsType } from "../utils/database/models";
 import { perserveStatus } from "../utils";
 import { toast } from "react-toastify";
 import Alert from "./Alert";
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
+import { ResponseData } from "../types/definitions";
+import Link from "./Link";
 
 type FontsArray = FontsType["dataValues"][];
+
+const getKey = (pageIndex: number, previousPageData: any[]) => {
+  if (previousPageData && !previousPageData.length) return null; // reached the end
+  return `/api/fonts?page=${pageIndex + 1}`; // SWR key
+};
 
 export default function AddFont({
   id,
@@ -15,21 +22,24 @@ export default function AddFont({
   id: string;
   bannerFonts: FontsArray;
 }) {
-  const { data, error, isLoading, mutate } = useSWR("/api/fonts", fetcher);
+  const { data, error, isLoading, setSize, size, mutate } = useSWRInfinite(
+    getKey,
+    (url) => fetcher(url, { credentials: "include" })
+  );
 
-  const [availableFonts, setAvailableFonts] = useState<FontsArray>();
-
-  useEffect(() => {
-    if (bannerFonts && data && data.data && Array.isArray(data.data)) {
-      setAvailableFonts(
-        (data.data as FontsArray).filter(
+  const availableFonts = useMemo(() => {
+    if (bannerFonts) {
+      return (data?.flat() as ResponseData<FontsArray>[])
+        .map((data) => data.data)
+        .flat()
+        .filter(
           (font) =>
             bannerFonts.findIndex(
-              (bannerFont) => font.nombre === bannerFont.nombre
+              (bannerFont) => font?.nombre === bannerFont.nombre
             ) === -1
-        )
-      );
+        );
     }
+    return undefined;
   }, [data, bannerFonts]);
 
   return (
@@ -88,13 +98,38 @@ export default function AddFont({
       {availableFonts && availableFonts.length > 0 && (
         <>
           <h3 className="text-lg">Fuentes disponibles para añadir:</h3>
+          <p>
+            Puedes ver las fuentes disponibles <Link href="/fonts">aqui</Link>
+          </p>
+          <select
+            name="font"
+            id=""
+            onChange={(e) => {
+              const value = e.target.value;
+              if (value == "loadMore") {
+                e.preventDefault();
 
-          <select name="font" id="">
+                setSize((s) => s + 1);
+              }
+            }}
+          >
             {availableFonts.map((font) => (
-              <option key={font.nombre} value={font.nombre}>
-                {font.nombre}
+              <option key={font!.nombre} value={font!.nombre}>
+                {font!.nombre}
               </option>
             ))}
+            {data?.[size - 1]?.data?.length > 0 && (
+              <option
+                value="loadMore"
+                key={"select"}
+                onChange={(e) => {
+                  e.preventDefault();
+                  setSize((s) => s + 1);
+                }}
+              >
+                Cargar más...
+              </option>
+            )}
           </select>
           <button
             type="submit"

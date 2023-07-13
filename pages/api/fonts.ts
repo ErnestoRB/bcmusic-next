@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import formidable from "formidable";
 import { ValidationError } from "joi";
 import { Fonts } from "../../utils/database/models";
-import { copyFile, rm } from "fs/promises";
+import { copyFile, mkdir, rm, stat } from "fs/promises";
 import path from "path";
 import { FONTS_PATH } from "../../vm/fonts/path";
 import { onlyAllowAdmins } from "../../utils/validation/user";
@@ -85,6 +85,18 @@ export default async function handler(
         return;
       }
 
+      let folderExists: boolean = false;
+      try {
+        folderExists = !!(await stat(FONTS_PATH));
+      } catch (error) {
+        await mkdir(FONTS_PATH, { recursive: true })
+          .then(() => (folderExists = true))
+          .catch(() => (folderExists = false));
+      }
+      if (!folderExists) {
+        res.status(400).send({ message: `No se pudo guardar la fuente` });
+        return;
+      }
       await copyFile(
         files.font.filepath,
         path.join(FONTS_PATH, files.font.newFilename)

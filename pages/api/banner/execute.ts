@@ -26,7 +26,9 @@ export default async function handler(
     res,
     authOptions(req, res)
   );
-  const artists = req.body ?? artistSample;
+  console.log({ body: req.body });
+
+  const artists = Array.isArray(req.body) ? req.body : artistSample;
   if (onlyAllowAdmins(session, res)) {
     return;
   }
