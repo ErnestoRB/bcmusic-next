@@ -1,19 +1,25 @@
 services:
   database:
-    image: mysql
+    image: mysql:8.0.33-debian
     ports:
       - 2020:3306
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_spanish_ci
-    volumes:
-      - ./backups:/docker-entrypoint-initdb.d
+    networks:
+      - database_net
     environment:
       - MYSQL_ROOT_PASSWORD=b4$$hcr4$$h3rs
       - MYSQL_DATABASE=musica
   pma:
     image: phpmyadmin
+    depends_on:
+      - database
+    networks:
+      - database_net
     ports:
       - 8080:80
     environment:
       - PMA_HOST=database
       - PMA_USER=root
       - PMA_PASSWORD=b4$$hcr4$$h3rs
+networks:
+  database_net:

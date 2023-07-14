@@ -26,7 +26,7 @@ export default function UploadPage({}: {
         <title>Subir fuente</title>
       </Head>
       <div className="container bg-white p-2 md:p-4 lg:p-8 rounded-md">
-        <h1 className="text-2xl font-bold">Subir fuente</h1>
+        <h1>Subir fuente</h1>
         <hr className="mb-4" />
         <div className="">
           <UploadFont></UploadFont>

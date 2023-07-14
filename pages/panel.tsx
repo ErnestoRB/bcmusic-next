@@ -10,6 +10,7 @@ import { backgroundGradient } from "../utils/styles";
 import { authOptions } from "./api/auth/[...nextauth]";
 import Link from "../components/Link";
 import { Loading } from "../components/Loading";
+import { AdminActions } from "../components/AdminActions";
 
 export default function Panel() {
   const router = useRouter();
@@ -36,15 +37,12 @@ export default function Panel() {
         )}
         {session && (
           <>
-            <h1 className="text-3xl font-bold">Panel de usuario</h1>
+            <h1>Panel de usuario</h1>
             <h2>Tipo de usuario: {session?.data?.user.tipo_usuario?.nombre}</h2>
             {session?.data?.user.tipo_usuario?.nombre === "admin" && (
-              <div className="flex flex-col flex-wrap">
-                <Link href="/new">Crear nuevo banner</Link>
-                <Link href="/uploadFont" className="text-blue-600 underline">
-                  Subir nueva fuente
-                </Link>
-              </div>
+              <>
+                <AdminActions></AdminActions>
+              </>
             )}
             <Alert type="warning">
               Si no aparece información extra en este panel quiere decir que no

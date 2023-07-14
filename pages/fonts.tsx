@@ -10,6 +10,7 @@ import { backgroundGradient } from "../utils/styles";
 import { isAdmin } from "../utils/validation/user";
 import { CopyToClipboards } from "../components/CopyToClipboard";
 import { loadFontsAsync } from "../utils";
+import { Button } from "../components/Button";
 
 export default function FontsComponent() {
   const [page, setPage] = useState(1);
@@ -91,12 +92,12 @@ export default function FontsComponent() {
                 </button>
               )}
               {page > 1 && (
-                <button
+                <Button
                   onClick={() => setPage((page) => page - 1)}
                   className="bg-blue-500 hover:bg-blue-600 text-white"
                 >
                   Página anterior
-                </button>
+                </Button>
               )}
             </div>
           </>

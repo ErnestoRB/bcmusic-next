@@ -4,6 +4,7 @@ import Link from "next/link";
 import React, { useMemo } from "react";
 import { useMediaQuery } from "../utils/hooks/useMediaQuery";
 import { Dropdown } from "./Dropdown";
+import { Button } from "./Button";
 
 function NavBarLink(
   props: React.ComponentProps<typeof Link> & { visible?: "true" | "false" }
@@ -13,7 +14,7 @@ function NavBarLink(
       {(props.visible === undefined || props.visible === "true") && (
         <Link
           {...props}
-          className="px-2 py-1 bg-white hover:bg-stone-200 text-black"
+          className="grid h-full px-2 py-1 bg-stone-700 hover:bg-stone-800 text-white place-items-center"
         ></Link>
       )}
     </>
@@ -92,13 +93,13 @@ export default function NavBar() {
           >
             <span>Crear banner</span>
           </NavBarLink>,
-          <button
+          <Button
             key="logout"
-            className="bg-red-600 text-white font-semibold"
+            className="bg-red-600 text-white font-semibold grid place-items-center px-2 py-1"
             onClick={() => signOut()}
           >
             Cerrar sesión
-          </button>,
+          </Button>,
         ],
       },
     ],
@@ -106,7 +107,10 @@ export default function NavBar() {
   );
 
   return (
-    <nav className=" bg-black flex flex-col sm:flex-row flex-wrap w-full h-[10vh] text-white gap-x-4 items-center sm:items-stretch place-items-center px-1 md:px-4">
+    <nav
+      className=" bg-black flex flex-col sm:flex-row flex-wrap w-full h-[10vh] 
+    text-white gap-x-4 items-center sm:items-center place-items-center px-1 md:px-4"
+    >
       <Link
         className="justify-self-start flex-initial w-max text-lg font-bold"
         href={"/"}
@@ -118,7 +122,7 @@ export default function NavBar() {
       </Link>
       <div
         nav-options="true"
-        className="flex flex-1 justify-end items-center gap-x-1 md:gap-x-2"
+        className="flex flex-1 p-0 max-h-12 justify-end items-stretch gap-x-1 md:gap-x-2"
       >
         {desktopNavbar &&
           menuItems
@@ -127,8 +131,8 @@ export default function NavBar() {
             .map((item, index) => item)}
         {!desktopNavbar && (
           <Dropdown
-            classNameButton="p-2"
-            classNameDropdown="w-min md:w-max p-2"
+            classNameButton="p-2 bg-stone-800  hover:bg-stone-900 text-white"
+            classNameDropdown="w-min md:w-max p-2 bg-black text-white"
           >
             {menuItems
               .filter((item) => !item.type || item.type === session.status)

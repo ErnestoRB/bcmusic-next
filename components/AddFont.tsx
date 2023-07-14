@@ -7,6 +7,7 @@ import Alert from "./Alert";
 import { useMemo } from "react";
 import { ResponseData } from "../types/definitions";
 import Link from "./Link";
+import { Button } from "./Button";
 
 type FontsArray = FontsType["dataValues"][];
 
@@ -65,8 +66,8 @@ export default function AddFont({
           });
       }}
     >
-      <h1 className="text-xl font-bold">Añadir fuente</h1>
-      <h3 className="text-lg">Fuentes añadidas:</h3>
+      <h1>Añadir fuente</h1>
+      <h3>Fuentes añadidas:</h3>
       <ul className="list-disc list-inside">
         {bannerFonts.length === 0 && (
           <Alert>No hay fuentes en el banner aún</Alert>
@@ -74,7 +75,7 @@ export default function AddFont({
         {bannerFonts.map((font) => (
           <li className="" key={font.nombre}>
             {font.nombre}{" "}
-            <button
+            <Button
               type="button"
               className="bg-red-600 hover:bg-red-700 text-white p-1"
               onClick={() => {
@@ -91,7 +92,7 @@ export default function AddFont({
               }}
             >
               Eliminar
-            </button>
+            </Button>
           </li>
         ))}
       </ul>
@@ -131,13 +132,13 @@ export default function AddFont({
               </option>
             )}
           </select>
-          <button
+          <Button
             type="submit"
             className="bg-green-500 text-white hover:bg-green-600"
             disabled={isLoading || error}
           >
             Añadir
-          </button>
+          </Button>
         </>
       )}
       {(!availableFonts || availableFonts.length === 0) && (

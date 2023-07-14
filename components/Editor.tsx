@@ -11,6 +11,7 @@ import { Loading } from "./Loading";
 import playIcon from "../images/play.svg";
 import saveIcon from "../images/save-floppy-disk.svg";
 import javascriptIcon from "../images/javascript.svg";
+import { Button } from "./Button";
 
 export interface EditorFileDescription {
   name: string;
@@ -100,13 +101,11 @@ export default function BannerEditor({ id }: { id: string }) {
     <>
       {data && data.data && !error && !isLoading && (
         <>
-          <h1 className="font-bold text-4xl my-4">
-            Banner {`"${data.data?.name}"`}
-          </h1>
+          <h1>Banner {`"${data.data?.name}"`}</h1>
           <AddFont id={id} bannerFonts={data.data.fonts}></AddFont>
           <div>
             <div className="flex gap-x-2 p-2 bg-stone-800">
-              <button
+              <Button
                 className="bg-green-600 text-sm p-2  rounded-lg"
                 onClick={() => {
                   if (editorText !== oldCode.current) {
@@ -142,8 +141,8 @@ export default function BannerEditor({ id }: { id: string }) {
                   height={12}
                   className="inline"
                 ></Image>
-              </button>
-              <button
+              </Button>
+              <Button
                 className="bg-blue-600 text-white text-sm p-2  rounded-lg"
                 onClick={() => {
                   if (!id) {
@@ -176,13 +175,13 @@ export default function BannerEditor({ id }: { id: string }) {
                   height={12}
                   className="inline"
                 ></Image>
-              </button>
+              </Button>
             </div>
             <div className="flex flex-col md:flex-row">
               <div className="md:w-1/5 w-full flex flex-row md:flex-col bg-stone-800 text-white">
                 <div className="p-2">Archivos</div>
                 {files.map((file, index) => (
-                  <button
+                  <Button
                     key={file.name}
                     className="bg-stone-900 h-8 gap-x-2 px-2 text-sm flex items-center"
                     onClick={() => setFileIndex(index)}
@@ -196,7 +195,7 @@ export default function BannerEditor({ id }: { id: string }) {
                       ></Image>
                     ) : null}
                     {file.name}
-                  </button>
+                  </Button>
                 ))}
               </div>
               <Editor

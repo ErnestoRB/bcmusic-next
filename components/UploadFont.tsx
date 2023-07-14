@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { perserveStatus } from "../utils";
+import { Button } from "./Button";
 
 export default function UploadFont() {
   const [files, setFiles] = useState<File[]>();
@@ -56,12 +57,12 @@ export default function UploadFont() {
           value={name}
           onChange={(evt) => setName(evt.target.value)}
         />
-        <button
+        <Button
           type="submit"
           className="bg-blue-600 hover:bg-blue-700 text-white"
         >
           Guardar
-        </button>
+        </Button>
       </form>
     </div>
   );

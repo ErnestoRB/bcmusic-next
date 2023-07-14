@@ -19,10 +19,6 @@ select {
   @apply border-gray-500 border border-l-8 border-l-black pl-2 py-1;
 }
 
-button {
-  padding: 15px 7.5px;
-}
-
 nav > *,
 div[nav-options] {
   display: flex;
@@ -38,4 +34,19 @@ nav {
       rgba(181, 23, 203, 1) 100%
     )
     30 stretch;
+}
+
+h1 {
+  @apply text-3xl md:text-4xl font-semibold;
+}
+
+h2 {
+  @apply text-xl md:text-2xl font-semibold;
+}
+
+h3 {
+  @apply text-lg md:text-xl;
+}
+h4 {
+  @apply text-lg;
 }

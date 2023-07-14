@@ -5,7 +5,7 @@ export default function NotFound() {
   return (
     <div className="grid place-items-center w-full">
       <div className="w-max flex flex-col items-center gap-2">
-        <h1 className="text-center text-3xl">Página no implementada!</h1>
+        <h1>Página no implementada!</h1>
         <Image
           src={notFound}
           alt="Page wasn't found!"

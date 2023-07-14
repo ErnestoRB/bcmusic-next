@@ -10,6 +10,7 @@ import Alert from "../../components/Alert";
 import Script from "next/script";
 import Head from "next/head";
 import { backgroundGradient } from "../../utils/styles";
+import { Button } from "../../components/Button";
 
 export const callbackUrl = "/";
 export default function AuthError({
@@ -53,7 +54,7 @@ export default function AuthError({
               )) || <Alert>{query.error}</Alert>}
           </>
         )}
-        <h1 className="text-3xl my-2 font-bold">Iniciar sesión</h1>
+        <h1 className="my-2">Iniciar sesión</h1>
         <div className="flex flex-col">
           <form
             className="flex flex-col gap-y-4"
@@ -108,31 +109,31 @@ export default function AuthError({
               </>
             )}
             {loginMethod && (
-              <button
+              <Button
                 id="login-button"
                 className="bg-blue-600 text-white"
                 type="submit"
               >
                 Enviar
-              </button>
+              </Button>
             )}
           </form>
           {loginMethod && <hr className="my-4" />}
-          <button
+          <Button
             id="password-login"
             className="bg-stone-700 text-white"
             onClick={() => setLoginMethod("credentials")}
           >
             Iniciar sesión con contraseña
-          </button>
-          <button
+          </Button>
+          <Button
             id="email-login"
             className="bg-black text-white"
             onClick={() => setLoginMethod("email")}
           >
             Iniciar sesión con Email
-          </button>
-          <button
+          </Button>
+          <Button
             id="spotify-login"
             className="flex items-center gap-2 justify-center bg-spotify-green text-white"
             onClick={() => signIn("spotify", { callbackUrl })}
@@ -144,7 +145,7 @@ export default function AuthError({
               alt={"spotify logo"}
             ></Image>
             Iniciar sesión con Spotify
-          </button>
+          </Button>
         </div>
         <span>
           ¿Aún no tienes cuenta? ¡Puedes crear una{" "}

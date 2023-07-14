@@ -8,7 +8,7 @@ import { Pais } from "../../utils/database/models";
 import { callbackUrl } from "./login";
 import spotifyLogo from "../../images/spotify-white.png";
 import Image from "next/image";
-import { useSpring, animated } from "@react-spring/web";
+import { Button } from "../../components/Button";
 import Script from "next/script";
 import { backgroundGradient } from "../../utils/styles";
 
@@ -68,8 +68,8 @@ export default function SignUp({ paises = [] }: { paises: PaisFields[] }) {
         className="max-w-sm w-full flex flex-col gap-y-2 p-2 md:p-4 rounded-sm bg-white"
         onSubmit={handleSubmit(onSubmit)}
       >
-        <h1 className="text-3xl">¡Regístrate!</h1>
-        <button
+        <h1>¡Regístrate!</h1>
+        <Button
           type="button"
           className="flex items-center gap-2 bg-spotify-green text-white"
           onClick={() => signIn("spotify", { callbackUrl })}
@@ -81,7 +81,7 @@ export default function SignUp({ paises = [] }: { paises: PaisFields[] }) {
             alt={"spotify logo"}
           ></Image>
           Registrarse usando Spotify
-        </button>
+        </Button>
         <hr />
         {response && isError && <Alert>{response}</Alert>}
         {response && !isError && <Alert type="success">{response}</Alert>}
@@ -139,9 +139,9 @@ export default function SignUp({ paises = [] }: { paises: PaisFields[] }) {
         {errors.Nacimiento?.type === "required" && (
           <Alert>Campo Nacimiento requerido</Alert>
         )}
-        <button type="submit" className="bg-blue-700 text-white">
+        <Button type="submit" className="bg-blue-700 text-white">
           Registrarse
-        </button>
+        </Button>
       </form>
     </div>
   );

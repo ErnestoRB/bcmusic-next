@@ -26,7 +26,7 @@ export default function BannerPage({
       </Head>
 
       <div className="max-w-md p-2 md:p-4 rounded-sm bg-white flex flex-col gap-y-2 shadow-lg">
-        <h1 className="text-3xl font-semibold">Editar banner</h1>
+        <h1>Editar banner</h1>
         <hr />
         <Link
           href={`/code/${banner.id}`}
