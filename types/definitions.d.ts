@@ -87,3 +87,5 @@ export type ResponseData<T> = {
   message: string;
   data?: T;
 };
+
+export type EmptyResponse = ResponseData<undefined>;

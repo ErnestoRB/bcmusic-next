@@ -17,7 +17,7 @@ import logError from "../../../utils/log";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ResponseData | Buffer>
+  res: NextApiResponse<ResponseData<undefined> | Buffer>
 ) {
   const { id = "synthwave" } = req.query;
   if (id instanceof Array) {

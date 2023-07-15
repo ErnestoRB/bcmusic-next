@@ -8,7 +8,7 @@ import { validateRecaptchaToken } from "../../utils/recaptcha";
 import logError from "../../utils/log";
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ResponseData>
+  res: NextApiResponse<ResponseData<undefined>>
 ) {
   try {
     const { Apellido, Email, Nombre, Nacimiento, Pais, Contraseña, token } =
