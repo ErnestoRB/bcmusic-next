@@ -1,4 +1,4 @@
-import { RECAPTCHA_SECRET } from "../credentials";
+import { RECAPTCHA_SECRET } from "../environment";
 
 export const validateRecaptchaToken = async (token: string) =>
   await fetch("https://www.google.com/recaptcha/api/siteverify", {

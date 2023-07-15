@@ -5,7 +5,7 @@ import Credentials from "next-auth/providers/credentials";
 import Email from "next-auth/providers/email";
 import Spotify from "next-auth/providers/spotify";
 import { sequelize } from "../../../utils/database/connection";
-import { CLIENT_ID, CLIENT_SECRET } from "../../../utils/credentials";
+import { CLIENT_ID, CLIENT_SECRET } from "../../../utils/environment";
 import Cookies from "cookies";
 import {
   User,
