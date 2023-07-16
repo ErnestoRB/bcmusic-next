@@ -31,4 +31,4 @@ jobs:
           git config --global user.email "actions@github.com"
           git config --global user.name "GitHub actions"
           git remote add dokku dokku@${{ secrets.HOST }}:bcmusic-prod
-          git push dokku master -f
+          git push dokku ${{ github.ref }}:master -f
