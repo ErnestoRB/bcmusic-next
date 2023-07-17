@@ -8,13 +8,9 @@ import { useMemo } from "react";
 import { ResponseData } from "../types/definitions";
 import Link from "./Link";
 import { Button } from "./Button";
+import { useSWRInfinitePagination } from "../utils/hooks/useSWRPagination";
 
 type FontsArray = FontsType["dataValues"][];
-
-const getKey = (pageIndex: number, previousPageData: any[]) => {
-  if (previousPageData && !previousPageData.length) return null; // reached the end
-  return `/api/fonts?page=${pageIndex + 1}`; // SWR key
-};
 
 export default function AddFont({
   id,
@@ -23,10 +19,8 @@ export default function AddFont({
   id: string;
   bannerFonts: FontsArray;
 }) {
-  const { data, error, isLoading, setSize, size, mutate } = useSWRInfinite(
-    getKey,
-    (url) => fetcher(url, { credentials: "include" })
-  );
+  const { data, error, isLoading, setSize, mutate, lastPage } =
+    useSWRInfinitePagination("/api/fonts");
 
   const availableFonts = useMemo(() => {
     if (bannerFonts) {
@@ -67,6 +61,15 @@ export default function AddFont({
       }}
     >
       <h1>Añadir fuente</h1>
+      <ul>
+        <li>
+          Puedes subir nuevas fuentes <Link href="/font">aquí</Link>
+        </li>
+        <li>
+          Puedes ver las fuentes disponibles <Link href="/fonts">aquí</Link>
+        </li>
+      </ul>
+
       <h3>Fuentes añadidas:</h3>
       <ul className="list-disc list-inside">
         {bannerFonts.length === 0 && (
@@ -99,14 +102,13 @@ export default function AddFont({
       {availableFonts && availableFonts.length > 0 && (
         <>
           <h3 className="text-lg">Fuentes disponibles para añadir:</h3>
-          <p>
-            Puedes ver las fuentes disponibles <Link href="/fonts">aqui</Link>
-          </p>
+
           <select
             name="font"
             id=""
             onChange={(e) => {
               const value = e.target.value;
+              console.log({ value });
               if (value == "loadMore") {
                 e.preventDefault();
 
@@ -119,15 +121,8 @@ export default function AddFont({
                 {font!.nombre}
               </option>
             ))}
-            {data?.[size - 1]?.data?.length > 0 && (
-              <option
-                value="loadMore"
-                key={"select"}
-                onChange={(e) => {
-                  e.preventDefault();
-                  setSize((s) => s + 1);
-                }}
-              >
+            {!lastPage && (
+              <option value="loadMore" key={"select"}>
                 Cargar más...
               </option>
             )}

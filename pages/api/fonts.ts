@@ -1,5 +1,4 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import formidable from "formidable";
 import { ValidationError } from "joi";
 import { Fonts } from "../../utils/database/models";
 import { copyFile, mkdir, rm, stat } from "fs/promises";
@@ -11,20 +10,7 @@ import { authOptions } from "./auth/[...nextauth]";
 import { PaginationValidation } from "../../utils/validation/pagination";
 import { isDuplicateError } from "../../utils/database";
 import logError from "../../utils/log";
-
-const parser = formidable();
-const parse = (req: Parameters<typeof parser.parse>[0]) =>
-  new Promise<{ fields: formidable.Fields; files: formidable.Files }>(
-    (res, rej) => {
-      parser.parse(req, (err, fields, files) => {
-        if (err) {
-          rej(err);
-          return;
-        }
-        res({ fields, files });
-      });
-    }
-  );
+import { parse } from "../../utils/forms/formidable";
 
 const FONTS_PER_PAGE = 15;
 

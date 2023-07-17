@@ -19,6 +19,10 @@ select {
   @apply border-gray-500 border border-l-8 border-l-black pl-2 py-1;
 }
 
+input:disabled {
+  @apply text-stone-600 bg-stone-200 border-l-stone-700;
+}
+
 nav > *,
 div[nav-options] {
   display: flex;
@@ -45,8 +49,11 @@ h2 {
 }
 
 h3 {
-  @apply text-lg md:text-xl;
+  @apply text-lg md:text-xl font-semibold;
 }
 h4 {
-  @apply text-lg;
+  @apply text-lg font-semibold;
+}
+h5 {
+  @apply text-base font-semibold;
 }

@@ -8,7 +8,6 @@ import Alert from "../components/Alert";
 import { BannerHistorial } from "../components/BannerHistorial";
 import { backgroundGradient } from "../utils/styles";
 import { authOptions } from "./api/auth/[...nextauth]";
-import Link from "../components/Link";
 import { Loading } from "../components/Loading";
 import { AdminActions } from "../components/AdminActions";
 
@@ -35,7 +34,7 @@ export default function Panel() {
             Cargando...
           </div>
         )}
-        {session && (
+        {session.status != "loading" && session.data && (
           <>
             <h1>Panel de usuario</h1>
             <h2>Tipo de usuario: {session?.data?.user.tipo_usuario?.nombre}</h2>

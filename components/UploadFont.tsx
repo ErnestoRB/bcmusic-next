@@ -2,10 +2,16 @@ import { useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { perserveStatus } from "../utils";
 import { Button } from "./Button";
+import { useRouter } from "next/router";
 
-export default function UploadFont() {
+interface UploadFontProps {
+  fontName?: string;
+}
+
+export default function UploadFont({ fontName }: UploadFontProps) {
+  const { back } = useRouter();
   const [files, setFiles] = useState<File[]>();
-  const [name, setName] = useState<string>("");
+  const [name, setName] = useState<string>(fontName ?? "");
   const fileRef = useRef<HTMLInputElement>(null);
 
   return (
@@ -26,9 +32,9 @@ export default function UploadFont() {
           });
           data.append("name", name);
 
-          fetch("/api/fonts", {
+          fetch(fontName ? `/api/font/${fontName}` : "/api/fonts", {
             body: data,
-            method: "POST",
+            method: fontName ? "PATCH" : "POST",
             credentials: "include",
           })
             .then(perserveStatus)
@@ -37,9 +43,19 @@ export default function UploadFont() {
               setName("");
               setFiles([]);
               fileRef.current!.value = "";
+              back();
             });
         }}
       >
+        <label htmlFor="name">Nombre de la fuente a usar en los banners</label>
+        <input
+          type="text"
+          name="name"
+          placeholder="Nombre de la fuente"
+          value={name}
+          disabled={!!fontName}
+          onChange={(evt) => setName(evt.target.value)}
+        />
         <label htmlFor="font">Archivo</label>
         <input
           type="file"
@@ -48,14 +64,6 @@ export default function UploadFont() {
           id=""
           ref={fileRef}
           onChange={(evt) => setFiles(Array.from(evt.currentTarget.files!))}
-        />
-        <label htmlFor="name">Nombre de la fuente a usar en los banners</label>
-        <input
-          type="text"
-          name="name"
-          placeholder="Nombre de la fuente"
-          value={name}
-          onChange={(evt) => setName(evt.target.value)}
         />
         <Button
           type="submit"

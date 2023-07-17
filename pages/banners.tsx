@@ -1,11 +1,11 @@
 import Head from "next/head";
 import BannerPreview from "../components/BannerPreview";
 import { useSession } from "next-auth/react";
-import Link from "next/link";
 import useSWR from "swr";
 import fetcher from "../utils/swr";
 import { BannerRecordWithAuthors } from "../types/definitions";
 import { Loading } from "../components/Loading";
+import Link from "../components/Link";
 
 export default function BannerPage({}: {
   banners: { mes: number; cantidad: number }[];
@@ -35,16 +35,16 @@ export default function BannerPage({}: {
                 <div key={banner.id}>
                   {session &&
                     session.data?.user?.tipo_usuario?.nombre === "admin" && (
-                      <div className="flex">
+                      <div className="flex gap-x-2 gap-y-1 flex-wrap">
                         <Link
                           href={`/code/${banner.id}`}
-                          className="bg-bc-purple-2 hover:bg-bc-purple-3 text-white p-1 inline-block"
+                          className="bg-bc-purple-2 hover:bg-bc-purple-3 text-white px-2 inline-block"
                         >
                           Ver código
                         </Link>
                         <Link
                           href={`/admin/banner/${banner.id}`}
-                          className="bg-purple-700 hover:bg-purple-800 text-white p-1 inline-block"
+                          className="bg-purple-700 hover:bg-purple-800 text-white px-2 inline-block"
                         >
                           Editar metadatos
                         </Link>

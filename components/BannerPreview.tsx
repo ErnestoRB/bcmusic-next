@@ -24,14 +24,14 @@ export default function BannerPreview({
           {bannerData.name}
         </h3>
         {bannerData.authors && bannerData.authors.length >= 1 && (
-          <p>
-            Autores:
+          <>
+            <p>Autores:</p>
             <ul className="list-disc list-inside">
               {bannerData.authors?.map((author) => (
                 <li key={author}>{`${author}`}</li>
               ))}
             </ul>
-          </p>
+          </>
         )}
 
         {bannerData.description && (

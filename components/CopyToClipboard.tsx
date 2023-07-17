@@ -12,7 +12,7 @@ export function CopyToClipboards({ children }: { children: string }) {
     <div className="flex items-center shadow-inner bg-stone-100 w-max rounded-md pl-4 gap-x-2">
       <span className="block ">{children}</span>
       <Button
-        className="rounded-md bg-rose-500"
+        className="rounded-md bg-red-600 hover:bg-red-700"
         onClick={() => {
           if (window.navigator?.clipboard) {
             window.navigator.clipboard.writeText(children);

@@ -9,8 +9,10 @@ import Alert from "../components/Alert";
 import { backgroundGradient } from "../utils/styles";
 import { isAdmin } from "../utils/validation/user";
 import { CopyToClipboards } from "../components/CopyToClipboard";
-import { loadFontsAsync } from "../utils";
+import { loadFontsAsync, perserveStatus } from "../utils";
 import { Button } from "../components/Button";
+import { toast } from "react-toastify";
+import Link from "../components/Link";
 
 export default function FontsComponent() {
   const [page, setPage] = useState(1);
@@ -43,6 +45,9 @@ export default function FontsComponent() {
     >
       <div className="flex flex-col gap-4 bg-white p-4 md:p-8 rounded-sm">
         <h2 className="text-lg font-bold">Fuentes disponibles:</h2>
+        <p>
+          Añadir nueva fuente <Link href={"font"}>aquí</Link>
+        </p>
         {error && !isLoading && (
           <Alert inline={false}>Error al cargar las fuentes</Alert>
         )}
@@ -52,9 +57,40 @@ export default function FontsComponent() {
               {(data.data as FontsType["dataValues"][]).map((font) => (
                 <div
                   key={font.nombre}
-                  className="rounded-sm bg-stone-50 p-2 md:p-4"
+                  className="flex flex-col rounded-sm border-l-4 border-l-rose-600 bg-stone-50 p-2 md:p-4 gap-y-2"
                 >
+                  <h4>{font.nombre} </h4>
+                  <hr />
+
+                  <div className="flex flew-wrap justify-end">
+                    <Link href={`/font/${font.nombre}`}>
+                      <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+                        Editar
+                      </Button>
+                    </Link>
+                    <Button
+                      className="bg-red-600 hover:bg-red-700 text-white"
+                      onClick={() => {
+                        fetch(`/api/font/${font.nombre}`, { method: "DELETE" })
+                          .then(perserveStatus)
+                          .then((res) => {
+                            if (res.ok) {
+                              toast(res.json?.message ?? "Fuente eliminada");
+                            } else {
+                              toast(
+                                res.json?.message ??
+                                  "No se pudo eliminar la fuente"
+                              );
+                            }
+                          });
+                      }}
+                    >
+                      Eliminar
+                    </Button>
+                  </div>
+                  <h5>Previsualización</h5>
                   <div
+                    className="p-2 bg-stone-700 rounded-lg text-white text-lg"
                     style={{
                       fontFamily: font.nombre,
                     }}
@@ -71,7 +107,7 @@ export default function FontsComponent() {
                   </div>
 
                   <span>
-                    Puede usarse en los scripts como
+                    Copiar nombre
                     <CopyToClipboards>{font.nombre}</CopyToClipboards>
                   </span>
                 </div>
@@ -86,7 +122,7 @@ export default function FontsComponent() {
               {data.data.length >= 1 && (
                 <button
                   onClick={() => setPage((page) => page + 1)}
-                  className="bg-blue-500 hover:bg-blue-600 text-white"
+                  className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1"
                 >
                   Página siguiente
                 </button>
@@ -94,7 +130,7 @@ export default function FontsComponent() {
               {page > 1 && (
                 <Button
                   onClick={() => setPage((page) => page - 1)}
-                  className="bg-blue-500 hover:bg-blue-600 text-white"
+                  className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1"
                 >
                   Página anterior
                 </Button>
