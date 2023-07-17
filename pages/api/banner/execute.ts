@@ -5,6 +5,7 @@ import { unstable_getServerSession } from "next-auth";
 import { onlyAllowAdmins } from "../../../utils/validation/user";
 import { authOptions } from "../auth/[...nextauth]";
 import logError from "../../../utils/log";
+import { censureError } from "../../../utils/errors";
 
 const artistSample = [
   { name: "Duck Fizz", images: [] },
@@ -97,6 +98,9 @@ export default async function handler(
     }
     logError("Error al ejecutar banner!");
     logError(error);
-    res.status(500).send({ message: `¡Ocurrió un error en tu script!` });
+    censureError(error);
+    res
+      .status(500)
+      .send({ message: `¡Ocurrió un error en tu script: "${error.message}"` });
   }
 }

@@ -100,7 +100,6 @@ describe("Utility functions", () => {
       });
     });
   });
-
   describe("PaginationValidation", () => {
     it("Returns 1 as default page when page attribute isn't present", () => {
       const { error, value } = PaginationValidation.validate({

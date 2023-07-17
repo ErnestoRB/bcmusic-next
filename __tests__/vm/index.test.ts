@@ -1,11 +1,7 @@
 /*
  * @jest-environment node
  */
-import {
-  executeBanner,
-  getBufferFromExecution,
-  runInBannerContext,
-} from "../../vm";
+import { getBufferFromExecution, runInBannerContext } from "../../vm";
 import { ScriptReturn } from "../../utils/validation/vm";
 import { isPromise } from "util/types";
 

@@ -1,3 +1,4 @@
+import { error } from "console";
 import { SpotifyTopArtistData } from "../types/definitions";
 import { FontsType } from "./database/models";
 
@@ -81,6 +82,11 @@ export const shortDateFormat = (date: Date): string => {
   } del ${date.getFullYear()}`;
 };
 
-export class BannerError extends Error {
+export class BannerError {
   isBanner = true;
+  message: string;
+
+  constructor(message?: string) {
+    this.message = message ?? "";
+  }
 }
