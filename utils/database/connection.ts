@@ -11,8 +11,6 @@ import {
 let possibleSequelize: Sequelize | undefined = undefined;
 
 if (DATABASE_URL) {
-  console.log(DATABASE_URL);
-
   possibleSequelize = new Sequelize(DATABASE_URL);
 } else {
   possibleSequelize = new Sequelize({

@@ -23,10 +23,8 @@ export async function executeBanner(
         "El resultado no es una promesa, una funcion que devuelva una promesa, o un buffer!",
     },
   });
-  console.log(returned);
 
   const buffer: Buffer | undefined = await getBufferFromExecution(returned);
-  console.log(buffer);
 
   return buffer;
 }

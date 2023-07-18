@@ -11,7 +11,7 @@ export function censureError(error: Error): void {
     return;
   }
 
-  let obj = error;
+  let obj: any = error;
   while (obj !== Object.prototype) {
     Object.getOwnPropertyNames(obj).forEach((name) => {
       const value = obj[name];
