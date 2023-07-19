@@ -10,11 +10,11 @@ RUN apk add --update --no-cache \
     autoconf \
     automake
 WORKDIR /app
-
+ARG NEXT_PUBLIC_RECAPTCHA_CLIENT
+ENV NEXT_PUBLIC_RECAPTCHA_CLIENT=${NEXT_PUBLIC_RECAPTCHA_CLIENT}
 COPY package.json package-lock.json ./
 RUN npm install
 COPY . .
 RUN npm run build
-
 ENV PORT=80
 CMD npm start
