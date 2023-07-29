@@ -1,8 +1,19 @@
 import Head from "next/head";
+import { useContext, useEffect } from "react";
+import { BackgroundContext } from "../context/BackgroundContext";
 
 export default function Politicas() {
+  const { setBackground, setDefault } = useContext(BackgroundContext)!;
+
+  useEffect(() => {
+    setBackground("bg-stone-400");
+    return () => {
+      setDefault();
+    };
+  }, []);
+
   return (
-    <div className="flex flex-col items-center justify-center w-full bg-stone-200 py-10">
+    <div className="flex flex-col items-center justify-center w-full  py-10">
       <Head>
         <title>Política de privacidad</title>
       </Head>

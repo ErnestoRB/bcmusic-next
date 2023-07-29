@@ -1,5 +1,4 @@
 import Head from "next/head";
-import { backgroundGradient } from "../../utils/styles";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 import BannerForm from "../../components/BannerForm";
@@ -18,9 +17,7 @@ export default function CreateBannerCode() {
   });
 
   return (
-    <div
-      className={`flex flex-col items-center justify-center w-full ${backgroundGradient}`}
-    >
+    <div className={`flex flex-col items-center justify-center w-full `}>
       <Head>
         <title>Programar nuevo banner</title>
       </Head>

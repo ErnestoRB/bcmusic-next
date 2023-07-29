@@ -1,12 +1,8 @@
 import Head from "next/head";
-import { backgroundGradient } from "../utils/styles";
-import { Loading } from "../components/Loading";
 
 export default function About() {
   return (
-    <div
-      className={`flex flex-col items-center justify-center w-full ${backgroundGradient}`}
-    >
+    <div className={`flex flex-col items-center justify-center w-full `}>
       <Head>
         <title>Sobre la aplicación</title>
       </Head>

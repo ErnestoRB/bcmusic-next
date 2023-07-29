@@ -6,10 +6,13 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Alert from "../components/Alert";
 import { BannerHistorial } from "../components/BannerHistorial";
-import { backgroundGradient } from "../utils/styles";
 import { authOptions } from "./api/auth/[...nextauth]";
 import { Loading } from "../components/Loading";
 import { AdminActions } from "../components/AdminActions";
+import {
+  isAdminSession,
+  isCollaboratorSession,
+} from "../utils/validation/user";
 
 export default function Panel() {
   const router = useRouter();
@@ -21,9 +24,7 @@ export default function Panel() {
   });
 
   return (
-    <div
-      className={`w-full ${backgroundGradient} flex justify-center items-center`}
-    >
+    <div className={`w-full flex justify-center items-center`}>
       <div className="max-w-md p-2 md:p-4 rounded-sm bg-white flex flex-col gap-y-2 shadow-lg">
         <Head>
           <title>Panel de usuario</title>
@@ -38,7 +39,8 @@ export default function Panel() {
           <>
             <h1>Panel de usuario</h1>
             <h2>Tipo de usuario: {session?.data?.user.tipo_usuario?.nombre}</h2>
-            {session?.data?.user.tipo_usuario?.nombre === "admin" && (
+            {(isCollaboratorSession(session.data) ||
+              isAdminSession(session.data)) && (
               <>
                 <AdminActions></AdminActions>
               </>

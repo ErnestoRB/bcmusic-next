@@ -1,10 +1,11 @@
 import { Canvas } from "@react-three/fiber";
 import Head from "next/head";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ErrorBoundary } from "../components/errors/ErrorBoundary";
 import { Background } from "../components/three/Background";
 import WebGL from "../utils/three/compatibility";
+import { BackgroundContext } from "../context/BackgroundContext";
 
 const FallbackCanvas = function () {
   return (
@@ -23,6 +24,15 @@ const FallbackCanvas = function () {
 
 export default function Home() {
   const [compatibility, setCompatibility] = useState(false);
+
+  const { setBackground, setDefault } = useContext(BackgroundContext)!;
+
+  useEffect(() => {
+    setBackground("bg-black");
+    return () => {
+      setDefault();
+    };
+  }, [setBackground, setDefault]);
 
   useEffect(() => {
     setCompatibility(WebGL.isWebGLAvailable());

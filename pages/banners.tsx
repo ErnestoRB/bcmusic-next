@@ -12,9 +12,8 @@ export default function BannerPage({}: {
 }) {
   const { data, error, isLoading } = useSWR("/api/banners", fetcher);
 
-  const session = useSession();
   return (
-    <div className="w-full bg-gradient-to-tr from-bc-purple-1 via-blue-300 to-stone-100 flex flex-col md:flex-row justify-center gap-8 items-center py-4 md:py-8">
+    <div className="w-full flex flex-col md:flex-row justify-center gap-8 items-center py-4 md:py-8">
       <Head>
         <title>Banners disponibles</title>
       </Head>
@@ -32,24 +31,10 @@ export default function BannerPage({}: {
             </h1>
             <div className="grid gap-y-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-3 place-items-center">
               {data.data.map((banner: BannerRecordWithAuthors) => (
-                <div key={banner.id}>
-                  {session &&
-                    session.data?.user?.tipo_usuario?.nombre === "admin" && (
-                      <div className="flex gap-x-2 gap-y-1 flex-wrap">
-                        <Link
-                          href={`/code/${banner.id}`}
-                          className="bg-bc-purple-2 hover:bg-bc-purple-3 text-white px-2 inline-block"
-                        >
-                          Ver código
-                        </Link>
-                        <Link
-                          href={`/admin/banner/${banner.id}`}
-                          className="bg-purple-700 hover:bg-purple-800 text-white px-2 inline-block"
-                        >
-                          Editar metadatos
-                        </Link>
-                      </div>
-                    )}
+                <div
+                  key={banner.id}
+                  className="grid place-items-cente bg-white"
+                >
                   <BannerPreview bannerData={banner}></BannerPreview>
                 </div>
               ))}

@@ -1,6 +1,5 @@
 import Head from "next/head";
 import Editor from "../../components/Editor";
-import { backgroundGradient } from "../../utils/styles";
 import { useRouter } from "next/router";
 import { GetServerSideProps } from "next";
 import { BannerRecord, Fonts } from "../../utils/database/models";
@@ -26,7 +25,7 @@ export default function CodeEditor({
 
   return (
     <div
-      className={`flex flex-col items-center justify-center w-full ${backgroundGradient} py-4 md:py-8`}
+      className={`flex flex-col items-center justify-center w-full  py-4 md:py-8`}
     >
       <Head>
         <title>Crear código de banner</title>
