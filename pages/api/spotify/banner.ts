@@ -1,35 +1,41 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getSpotifyData } from "../../../utils";
-import executeBanner, {
-  bannerExists,
-  getBannerConfig,
-} from "../../../utils/banners";
 import { unstable_getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
 import { refreshToken } from "../../../utils/spotify";
-import { Account, Banner } from "../../../utils/database/models";
+import {
+  Account,
+  BannerRecord,
+  Fonts,
+  GeneratedBanner,
+} from "../../../utils/database/models";
 import { ResponseData } from "../../../types/definitions";
 import { sequelize } from "../../../utils/database/connection";
 import { Op, Transaction } from "sequelize";
-
-export const MIN_ARTISTS = 3;
+import { executeBanner } from "../../../vm";
+import logError from "../../../utils/log";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ResponseData | Buffer>
+  res: NextApiResponse<ResponseData<undefined> | Buffer>
 ) {
-  const { nombre = "synthwave" } = req.query; // nombre debe ser el nombre del archivo
-  if (nombre instanceof Array) {
+  const { id = "synthwave" } = req.query;
+  if (id instanceof Array) {
     res.status(400).json({ message: "Sólo especifica un valor para banner" });
     return;
   }
-  console.log(nombre);
-
-  if (!(await bannerExists(nombre))) {
+  const record = await BannerRecord.findByPk(id, {
+    include: {
+      model: Fonts,
+      through: {
+        attributes: [],
+      },
+    },
+  });
+  if (!record) {
     res.status(400).json({ message: "No se encontró ese banner" });
     return;
   }
-  const bannerConfig = await getBannerConfig(nombre);
   try {
     const session = await unstable_getServerSession(
       req,
@@ -54,7 +60,7 @@ export default async function handler(
       return;
     }
     if (process.env.NODE_ENV === "production") {
-      const banner = await Banner.findOne({
+      const banner = await GeneratedBanner.findOne({
         where: {
           [Op.and]: [
             sequelize.where(
@@ -80,10 +86,7 @@ export default async function handler(
     }
     const { refresh_token, access_token, id } = spotifyToken.dataValues;
 
-    let data = await getSpotifyData(
-      access_token as string,
-      bannerConfig.time_range
-    );
+    let data = await getSpotifyData(access_token as string, "long_term");
     if (data.error && data.error.status == 401) {
       try {
         const { access_token } = await refreshToken(refresh_token);
@@ -95,18 +98,15 @@ export default async function handler(
             },
           }
         );
-        data = await getSpotifyData(
-          access_token as string,
-          bannerConfig.time_range
-        );
+        data = await getSpotifyData(access_token as string, "long_term");
       } catch (error: any) {
         res.send({ message: "Error al renovar el token de acceso" });
         return;
       }
     }
-    if (!data.error && data.total < MIN_ARTISTS) {
+    if (!data.error && data.total! < record.dataValues.minItems) {
       res.status(400).send({
-        message: `Para generar un banner '${bannerConfig.name}' se necesitan al menos ${MIN_ARTISTS} artistas y tú sólo tienes ${data.total}`,
+        message: `Para generar un banner '${record.dataValues.name}' se necesitan al menos ${record.dataValues.minItems} artistas y tú sólo tienes ${data.total}`,
       });
       return;
     }
@@ -122,28 +122,37 @@ export default async function handler(
       res.status(400).send({ message: "Error al contactar la API De Spotify" });
       return;
     }
-    const img = await executeBanner(nombre, data.items, session.user);
+    const { width, height } = record.dataValues;
+    const img = await executeBanner(
+      record.dataValues.script,
+      { width, height },
+      data.items!,
+      /// @ts-ignore
+      record.fonts.map((font) => font.dataValues)
+    );
     if (!img) {
       res.status(400).send({
         message:
-          "No fue posible crear el banner solcitado, ¿probablemente no existe?",
+          "Este banner no regresó ningun resultado... ¿Probablemente esté en desarrollo?",
       });
       return;
     }
     if (process.env.NODE_ENV === "production") {
       let t: Transaction = await sequelize.transaction();
       try {
-        await Banner.create(
+        const historyRecord = await GeneratedBanner.create(
           { idUsuario: session?.user.id, fecha_generado: new Date() },
           { transaction: t }
         );
+        /// @ts-ignore
+        historyRecord.setBannerRecord(record);
         await t.commit();
         res.send(img);
-      } catch (err: any) {
-        console.log(err);
+      } catch (error: any) {
+        logError(error);
         await t.rollback();
-        if (err.isBanner) {
-          res.status(400).send({ message: err.message });
+        if (error.isBanner) {
+          res.status(400).send({ message: error.message });
           return;
         }
         res.status(400).send({ message: "Error" });
@@ -151,8 +160,8 @@ export default async function handler(
       return;
     }
     res.send(img);
-  } catch (err) {
-    console.log(err);
-    res.status(500).send({ message: "Error interno" });
+  } catch (error: any) {
+    logError(error);
+    res.status(500).send({ message: "Error al generar tu banner :(" });
   }
 }

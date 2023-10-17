@@ -7,7 +7,7 @@ export default function Politicas() {
         <title>Política de privacidad</title>
       </Head>
       <div className="max-w-lg bg-white p-2 md:p-4 shadow-lg rounded">
-        <h1 className="text-3xl font-bold">Política de privacidad</h1>
+        <h1>Política de privacidad</h1>
         <p>
           Al aceptar nuestra política de privacidad, usted, usuario de la
           aplicación BCMusic, proporciona los siguientes derechos sobre sus

@@ -5,9 +5,10 @@ import { hash } from "bcrypt";
 import { User } from "../../utils/database/models";
 import { isDuplicateError } from "../../utils/database";
 import { validateRecaptchaToken } from "../../utils/recaptcha";
+import logError from "../../utils/log";
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ResponseData>
+  res: NextApiResponse<ResponseData<undefined>>
 ) {
   try {
     const { Apellido, Email, Nombre, Nacimiento, Pais, Contraseña, token } =
@@ -34,13 +35,14 @@ export default async function handler(
       apellido: Apellido,
     });
     res.send({ message: "Registro exitoso" });
-  } catch (err: any) {
-    console.log(err);
-    if (err.isJoi) {
-      res.status(400).send({ message: err.details[0].message });
+  } catch (error: any) {
+    logError(error);
+
+    if (error.isJoi) {
+      res.status(400).send({ message: error.details[0].message });
       return;
     }
-    if (isDuplicateError(err)) {
+    if (isDuplicateError(error)) {
       res.status(400).send({ message: "Este email ya está registrado!" });
       return;
     }

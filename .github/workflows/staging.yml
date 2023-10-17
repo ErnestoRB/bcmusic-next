@@ -1,0 +1,34 @@
+name: Staging deploy
+on:
+  push:
+    branches-ignore:
+      - main
+
+jobs:
+  build:
+    name: Run command
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Add SSH key
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+        run: |
+          mkdir -p /home/runner/.ssh
+          ssh-keyscan ${{ secrets.HOST }} >> /home/runner/.ssh/known_hosts
+          # DOKKU_SSH_KEY is the name of the repository secret
+          echo "${{ secrets.DOKKU_SSH_KEY }}" > /home/runner/.ssh/github_actions
+          chmod 600 /home/runner/.ssh/github_actions
+          ssh-agent -a $SSH_AUTH_SOCK > /dev/null	
+          ssh-add /home/runner/.ssh/github_actions
+      - name: Build and deploy
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+        run: |
+          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub actions"
+          git remote add dokku dokku@${{ secrets.HOST }}:bcmusic-dev
+          git push dokku ${{ github.ref }}:master -f

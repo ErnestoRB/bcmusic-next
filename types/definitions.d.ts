@@ -1,11 +1,27 @@
+import { BannerRecordModel } from "../utils/database/models";
+
 declare global {
   interface Window {
     grecaptcha: any;
   }
 }
 
-export interface SpotifyData {
-  error?: string;
+export type BannerRecordWithFonts = BannerRecordModel["dataValues"] & {
+  fonts: FontsType["dataValues"][];
+};
+
+export type BannerRecordWithAuthors = BannerRecordModel["dataValues"] & {
+  authors: string[];
+};
+
+export interface SpotifyErrorResponse {
+  error?: {
+    status: number;
+    message: string;
+  };
+}
+
+export interface SpotifyData extends SpotifyErrorResponse {
   error_description?: string;
   access_token: string;
   token_type: string;
@@ -14,8 +30,9 @@ export interface SpotifyData {
   scope: string;
 }
 
-export interface SpotifyTopArtistData {
-  items: SpotifyArtist[];
+export interface SpotifyTopArtistData extends SpotifyErrorResponse {
+  items?: SpotifyArtist[];
+  total?: number;
 }
 
 export interface SpotifyArtist {
@@ -66,7 +83,9 @@ export interface Usuario {
   Pais: string;
 }
 
-type ResponseData = {
+export type ResponseData<T> = {
   message: string;
-  data?: any;
+  data?: T;
 };
+
+export type EmptyResponse = ResponseData<undefined>;

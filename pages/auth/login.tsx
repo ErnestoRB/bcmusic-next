@@ -3,31 +3,41 @@ import { getCsrfToken, getProviders, signIn } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import spotifyLogo from "../../images/spotify-white.png";
 import Alert from "../../components/Alert";
-import { useSpring, animated } from "@react-spring/web";
 import Script from "next/script";
 import Head from "next/head";
 import { backgroundGradient } from "../../utils/styles";
+import { Button } from "../../components/Button";
+
+const LoginButton = function ({
+  children,
+  className,
+  onClick,
+}: React.ComponentProps<typeof Button>) {
+  return (
+    <Button id="email-login" className={`h-12 ${className}`} onClick={onClick}>
+      {children}
+    </Button>
+  );
+};
 
 export const callbackUrl = "/";
 export default function AuthError({
   csrfToken,
+  providers,
 }: {
   providers: Awaited<ReturnType<typeof getProviders>>;
   csrfToken: string;
 }) {
   const { query } = useRouter();
-  const {
-    register,
-    handleSubmit,
-    watch,
-    formState: { errors },
-  } = useForm();
+  const { register, handleSubmit } = useForm();
 
   const [loginMethod, setLoginMethod] = useState("");
+
+  console.log({ providers });
 
   return (
     <div
@@ -54,10 +64,10 @@ export default function AuthError({
               )) || <Alert>{query.error}</Alert>}
           </>
         )}
-        <h1 className="text-2xl my-2">Iniciar sesión</h1>
+        <h1 className="my-2">Iniciar sesión</h1>
         <div className="flex flex-col">
           <form
-            className="flex flex-col"
+            className="flex flex-col gap-y-4"
             onSubmit={handleSubmit((values) => {
               const { contraseña, email } = values;
 
@@ -84,13 +94,14 @@ export default function AuthError({
             {loginMethod && (
               <>
                 <input
-                  autoComplete="email"
                   name="csrfToken"
                   type="hidden"
                   defaultValue={csrfToken}
                 />
                 <label htmlFor="email">Correo</label>
                 <input
+                  autoComplete="email"
+                  id="input-email"
                   type="email"
                   {...register("email", { required: true })}
                   required
@@ -100,40 +111,69 @@ export default function AuthError({
             {loginMethod === "credentials" && (
               <>
                 <label htmlFor="contraseña">Contraseña</label>
-                <input type="password" {...register("contraseña")} />
+                <input
+                  id="input-password"
+                  type="password"
+                  {...register("contraseña")}
+                />
               </>
             )}
             {loginMethod && (
-              <button className="bg-blue-600 text-white" type="submit">
+              <LoginButton
+                id="login-button"
+                className="bg-blue-600 text-white"
+                type="submit"
+              >
                 Enviar
-              </button>
+              </LoginButton>
             )}
           </form>
           {loginMethod && <hr className="my-4" />}
-          <button
-            className="bg-stone-700 text-white"
-            onClick={() => setLoginMethod("credentials")}
-          >
-            Iniciar sesión con contraseña
-          </button>
-          <button
-            className="bg-black text-white"
-            onClick={() => setLoginMethod("email")}
-          >
-            Iniciar sesión con Email
-          </button>
-          <button
-            className="flex items-center gap-2 justify-center bg-spotify-green text-white"
-            onClick={() => signIn("spotify", { callbackUrl })}
-          >
-            <Image
-              src={spotifyLogo}
-              width={32}
-              height={32}
-              alt={"spotify logo"}
-            ></Image>
-            Iniciar sesión con Spotify
-          </button>
+          {providers &&
+            Object.values(providers).map((provider) => {
+              switch (provider.id) {
+                case "credentials":
+                  return (
+                    <LoginButton
+                      key={provider.id}
+                      id="password-login"
+                      className="bg-stone-700 text-white"
+                      onClick={() => setLoginMethod("credentials")}
+                    >
+                      Iniciar sesión con contraseña
+                    </LoginButton>
+                  );
+                case "email":
+                  return (
+                    <LoginButton
+                      key={provider.id}
+                      id="email-login"
+                      className="bg-black text-white"
+                      onClick={() => setLoginMethod("email")}
+                    >
+                      Iniciar sesión con Email
+                    </LoginButton>
+                  );
+                case "spotify":
+                  return (
+                    <LoginButton
+                      key={provider.id}
+                      id="spotify-login"
+                      className="flex items-center gap-2 justify-center bg-spotify-green text-white"
+                      onClick={() => signIn("spotify", { callbackUrl })}
+                    >
+                      <Image
+                        src={spotifyLogo}
+                        width={32}
+                        height={32}
+                        alt={"spotify logo"}
+                      ></Image>
+                      Iniciar sesión con Spotify
+                    </LoginButton>
+                  );
+              }
+              return undefined;
+            })}
         </div>
         <span>
           ¿Aún no tienes cuenta? ¡Puedes crear una{" "}
@@ -149,9 +189,12 @@ export default function AuthError({
 
 export async function getServerSideProps(context: NextPageContext) {
   const csrfToken = await getCsrfToken(context);
+  const providers = await getProviders();
+
   return {
     props: {
       csrfToken,
+      providers,
     },
   };
 }

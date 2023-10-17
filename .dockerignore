@@ -4,3 +4,5 @@ __tests__
 cypress
 .env.local
 data
+.github
+.swc

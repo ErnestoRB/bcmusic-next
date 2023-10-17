@@ -1,5 +1,6 @@
 import Head from "next/head";
 import { backgroundGradient } from "../utils/styles";
+import { Loading } from "../components/Loading";
 
 export default function About() {
   return (
@@ -10,7 +11,7 @@ export default function About() {
         <title>Sobre la aplicación</title>
       </Head>
       <div className="max-w-lg bg-white p-2 md:p-4 shadow-lg rounded">
-        <h1 className="text-3xl font-semibold">BashCrashers MusicApp </h1>
+        <h1>BashCrashers MusicApp </h1>
         <p>
           Es una plataforma que permite generar diseños (banners) apartir de
           información proporcionada por la API de Spotify.

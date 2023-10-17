@@ -9,11 +9,7 @@ import WebGL from "../utils/three/compatibility";
 const FallbackCanvas = function () {
   return (
     <div className="w-full h-full grid place-items-center place-content-center text-white">
-      <h1
-        className={`text-center text-2xl sm:text-4xl font-blade text-bc-pink-1`}
-      >
-        bienvenido a bashcrashers
-      </h1>{" "}
+      <h1 className={`font-blade text-bc-pink-1`}>bienvenido a bashcrashers</h1>{" "}
       <span>
         Genera tu banner
         <Link className="text-blue-600" href="/banner">

@@ -6,14 +6,14 @@ import bannerImage from "../images/banner.png";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { BannerConfigAndFile, getAvailableBanners } from "../utils/banners";
+import { BannerRecord, BannerRecordModel } from "../utils/database/models";
+import { Button } from "../components/Button";
 
 let downloaded = false;
 export default function BannerPage({
-  banners,
   availableBanners,
 }: {
-  availableBanners: BannerConfigAndFile[] | undefined;
+  availableBanners: BannerRecordModel["dataValues"][] | undefined;
   banners: { mes: number; cantidad: number }[];
 }) {
   const session = useSession();
@@ -75,9 +75,7 @@ export default function BannerPage({
             </div>
             {session?.status !== "authenticated" && (
               <>
-                <h1 className="text-3xl">
-                  ¡Genera ya tu banner! ¿Qué esperas?
-                </h1>
+                <h1>¡Genera ya tu banner! ¿Qué esperas?</h1>
                 <p>
                   Sólo necesitar crear una cuenta, da click{" "}
                   <Link
@@ -94,8 +92,8 @@ export default function BannerPage({
             {session?.status === "authenticated" && (
               <>
                 {isLoading && <Alert type="info">Cargando...</Alert>}
-                <h1 className="text-3xl">Generar banner</h1>
-                <h3 className="text-xl">Diseños disponibles</h3>
+                <h1>Generar banner</h1>
+                <h3>Diseños disponibles</h3>
                 {availableBanners && (
                   <select
                     onChange={(evt) => {
@@ -104,17 +102,14 @@ export default function BannerPage({
                   >
                     <option>Selecciona un diseño</option>
                     {availableBanners.map((bannerConfig) => (
-                      <option
-                        key={bannerConfig.name}
-                        value={bannerConfig.fileName}
-                      >
+                      <option key={bannerConfig.id} value={bannerConfig.id}>
                         {bannerConfig.name}
                       </option>
                     ))}
                   </select>
                 )}
                 {error && <Alert>{error}</Alert>}
-                <button
+                <Button
                   className="bg-green-400 text-black"
                   onClick={() => {
                     if (isLoading) return;
@@ -123,7 +118,7 @@ export default function BannerPage({
                     setLoading(true);
                     fetch(
                       `/api/spotify/banner?${new URLSearchParams({
-                        nombre: selected,
+                        id: selected,
                       })}`,
                       { credentials: "include" }
                     )
@@ -143,7 +138,7 @@ export default function BannerPage({
                   }}
                 >
                   Crear banner
-                </button>
+                </Button>
                 <span className="text-sm">
                   <b>Aviso:</b> La creación del banner surge en nuestro
                   servidor, pero no la almacenamos en él. Si no la descargas
@@ -175,7 +170,8 @@ export default function BannerPage({
   );
 }
 export const getServerSideProps: GetServerSideProps = async () => {
-  const availableBanners = await getAvailableBanners();
-
-  return { props: { availableBanners } };
+  const availableBanners: BannerRecordModel[] = await BannerRecord.findAll();
+  return {
+    props: { availableBanners: availableBanners.map((a) => a.dataValues) },
+  };
 };

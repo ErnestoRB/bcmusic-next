@@ -27,6 +27,7 @@ yarn-error.log*
 
 # local env files
 .env*.local
+cypress.env.json
 
 # vercel
 .vercel
@@ -38,6 +39,10 @@ next-env.d.ts
 #production data
 data
 *.env
+.runtime
 
 #testing videos
 cypress/videos
+
+# sequelize-cli
+sequelizeData.*.json

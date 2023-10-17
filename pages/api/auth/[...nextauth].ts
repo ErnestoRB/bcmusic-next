@@ -5,7 +5,13 @@ import Credentials from "next-auth/providers/credentials";
 import Email from "next-auth/providers/email";
 import Spotify from "next-auth/providers/spotify";
 import { sequelize } from "../../../utils/database/connection";
-import { CLIENT_ID, CLIENT_SECRET } from "../../../utils/credentials";
+import {
+  CLIENT_ID,
+  CLIENT_SECRET,
+  GMAIL_ADDRESS,
+  GMAIL_PASS,
+  IS_DEVELOPMENT,
+} from "../../../utils/environment";
 import Cookies from "cookies";
 import {
   User,
@@ -13,6 +19,7 @@ import {
   Session as SessionModel,
   VerificationToken,
   Pais,
+  TipoUsuario,
 } from "../../../utils/database/models";
 import { randomBytes, randomUUID } from "crypto";
 import {
@@ -23,6 +30,7 @@ import {
 import { decode, encode } from "next-auth/jwt";
 import { sendVerificationRequest } from "../../../utils/email";
 import { validateRecaptchaToken } from "../../../utils/recaptcha";
+import logError from "../../../utils/log";
 
 const generateSessionToken = () => {
   return randomUUID?.() ?? randomBytes(32).toString("hex");
@@ -33,6 +41,104 @@ export const adapter = SequelizeAdapter(sequelize, {
   models: { User, Account, Session: SessionModel, VerificationToken },
   synchronize: true,
 });
+
+const providers: AuthOptions["providers"] = [
+  Spotify({
+    clientId: CLIENT_ID!,
+    clientSecret: CLIENT_SECRET!,
+    profile: function (profile) {
+      if (IS_DEVELOPMENT) console.log(profile);
+      const newProfile: IUser = {
+        id: profile.id,
+        image: profile.images?.[0]?.url,
+        email: profile.email,
+        name: profile.display_name,
+      };
+      return newProfile;
+    },
+    allowDangerousEmailAccountLinking: true,
+    checks: process.env["NODE_ENV"] === "development" ? "none" : "state",
+    authorization:
+      "https://accounts.spotify.com/authorize?" +
+      new URLSearchParams({
+        scope: "user-top-read user-read-email",
+      }).toString(),
+  }),
+  Credentials({
+    // The name to display on the sign in form (e.g. "Sign in with...")
+    name: "Iniciar sesión",
+    // `credentials` is used to generate a form on the sign in page.
+    // You can specify which fields should be submitted, by adding keys to the `credentials` object.
+    // e.g. domain, username, password, 2FA token, etc.
+    // You can pass any HTML attribute to the <input> tag through the object.
+    credentials: {
+      email: {
+        label: "Email",
+        type: "email",
+        placeholder: "youremail@example.com",
+      },
+      contraseña: { label: "Contraseña", type: "password" },
+    },
+    async authorize(credentials, req) {
+      try {
+        const gToken = (credentials as any).token;
+        const gResponse = await validateRecaptchaToken(gToken);
+        if (!gResponse.success || gResponse.score < 0.7) {
+          throw new Error(
+            "Detectamos actividad sospechosa. Por favor, trata de iniciar sesión con Spotify o a través de verificación de correo."
+          );
+        }
+        let usuario: any = await User.findOne({
+          where: { email: credentials?.email },
+        });
+        if (!usuario) throw new Error("Credenciales inválidas");
+        usuario = usuario.dataValues;
+        if (!usuario.password)
+          throw new Error("Esta cuenta no fue registrada con una contraseña.");
+        if (await compare(credentials!.contraseña, usuario.password)) {
+          usuario.password = undefined;
+          return usuario;
+        }
+        throw new Error("Credenciales inválidas");
+      } catch (error: any) {
+        throw error;
+      }
+    },
+  }),
+];
+
+if (GMAIL_ADDRESS && GMAIL_PASS) {
+  providers.unshift(
+    Email({
+      server: {
+        service: "gmail",
+        auth: {
+          user: process.env.GMAIL_ADDRESS,
+          pass: process.env.GMAIL_PASS,
+        },
+      },
+      from: `BashCrashers MusicApp <${
+        GMAIL_ADDRESS ?? `dev.ernestorb@gmail.com`
+      }>`,
+      sendVerificationRequest,
+    })
+  );
+}
+
+const events: AuthOptions["events"] = {
+  signIn: async ({ account, user, isNewUser, profile }) => {
+    console.log(
+      `[LOGIN] ${isNewUser ? "[NEW]" : ""}\nProfile: ${JSON.stringify(
+        profile
+      )}\nAccount: ${JSON.stringify(account)}\nUser: ${JSON.stringify(user)}`
+    );
+
+    // update spotify profile image every time user signsin
+    if (account?.provider === "spotify") {
+      await User.update({ image: profile?.image }, { where: { id: user.id } });
+    }
+  },
+};
 
 export const authOptions: (
   req: NextApiRequest | GetServerSidePropsContext["req"],
@@ -45,82 +151,8 @@ export const authOptions: (
       verifyRequest: "/auth/emailSent",
     },
     adapter,
-    providers: [
-      Email({
-        server: {
-          service: "gmail",
-          auth: {
-            user: process.env.GMAIL_ADDRESS,
-            pass: process.env.GMAIL_PASS,
-          },
-        },
-        from: "BashCrashers MusicApp <dev.ernestorb@gmail.com>",
-        sendVerificationRequest,
-      }),
-      Spotify({
-        clientId: CLIENT_ID!,
-        clientSecret: CLIENT_SECRET!,
-        profile: function (profile) {
-          console.log(profile);
-          const newProfile: IUser = {
-            id: profile.id,
-            image: profile.images?.[0]?.url,
-            email: profile.email,
-            name: profile.display_name,
-          };
-          return newProfile;
-        },
-        allowDangerousEmailAccountLinking: true,
-        authorization:
-          "https://accounts.spotify.com/authorize?" +
-          new URLSearchParams({
-            scope: "user-top-read user-read-email",
-          }).toString(),
-      }),
-      Credentials({
-        // The name to display on the sign in form (e.g. "Sign in with...")
-        name: "Iniciar sesión",
-        // `credentials` is used to generate a form on the sign in page.
-        // You can specify which fields should be submitted, by adding keys to the `credentials` object.
-        // e.g. domain, username, password, 2FA token, etc.
-        // You can pass any HTML attribute to the <input> tag through the object.
-        credentials: {
-          email: {
-            label: "Email",
-            type: "email",
-            placeholder: "youremail@example.com",
-          },
-          contraseña: { label: "Contraseña", type: "password" },
-        },
-        async authorize(credentials, req) {
-          try {
-            const gToken = (credentials as any).token;
-            const gResponse = await validateRecaptchaToken(gToken);
-            if (!gResponse.success || gResponse.score < 0.7) {
-              throw new Error(
-                "Detectamos actividad sospechosa. Por favor, trata de iniciar sesión con Spotify o a través de verificación de correo."
-              );
-            }
-            let usuario: any = await User.findOne({
-              where: { email: credentials?.email },
-            });
-            if (!usuario) throw new Error("Credenciales inválidas");
-            usuario = usuario.dataValues;
-            if (!usuario.password)
-              throw new Error(
-                "Esta cuenta no fue registrada con una contraseña."
-              );
-            if (await compare(credentials!.contraseña, usuario.password)) {
-              usuario.password = undefined;
-              return usuario;
-            }
-            return null;
-          } catch (err: any) {
-            throw err;
-          }
-        },
-      }),
-    ],
+    providers,
+    events,
     callbacks: {
       signIn: async function ({ account, user, profile }) {
         try {
@@ -146,11 +178,11 @@ export const authOptions: (
             throw error;
           }
           return true;
-        } catch (err: any) {
-          if (err.isEmail) {
-            throw err;
+        } catch (error: any) {
+          if (error.isEmail) {
+            throw error;
           }
-          console.log(err);
+          logError(error);
           return false;
         }
       },
@@ -165,11 +197,18 @@ export const authOptions: (
             otherSession.user.pais = pais.dataValues.Nombre;
           }
         }
+        if (user.tipoUsuarioId) {
+          const tipo = await TipoUsuario.findByPk(user.tipoUsuarioId);
+          if (tipo) {
+            otherSession.user.tipo_usuario = tipo.dataValues;
+          }
+        }
         const { name, nacimiento, image, apellido } = user;
         otherSession.user.name = name;
         otherSession.user.apellido = apellido;
         otherSession.user.nacimiento = nacimiento;
         otherSession.user.image = image;
+
         return otherSession;
       },
     },

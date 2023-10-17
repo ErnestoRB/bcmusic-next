@@ -13,6 +13,10 @@ declare module "next-auth" {
       image?: string;
       nacimiento?: string;
       pais?: string;
+      tipo_usuario?: {
+        id: number;
+        nombre: string;
+      };
     } & DefaultSession["user"];
   }
 
@@ -24,6 +28,7 @@ declare module "next-auth" {
     image?: string;
     nacimiento?: string;
     idPais?: string;
+    tipoUsuarioId?: number;
   }
 
   interface SpotifyProfile extends Profile {

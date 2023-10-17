@@ -1,13 +1,14 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { unstable_getServerSession } from "next-auth";
 import { Account } from "../../../utils/database/models";
-import { ResponseData } from "../../../types/definitions";
+import { EmptyResponse } from "../../../types/definitions";
 import { refreshToken } from "../../../utils/spotify";
 import { authOptions } from "../auth/[...nextauth]";
+import logError from "../../../utils/log";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ResponseData>
+  res: NextApiResponse<EmptyResponse>
 ) {
   try {
     const session = await unstable_getServerSession(
@@ -47,8 +48,9 @@ export default async function handler(
       }
     );
     res.status(200).send({ message: "Token actualizado" });
-  } catch (err: any) {
-    console.log(err);
+  } catch (error: any) {
+    logError(error);
+
     res.status(500).send({ message: "Error al guardar el token" });
   }
 }
