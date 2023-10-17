@@ -1,4 +1,5 @@
 import NextAuth, { DefaultSession, DefaultUser, Profile } from "next-auth";
+import { Permiso, PermisoType } from "../utils/database/models";
 
 declare module "next-auth" {
   /**
@@ -13,10 +14,8 @@ declare module "next-auth" {
       image?: string;
       nacimiento?: string;
       pais?: string;
-      tipo_usuario?: {
-        id: number;
-        nombre: string;
-      };
+      tipo_usuario?: string;
+      permisos: string[];
     } & DefaultSession["user"];
   }
 

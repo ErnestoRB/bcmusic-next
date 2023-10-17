@@ -10,35 +10,38 @@ import { GetServerSideProps } from "next";
 import BannerForm from "../../../components/BannerForm";
 import { unstable_getServerSession } from "next-auth";
 import { authOptions } from "../../api/auth/[...nextauth]";
-import { isAdmin, onlyAllowAdmins } from "../../../utils/validation/user";
+import Alert from "../../../components/Alert";
+import { userHavePermission } from "../../../utils/authorization/validation/user/server";
+import { VIEW_BANNER_EDIT } from "../../../utils/authorization/permissions";
 
 export default function BannerPage({
   banner,
 }: {
-  banner: BannerRecordModel["dataValues"];
+  banner?: BannerRecordModel["dataValues"];
 }) {
   useSession({ required: true });
 
   return (
     <div className="w-full flex flex-col md:flex-row justify-center gap-8 items-center">
       <Head>
-        <title>Administrar banner</title>
+        <title>{banner ? "Administrar banner" : "Banner no encontrado"}</title>
       </Head>
 
       <div className="max-w-md p-2 md:p-4 rounded-sm bg-white flex flex-col gap-y-2 shadow-lg">
-        <h1>Editar banner</h1>
-        <hr />
-        <Link
-          href={`/code/${banner.id}`}
-          className="bg-bc-purple-2 hover:bg-bc-purple-3 text-white p-2 inline-block"
-        >
-          Ver código
-        </Link>
         {banner && (
           <>
+            <h1>Editar banner</h1>
+            <hr />
+            <Link
+              href={`/code/${banner.id}`}
+              className="bg-bc-purple-2 hover:bg-bc-purple-3 text-white p-2 inline-block"
+            >
+              Ver código
+            </Link>
             <BannerForm banner={banner}></BannerForm>
           </>
         )}
+        {!banner && <Alert>Banner no encontrado</Alert>}
       </div>
     </div>
   );
@@ -59,7 +62,7 @@ export const getServerSideProps: GetServerSideProps = async ({
     authOptions(req, res)
   );
 
-  if (!session || !isAdmin(session.user.tipo_usuario?.nombre)) {
+  if (!userHavePermission(session, VIEW_BANNER_EDIT)) {
     return {
       redirect: {
         destination: "/",

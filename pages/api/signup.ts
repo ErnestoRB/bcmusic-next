@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { ResponseData, SignUpInput } from "../../types/definitions";
-import signup from "../../utils/validation/signup";
+import signup from "../../utils/authorization/validation/signup";
 import { hash } from "bcrypt";
 import { User } from "../../utils/database/models";
 import { isDuplicateError } from "../../utils/database";

@@ -4,13 +4,17 @@ import { Fonts } from "../../utils/database/models";
 import { copyFile, mkdir, rm, stat } from "fs/promises";
 import path from "path";
 import { FONTS_PATH } from "../../vm/fonts/path";
-import { onlyAllowAdmins } from "../../utils/validation/user";
 import { unstable_getServerSession } from "next-auth";
 import { authOptions } from "./auth/[...nextauth]";
-import { PaginationValidation } from "../../utils/validation/pagination";
+import { PaginationValidation } from "../../utils/authorization/validation/pagination";
 import { isDuplicateError } from "../../utils/database";
 import logError from "../../utils/log";
 import { parse } from "../../utils/forms/formidable";
+import { apiUserHavePermission } from "../../utils/authorization/validation/user/server";
+import {
+  API_FONTS_GET,
+  API_FONTS_POST,
+} from "../../utils/authorization/permissions";
 
 const FONTS_PER_PAGE = 15;
 
@@ -24,10 +28,10 @@ export default async function handler(
       res,
       authOptions(req, res)
     );
-    if (onlyAllowAdmins(session, res)) {
-      return;
-    }
     if (req.method?.toLowerCase() === "get") {
+      if (apiUserHavePermission(session, res, API_FONTS_GET)) {
+        return;
+      }
       const { page } = (await PaginationValidation.validateAsync(
         req.query
       )) as { page: number };
@@ -44,6 +48,9 @@ export default async function handler(
       return;
     }
     if (req.method?.toLowerCase() === "post") {
+      if (apiUserHavePermission(session, res, API_FONTS_POST)) {
+        return;
+      }
       const { files, fields } = await parse(req);
       if (!fields.name) {
         res.status(400).send({ message: "No especificaste un nombre" });

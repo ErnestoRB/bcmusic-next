@@ -1,4 +1,4 @@
-import { BannerRecordValidation } from "../utils/validation/bannerRecords";
+import { BannerRecordValidation } from "../utils/authorization/validation/bannerRecords";
 
 describe("BannerRecordValidation", () => {
   it("Fails when nothing is sent", async () => {

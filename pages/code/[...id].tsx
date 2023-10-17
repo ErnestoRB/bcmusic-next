@@ -8,7 +8,8 @@ import Link from "next/link";
 import { BannerRecordWithFonts } from "../../types/definitions";
 import { unstable_getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]";
-import { isAdmin } from "../../utils/validation/user";
+import { userHavePermission } from "../../utils/authorization/validation/user/server";
+import { VIEW_BANNER_CODE } from "../../utils/authorization/permissions";
 
 export default function CodeEditor({
   banner = null,
@@ -65,7 +66,7 @@ export const getServerSideProps: GetServerSideProps = async ({
     authOptions(req, res)
   );
 
-  if (!session || !isAdmin(session.user.tipo_usuario?.nombre)) {
+  if (!userHavePermission(session, VIEW_BANNER_CODE)) {
     return {
       redirect: {
         destination: "/",

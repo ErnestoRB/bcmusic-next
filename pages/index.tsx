@@ -6,6 +6,7 @@ import { ErrorBoundary } from "../components/errors/ErrorBoundary";
 import { Background } from "../components/three/Background";
 import WebGL from "../utils/three/compatibility";
 import { BackgroundContext } from "../context/BackgroundContext";
+import { useSession } from "next-auth/react";
 
 const FallbackCanvas = function () {
   return (
@@ -25,7 +26,11 @@ const FallbackCanvas = function () {
 export default function Home() {
   const [compatibility, setCompatibility] = useState(false);
 
+  const session = useSession();
+
   const { setBackground, setDefault } = useContext(BackgroundContext)!;
+
+  console.log({ session });
 
   useEffect(() => {
     setBackground("bg-black");

@@ -7,11 +7,11 @@ import {
   User,
   UserType,
 } from "../../../utils/database/models";
-import { PaginationValidation } from "../../../utils/validation/pagination";
+import { PaginationValidation } from "../../../utils/authorization/validation/pagination";
 import { Model, Op } from "sequelize";
 import logError from "../../../utils/log";
-import { BannerHistoryDate } from "../../../utils/validation/bannerRecords";
-import { sessionRequired } from "../../../utils/validation/user";
+import { BannerHistoryDate } from "../../../utils/authorization/validation/bannerRecords";
+import { sessionRequired } from "../../../utils/authorization/validation/user/browser";
 import { unstable_getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
 import { sequelize } from "../../../utils/database/connection";

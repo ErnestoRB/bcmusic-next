@@ -6,7 +6,7 @@ import useSWR from "swr";
 import { useEffect, useState } from "react";
 import fetcher from "../utils/swr";
 import Alert from "../components/Alert";
-import { isAdmin } from "../utils/validation/user";
+import { isAdmin } from "../utils/authorization/validation/user/browser";
 import { CopyToClipboards } from "../components/CopyToClipboard";
 import { loadFontsAsync, perserveStatus } from "../utils";
 import { Button } from "../components/Button";

@@ -5,7 +5,8 @@ import { useRouter } from "next/router";
 import Head from "next/head";
 import { unstable_getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]";
-import { isAdmin } from "../../utils/validation/user";
+import { userHavePermission } from "../../utils/authorization/validation/user/server";
+import { VIEW_FONTS } from "../../utils/authorization/permissions";
 
 export default function FontPage({}: {}) {
   const router = useRouter();
@@ -46,7 +47,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     authOptions(req, res)
   );
 
-  if (!session || !isAdmin(session.user.tipo_usuario?.nombre)) {
+  if (!session || userHavePermission(session, VIEW_FONTS)) {
     return {
       redirect: {
         destination: "/",

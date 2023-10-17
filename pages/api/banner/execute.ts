@@ -2,10 +2,11 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { executeBanner } from "../../../vm";
 import { BannerRecord, Fonts } from "../../../utils/database/models";
 import { unstable_getServerSession } from "next-auth";
-import { onlyAllowAdmins } from "../../../utils/validation/user";
 import { authOptions } from "../auth/[...nextauth]";
 import logError from "../../../utils/log";
 import { censureError } from "../../../utils/errors";
+import { apiUserHavePermission } from "../../../utils/authorization/validation/user/server";
+import { API_BANNER_EXECUTE } from "../../../utils/authorization/permissions";
 
 const artistSample = [
   { name: "Duck Fizz", images: [] },
@@ -30,7 +31,7 @@ export default async function handler(
   console.log({ body: req.body });
 
   const artists = Array.isArray(req.body) ? req.body : artistSample;
-  if (onlyAllowAdmins(session, res)) {
+  if (apiUserHavePermission(session, res, API_BANNER_EXECUTE)) {
     return;
   }
 

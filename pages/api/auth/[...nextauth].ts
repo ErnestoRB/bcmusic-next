@@ -31,6 +31,7 @@ import { decode, encode } from "next-auth/jwt";
 import { sendVerificationRequest } from "../../../utils/email";
 import { validateRecaptchaToken } from "../../../utils/recaptcha";
 import logError from "../../../utils/log";
+import { getTypeUserPermissions } from "../../../utils/database/querys";
 
 const generateSessionToken = () => {
   return randomUUID?.() ?? randomBytes(32).toString("hex");
@@ -188,7 +189,7 @@ export const authOptions: (
       },
       session: async function ({ session, token, user }) {
         const otherSession: Session = {
-          user: { id: user.id, email: user.email },
+          user: { id: user.id, email: user.email, permisos: [] },
           expires: session.expires,
         };
         if (user.idPais) {
@@ -200,7 +201,11 @@ export const authOptions: (
         if (user.tipoUsuarioId) {
           const tipo = await TipoUsuario.findByPk(user.tipoUsuarioId);
           if (tipo) {
-            otherSession.user.tipo_usuario = tipo.dataValues;
+            const permisos = await getTypeUserPermissions(
+              String(user.tipoUsuarioId)
+            );
+            otherSession.user.tipo_usuario = tipo.dataValues.nombre;
+            otherSession.user.permisos = permisos;
           }
         }
         const { name, nacimiento, image, apellido } = user;
@@ -208,7 +213,6 @@ export const authOptions: (
         otherSession.user.apellido = apellido;
         otherSession.user.nacimiento = nacimiento;
         otherSession.user.image = image;
-
         return otherSession;
       },
     },

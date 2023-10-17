@@ -3,11 +3,16 @@ import { Fonts } from "../../../utils/database/models";
 import { copyFile, mkdir, readFile, rm, stat } from "fs/promises";
 import path from "path";
 import { FONTS_PATH } from "../../../vm/fonts/path";
-import { onlyAllowAdmins } from "../../../utils/validation/user";
 import { unstable_getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
 import logError from "../../../utils/log";
 import { parse } from "../../../utils/forms/formidable";
+import { apiUserHavePermission } from "../../../utils/authorization/validation/user/server";
+import {
+  API_FONT_DELETE,
+  API_FONT_GET,
+  API_FONT_PATCH,
+} from "../../../utils/authorization/permissions";
 
 export default async function handler(
   req: NextApiRequest,
@@ -20,15 +25,16 @@ export default async function handler(
       authOptions(req, res)
     );
     const { name } = req.query;
-    if (onlyAllowAdmins(session, res)) {
-      return;
-    }
+
     const font = await Fonts.findOne({ where: { nombre: name } });
     if (!font) {
       res.status(404).send({ message: "Fuente no existe" });
       return;
     }
     if (req.method?.toLowerCase() === "get") {
+      if (apiUserHavePermission(session, res, API_FONT_GET)) {
+        return;
+      }
       try {
         const fontBinary = await readFile(
           path.join(FONTS_PATH, font.dataValues.fileName)
@@ -41,6 +47,9 @@ export default async function handler(
       return;
     }
     if (req.method?.toLowerCase() === "delete") {
+      if (apiUserHavePermission(session, res, API_FONT_DELETE)) {
+        return;
+      }
       await font.destroy();
       res.send({
         message: `Fuente "${name}" eliminada`,
@@ -48,6 +57,9 @@ export default async function handler(
       return;
     }
     if (req.method?.toLowerCase() === "patch") {
+      if (apiUserHavePermission(session, res, API_FONT_PATCH)) {
+        return;
+      }
       const { files, fields } = await parse(req);
 
       if (!files.font) {

@@ -12,7 +12,7 @@ import { AdminActions } from "../components/AdminActions";
 import {
   isAdminSession,
   isCollaboratorSession,
-} from "../utils/validation/user";
+} from "../utils/authorization/validation/user/browser";
 
 export default function Panel() {
   const router = useRouter();
@@ -38,7 +38,7 @@ export default function Panel() {
         {session.status != "loading" && session.data && (
           <>
             <h1>Panel de usuario</h1>
-            <h2>Tipo de usuario: {session?.data?.user.tipo_usuario?.nombre}</h2>
+            <h2>Tipo de usuario: {session?.data?.user.tipo_usuario}</h2>
             {(isCollaboratorSession(session.data) ||
               isAdminSession(session.data)) && (
               <>
