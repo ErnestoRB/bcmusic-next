@@ -1,7 +1,6 @@
-import { isPromise } from "util/types";
 import { NodeVM } from "vm2";
 import { runInNewContext } from "vm";
-import { ScriptReturn } from "../utils/validation/vm";
+import { ScriptReturn } from "../utils/authorization/validation/vm";
 import { BannerArtist, BannerContext, createBannerContext } from "./context";
 import { BannerFont, registerBannerFont } from "./fonts";
 

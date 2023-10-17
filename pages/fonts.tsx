@@ -6,8 +6,7 @@ import useSWR from "swr";
 import { useEffect, useState } from "react";
 import fetcher from "../utils/swr";
 import Alert from "../components/Alert";
-import { backgroundGradient } from "../utils/styles";
-import { isAdmin } from "../utils/validation/user";
+import { isAdmin } from "../utils/authorization/validation/user/browser";
 import { CopyToClipboards } from "../components/CopyToClipboard";
 import { loadFontsAsync, perserveStatus } from "../utils";
 import { Button } from "../components/Button";
@@ -40,9 +39,7 @@ export default function FontsComponent() {
   }, [data]);
 
   return (
-    <div
-      className={`flex flex-col items-center justify-center w-full ${backgroundGradient}`}
-    >
+    <div className={`flex flex-col items-center justify-center w-full`}>
       <div className="flex flex-col gap-4 bg-white p-4 md:p-8 rounded-sm">
         <h2 className="text-lg font-bold">Fuentes disponibles:</h2>
         <p>

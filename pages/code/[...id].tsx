@@ -1,6 +1,5 @@
 import Head from "next/head";
 import Editor from "../../components/Editor";
-import { backgroundGradient } from "../../utils/styles";
 import { useRouter } from "next/router";
 import { GetServerSideProps } from "next";
 import { BannerRecord, Fonts } from "../../utils/database/models";
@@ -9,7 +8,8 @@ import Link from "next/link";
 import { BannerRecordWithFonts } from "../../types/definitions";
 import { unstable_getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]";
-import { isAdmin } from "../../utils/validation/user";
+import { userHavePermission } from "../../utils/authorization/validation/user/server";
+import { VIEW_BANNER_CODE } from "../../utils/authorization/permissions";
 
 export default function CodeEditor({
   banner = null,
@@ -26,7 +26,7 @@ export default function CodeEditor({
 
   return (
     <div
-      className={`flex flex-col items-center justify-center w-full ${backgroundGradient} py-4 md:py-8`}
+      className={`flex flex-col items-center justify-center w-full  py-4 md:py-8`}
     >
       <Head>
         <title>Crear código de banner</title>
@@ -66,7 +66,7 @@ export const getServerSideProps: GetServerSideProps = async ({
     authOptions(req, res)
   );
 
-  if (!session || !isAdmin(session.user.tipo_usuario?.nombre)) {
+  if (!userHavePermission(session, VIEW_BANNER_CODE)) {
     return {
       redirect: {
         destination: "/",

@@ -1,12 +1,17 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { BannerRecord, Fonts } from "../../../utils/database/models";
 import { ValidationError } from "joi";
-import { UpdateScriptValidation } from "../../../utils/validation/bannerRecords";
+import { UpdateScriptValidation } from "../../../utils/authorization/validation/bannerRecords";
 import { unstable_getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
-import { onlyAllowAdmins } from "../../../utils/validation/user";
 import type { Model } from "sequelize";
 import logError from "../../../utils/log";
+import { apiUserHavePermission } from "../../../utils/authorization/validation/user/server";
+import {
+  API_BANNER_DELETE,
+  API_BANNER_GET,
+  API_BANNER_PATCH,
+} from "../../../utils/authorization/permissions";
 
 const MAX_FONTS_PER_BANNER = 10;
 
@@ -20,9 +25,6 @@ export default async function handler(
       res,
       authOptions(req, res)
     );
-    if (onlyAllowAdmins(session, res)) {
-      return;
-    }
     const id = req.query.id;
     const script = req.query.script;
     if (!id) {
@@ -35,6 +37,9 @@ export default async function handler(
     }
 
     if (req.method?.toLowerCase() === "get") {
+      if (apiUserHavePermission(session, res, API_BANNER_GET)) {
+        return;
+      }
       if (script) {
         const record = await BannerRecord.findByPk(id, {
           include: {
@@ -83,6 +88,9 @@ export default async function handler(
       }
       res.send({ message: "Registro encontrado", data: record?.dataValues });
     } else if (req.method?.toLowerCase() === "patch") {
+      if (apiUserHavePermission(session, res, API_BANNER_PATCH)) {
+        return;
+      }
       const record = await BannerRecord.findByPk(id, {
         attributes: { exclude: ["script"] },
       });
@@ -130,6 +138,9 @@ export default async function handler(
       res.send({ message: `Banner ${id} actualizado!` });
       return;
     } else if (req.method?.toLowerCase() === "delete") {
+      if (apiUserHavePermission(session, res, API_BANNER_DELETE)) {
+        return;
+      }
       const record = await BannerRecord.findByPk(id, {
         attributes: { exclude: ["script"] },
       });
@@ -155,18 +166,8 @@ export default async function handler(
         });
         return;
       }
-      const updateRecord = (await UpdateScriptValidation.validateAsync(
-        req.body
-      )) as { script: string };
-      BannerRecord.update(
-        { script: updateRecord.script },
-        {
-          where: {
-            id,
-          },
-        }
-      );
-      res.send({ message: `Banner ${id} actualizado!` });
+      record.destroy();
+      res.send({ message: `Banner ${id} eliminado!` });
       return;
     } else {
       res.status(400).send({ message: `Método no implementado!` });

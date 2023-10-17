@@ -1,6 +1,7 @@
 import { models } from "@next-auth/sequelize-adapter";
 import { DataTypes, Model } from "sequelize";
 import { sequelize } from "./connection";
+import { IS_DEVELOPMENT } from "../environment";
 export const Pais = sequelize.define<
   Model<{
     ID: string;
@@ -16,12 +17,12 @@ export const Pais = sequelize.define<
   },
   { tableName: "paises", createdAt: false, updatedAt: false }
 );
-export const TipoUsuario = sequelize.define<
-  Model<{
-    id: number;
-    nombre: string;
-  }>
->(
+
+export interface TipoUsuarioType {
+  id: number;
+  nombre: string;
+}
+export const TipoUsuario = sequelize.define<Model<TipoUsuarioType>>(
   "tipoUsuario",
   {
     id: {
@@ -33,6 +34,68 @@ export const TipoUsuario = sequelize.define<
   },
   { tableName: "tipo_usuario", createdAt: false, updatedAt: false }
 );
+
+export interface PermisoType {
+  name: string;
+  active: boolean;
+}
+
+export const Permiso = sequelize.define<Model<PermisoType>>(
+  "permiso",
+  {
+    name: { type: DataTypes.STRING, primaryKey: true },
+    active: { type: DataTypes.BOOLEAN, defaultValue: true, allowNull: false },
+  },
+  { tableName: "permiso", createdAt: false, updatedAt: false }
+);
+
+export interface PermisoMeta {
+  active: boolean;
+  expirationDate: Date;
+  validFrom: Date;
+}
+
+export interface TipoUsuarioPermisoType extends PermisoMeta {
+  tipoUsuarioId: number;
+  permisoName: number;
+}
+
+export const TipoUsuarioPermiso = sequelize.define<
+  Model<TipoUsuarioPermisoType>
+>(
+  "tipoUsuarioPermiso",
+  {
+    tipoUsuarioId: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: TipoUsuario,
+        key: "id",
+      },
+    },
+    permisoName: {
+      type: DataTypes.STRING,
+      references: {
+        model: Permiso,
+        key: "name",
+      },
+    },
+    active: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
+      allowNull: false,
+    },
+    expirationDate: {
+      type: DataTypes.DATE,
+      defaultValue: null,
+      allowNull: true,
+    },
+    validFrom: { type: DataTypes.DATE, defaultValue: null, allowNull: true },
+  },
+  { tableName: "tipo_usuario_permiso", createdAt: false, updatedAt: false }
+);
+
+TipoUsuario.belongsToMany(Permiso, { through: TipoUsuarioPermiso });
+Permiso.belongsToMany(TipoUsuario, { through: TipoUsuarioPermiso });
 
 export const TimeRanges = sequelize.define<
   Model<{
@@ -188,3 +251,6 @@ BannerRecord.hasMany(GeneratedBanner, {
 
 // sequelize.sync({ alter: true });
 // sequelize.sync({ force: true });
+if (IS_DEVELOPMENT) {
+  sequelize.sync();
+}

@@ -1,13 +1,55 @@
+import { useSession } from "next-auth/react";
 import { BannerRecordWithAuthors } from "../types/definitions";
 import Alert from "./Alert";
+import Link from "./Link";
+import { Button } from "./Button";
+import { toast } from "react-toastify";
+import {
+  isAdminSession,
+  isCollaboratorSession,
+} from "../utils/authorization/validation/user/browser";
 
 export default function BannerPreview({
   bannerData,
 }: {
   bannerData: BannerRecordWithAuthors;
 }) {
+  const session = useSession();
+
   return (
     <div className="border border-stone-400 w-64  bg-white rounded shadow-lg">
+      {session.data &&
+        (isCollaboratorSession(session.data) ||
+          isAdminSession(session.data)) && (
+          <div className="flex gap-y-1 flex-wrap  p-2">
+            <h4 className="w-full">Acciones</h4>
+            <Link
+              href={`/code/${bannerData.id}`}
+              className="bg-green-600 hover:bg-green-700 text-white"
+            >
+              <Button> Ver código</Button>
+            </Link>
+
+            <Link
+              href={`/admin/banner/${bannerData.id}`}
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              <Button>Editar metadatos</Button>
+            </Link>
+            <Button
+              className="bg-red-600 hover:bg-red-700 text-white"
+              onClick={() => {
+                fetch(`/api/banner/${bannerData.id}`, { method: "DELETE" })
+                  .then(() => toast("Banner eliminado", { type: "success" }))
+                  .catch(() =>
+                    toast("Banner no pudo ser eliminado", { type: "error" })
+                  );
+              }}
+            >
+              Borrar
+            </Button>
+          </div>
+        )}
       <div className="flex flex-col gap-y-4 items-center justify-center w-full h-64 bg-black">
         {(bannerData.exampleUrl && (
           <picture className="w-full h-full">

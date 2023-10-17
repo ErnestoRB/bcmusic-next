@@ -14,7 +14,7 @@ function NavBarLink(
       {(props.visible === undefined || props.visible === "true") && (
         <Link
           {...props}
-          className="grid h-full px-2 py-1 bg-stone-700 hover:bg-stone-800 text-white place-items-center"
+          className="grid h-full px-2 py-1 border-b-0 lg:border-b-2 border-stone-200 shadow-md bg-stone-800 hover:bg-stone-900 text-white place-items-center"
         ></Link>
       )}
     </>
@@ -112,7 +112,7 @@ export default function NavBar() {
 
   return (
     <nav
-      className=" bg-black flex flex-col sm:flex-row flex-wrap w-full h-[10vh] 
+      className=" bg-gradient-to-br from-black/80 to-black/70 flex flex-col sm:flex-row flex-wrap w-full h-[10vh] 
     text-white gap-x-4 items-center sm:items-center place-items-center px-1 md:px-4"
     >
       <Link
@@ -135,8 +135,8 @@ export default function NavBar() {
             .map((item, index) => item)}
         {!desktopNavbar && (
           <Dropdown
-            classNameButton="p-2 bg-stone-800  hover:bg-stone-900 text-white"
-            classNameDropdown="w-min md:w-max p-2 bg-black text-white"
+            classNameButton="p-2 bg-stone-900 hover:bg-stone-900 text-white"
+            classNameDropdown="w-min md:w-max p-2 bg-black/40 backdrop-blur-md shadow-md text-white"
           >
             {menuItems
               .filter((item) => !item.type || item.type === session.status)

@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { isPromise } from "util/types";
+import { isPromise } from "node:util/types";
 
 export const PromiseValidation = Joi.custom((value, helpers) => {
   if (!isPromise(value)) {

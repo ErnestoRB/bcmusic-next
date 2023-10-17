@@ -5,13 +5,16 @@ import {
   User,
 } from "../../../utils/database/models";
 import { ValidationError } from "joi";
-import { BannerRecordValidation } from "../../../utils/validation/bannerRecords";
+import { BannerRecordValidation } from "../../../utils/authorization/validation/bannerRecords";
 import { unstable_getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
-import { onlyAllowAdmins } from "../../../utils/validation/user";
 import logError from "../../../utils/log";
 import { sequelize } from "../../../utils/database/connection";
-
+import { apiUserHavePermission } from "../../../utils/authorization/validation/user/server";
+import {
+  API_BANNER_CREATE,
+  API_BANNER_PATCH,
+} from "../../../utils/authorization/permissions";
 const createCache: { userId: string; lastCreated: Date }[] = [];
 const updateCache: { userId: string; lastUpdated: Date }[] = [];
 
@@ -27,11 +30,12 @@ export default async function handler(
       res,
       authOptions(req, res)
     );
-    if (onlyAllowAdmins(session, res)) {
-      return;
-    }
+
     const userId = session!.user.id;
     if (req.method?.toLowerCase() === "post") {
+      if (apiUserHavePermission(session, res, API_BANNER_CREATE)) {
+        return;
+      }
       const { body } = req;
       const record = (await BannerRecordValidation.validateAsync(
         body
@@ -68,6 +72,9 @@ export default async function handler(
       }
       res.send({ message: `Record creado!`, id: recordInstance.dataValues.id });
     } else if (req.method?.toLowerCase() === "patch") {
+      if (apiUserHavePermission(session, res, API_BANNER_PATCH)) {
+        return;
+      }
       const { body } = req;
       const record = (await BannerRecordValidation.validateAsync(
         body
@@ -104,9 +111,9 @@ export default async function handler(
           message: `Record no pudo ser alterado! ¿Probablemente no hubo cambios?`,
         });
       }
-    } else {
-      res.status(400).send({ message: `Método no implementado!` });
+      return;
     }
+    res.status(400).send({ message: `Método no implementado!` });
   } catch (error: any) {
     transaction.rollback();
     if (error.isJoi) {

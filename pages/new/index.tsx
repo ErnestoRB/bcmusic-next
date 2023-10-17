@@ -1,12 +1,12 @@
 import Head from "next/head";
-import { backgroundGradient } from "../../utils/styles";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 import BannerForm from "../../components/BannerForm";
 import { unstable_getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]";
 import { GetServerSideProps } from "next";
-import { isAdmin } from "../../utils/validation/user";
+import { userHavePermission } from "../../utils/authorization/validation/user/server";
+import { VIEW_BANNER_NEW } from "../../utils/authorization/permissions";
 
 export default function CreateBannerCode() {
   const { push } = useRouter();
@@ -18,9 +18,7 @@ export default function CreateBannerCode() {
   });
 
   return (
-    <div
-      className={`flex flex-col items-center justify-center w-full ${backgroundGradient}`}
-    >
+    <div className={`flex flex-col items-center justify-center w-full `}>
       <Head>
         <title>Programar nuevo banner</title>
       </Head>
@@ -42,7 +40,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     authOptions(req, res)
   );
 
-  if (!session || !isAdmin(session.user.tipo_usuario?.nombre)) {
+  if (!session || !userHavePermission(session, VIEW_BANNER_NEW)) {
     return {
       redirect: {
         destination: "/",

@@ -1,0 +1,14 @@
+export const API_BANNER_GET = "api.banner.get";
+export const API_BANNER_CREATE = "api.banner.create";
+export const API_BANNER_PATCH = "api.banner.patch";
+export const API_BANNER_DELETE = "api.banner.delete";
+export const API_BANNER_EXECUTE = "api.banner.execute";
+export const API_FONTS_POST = "api.font.post";
+export const API_FONTS_GET = "api.fonts.get";
+export const API_FONT_DELETE = "api.font.delete";
+export const API_FONT_GET = "api.font.get";
+export const API_FONT_PATCH = "api.font.patch";
+export const VIEW_BANNER_EDIT = "view.banner.edit";
+export const VIEW_BANNER_NEW = "view.banner.new";
+export const VIEW_BANNER_CODE = "view.banner.code";
+export const VIEW_FONTS = "view.fonts";

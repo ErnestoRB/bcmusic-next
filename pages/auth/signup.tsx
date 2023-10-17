@@ -10,7 +10,6 @@ import spotifyLogo from "../../images/spotify-white.png";
 import Image from "next/image";
 import { Button } from "../../components/Button";
 import Script from "next/script";
-import { backgroundGradient } from "../../utils/styles";
 
 export default function SignUp({ paises = [] }: { paises: PaisFields[] }) {
   const router = useRouter();
@@ -54,9 +53,7 @@ export default function SignUp({ paises = [] }: { paises: PaisFields[] }) {
   }, []);
 
   return (
-    <div
-      className={`w-full flex flex-col items-center justify-center py-8 ${backgroundGradient}`}
-    >
+    <div className={`w-full flex flex-col items-center justify-center py-8 `}>
       <Script
         async
         src={

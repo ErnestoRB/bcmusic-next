@@ -9,7 +9,6 @@ import spotifyLogo from "../../images/spotify-white.png";
 import Alert from "../../components/Alert";
 import Script from "next/script";
 import Head from "next/head";
-import { backgroundGradient } from "../../utils/styles";
 import { Button } from "../../components/Button";
 
 const LoginButton = function ({
@@ -40,9 +39,7 @@ export default function AuthError({
   console.log({ providers });
 
   return (
-    <div
-      className={`w-full flex justify-center items-center ${backgroundGradient}`}
-    >
+    <div className={`w-full flex justify-center items-center `}>
       <Head>
         <title>Iniciar sesión</title>
       </Head>

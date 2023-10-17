@@ -6,9 +6,10 @@ import { useRouter } from "next/router";
 import Head from "next/head";
 import { unstable_getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]";
-import { isAdmin } from "../utils/validation/user";
+import { userHavePermission } from "../utils/authorization/validation/user/server";
+import { VIEW_FONTS } from "../utils/authorization/permissions";
 
-export default function UploadPage({}: {
+export default function UploadFontPage({}: {
   availableBanners: BannerRecordModel["dataValues"][] | undefined;
   banners: { mes: number; cantidad: number }[];
 }) {
@@ -21,7 +22,7 @@ export default function UploadPage({}: {
   });
 
   return (
-    <div className="w-full bg-gradient-to-tr from-bc-purple-1 via-blue-300 to-stone-100 flex flex-col md:flex-row justify-center gap-8 items-center">
+    <div className="w-full flex flex-col md:flex-row justify-center gap-8 items-center">
       <Head>
         <title>Subir fuente</title>
       </Head>
@@ -42,7 +43,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     authOptions(req, res)
   );
 
-  if (!session || !isAdmin(session.user.tipo_usuario?.nombre)) {
+  if (!session || !userHavePermission(session, VIEW_FONTS)) {
     return {
       redirect: {
         destination: "/",

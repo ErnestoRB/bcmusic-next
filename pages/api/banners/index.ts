@@ -6,7 +6,7 @@ import {
   User,
   UserType,
 } from "../../../utils/database/models";
-import { PaginationValidation } from "../../../utils/validation/pagination";
+import { PaginationValidation } from "../../../utils/authorization/validation/pagination";
 import { Model } from "sequelize";
 import logError from "../../../utils/log";
 
