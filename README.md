@@ -1,10 +1,22 @@
-# Levantar app (desarrollo)
+# BashCrashers Music App
+
+BCMusicAPP es una aplicacion que a traves de los datos de plataformas musicales, genera recursos únicos, de interes para todos los aficionados a la música.
+
+Actualmente, BCMusicApp es capaz de generar imagenes a partir de los artistas favoritos de sus usuarios en Spotify.
+Para ello, se usan scripts de Javascript que permiten la programación de estos banners, generados a través de la API de canvas disponible en el navegador, gracias a [node-canvas](https://github.com/Automattic/node-canvas).
+Los scripts son generados por usuarios con permisos especiales, sin embargo, al ser de fuente desconfiable, se necesitan ejecutar en un sandbox. Para ello se usa el modulo [vm](https://nodejs.org/docs/v0.4.8/api/vm.html) ,asi como la librería [vm2](https://nodejs.org/docs/v0.4.8/api/vm.html). Sin embargo, es una característica que se puede considerar _inestable_.
+
+Para manejar el inicio de sesiones, se usa [next-auth](https://next-auth.js.org/), y como ORM se usa [Sequelize](https://sequelize.org/)
+
+## Levantar app (desarrollo)
 
 1. Levantar base de datos MySQL para desarrollo con docker:
 
 ```
 docker compose up
 ```
+
+**NOTA** existirá una instancia del cliente phpMyAdmin disponible en http://localhost:8080
 
 2. Generar .env.local
 
