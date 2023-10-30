@@ -38,7 +38,7 @@ export default function BannerPreview({
             </Link>
             <Button
               className="bg-red-600 hover:bg-red-700 text-white"
-              onClick={() => {
+              onPressEnd={() => {
                 fetch(`/api/banner/${bannerData.id}`, { method: "DELETE" })
                   .then(() => toast("Banner eliminado", { type: "success" }))
                   .catch(() =>

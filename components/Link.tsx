@@ -1,7 +1,6 @@
-import NextLink from "next/link";
 import React from "react";
+import { LinkProps, Link as L } from "react-aria-components";
 
-type LinkProps = React.ComponentProps<typeof NextLink>;
 export default function Link(props: LinkProps) {
-  return <NextLink className="text-blue-600 underline" {...props}></NextLink>;
+  return <L className="text-blue-600 underline" {...props}></L>;
 }

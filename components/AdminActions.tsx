@@ -1,7 +1,7 @@
 import { useSession } from "next-auth/react";
-import { Button } from "./Button";
-import Link from "./Link";
 import { useRouter } from "next/navigation";
+import { MenuButton } from "./Menu/MenuButton";
+import MenuItem from "./Menu/MenuItem";
 
 export function AdminActions() {
   const router = useRouter();
@@ -14,15 +14,11 @@ export function AdminActions() {
 
   return (
     <div className="flex flex-col md:flex-row md:gap-x-2 gap-y-1 flex-wrap">
-      <Link href="/new" className="bg-blue-600 hover:bg-blue-700 text-white ">
-        <Button>Crear nuevo banner</Button>
-      </Link>
-      <Link href="/font" className="bg-blue-600 hover:bg-blue-700 text-white">
-        <Button>Subir nueva fuente</Button>
-      </Link>
-      <Link href="/fonts" className="bg-blue-600 hover:bg-blue-700 text-white">
-        <Button>Ver fuentes existentes</Button>
-      </Link>
+      <MenuButton label="Acciones" buttonClass="bg-red-500 p-2 text-white">
+        <MenuItem href="/new">Crear nuevo banner</MenuItem>
+        <MenuItem href="/font">Subir nueva fuente</MenuItem>
+        <MenuItem href="/fonts">Ver fuentes </MenuItem>
+      </MenuButton>
     </div>
   );
 }

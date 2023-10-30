@@ -106,8 +106,8 @@ export default function BannerEditor({ id }: { id: string }) {
           <div>
             <div className="flex gap-x-2 p-2 bg-stone-800">
               <Button
-                className="bg-green-600 text-sm p-2  rounded-lg"
-                onClick={() => {
+                className="bg-green-600 text-sm p-2 rounded-lg"
+                onPressEnd={() => {
                   if (editorText !== oldCode.current) {
                     toast(
                       "Tienes cambios sin guardar! Guarda antes de ejecutar el código",
@@ -144,7 +144,7 @@ export default function BannerEditor({ id }: { id: string }) {
               </Button>
               <Button
                 className="bg-blue-600 text-white text-sm p-2  rounded-lg"
-                onClick={() => {
+                onPressEnd={() => {
                   if (!id) {
                     toast("Aún no estableces los datos del banner!", {
                       type: "error",
@@ -184,7 +184,7 @@ export default function BannerEditor({ id }: { id: string }) {
                   <Button
                     key={file.name}
                     className="bg-stone-900 h-8 gap-x-2 px-2 text-sm flex items-center"
-                    onClick={() => setFileIndex(index)}
+                    onPressEnd={() => setFileIndex(index)}
                   >
                     {file.language === "javascript" ? (
                       <Image

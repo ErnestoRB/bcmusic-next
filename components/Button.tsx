@@ -1,5 +1,5 @@
-import { ButtonHTMLAttributes } from "react";
+import { ButtonProps, Button as Btn } from "react-aria-components";
 
-export function Button(props: ButtonHTMLAttributes<HTMLButtonElement>) {
-  return <button {...props} className={`p-2 ${props.className}`}></button>;
+export function Button({ className = "", ...props }: ButtonProps) {
+  return <Btn {...props} className={`p-2 ${className}`}></Btn>;
 }

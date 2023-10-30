@@ -67,7 +67,7 @@ export default function FontsComponent() {
                     </Link>
                     <Button
                       className="bg-red-600 hover:bg-red-700 text-white"
-                      onClick={() => {
+                      onPressEnd={() => {
                         fetch(`/api/font/${font.nombre}`, { method: "DELETE" })
                           .then(perserveStatus)
                           .then((res) => {
@@ -126,7 +126,7 @@ export default function FontsComponent() {
               )}
               {page > 1 && (
                 <Button
-                  onClick={() => setPage((page) => page - 1)}
+                  onPressEnd={() => setPage((page) => page - 1)}
                   className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1"
                 >
                   Página anterior

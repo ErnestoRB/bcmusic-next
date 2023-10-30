@@ -81,7 +81,7 @@ export default function AddFont({
             <Button
               type="button"
               className="bg-red-600 hover:bg-red-700 text-white p-1"
-              onClick={() => {
+              onPressEnd={() => {
                 fetch(`/api/banner/${id}?deleteFont=${font.id}`, {
                   method: "DELETE",
                 })
@@ -129,7 +129,7 @@ export default function AddFont({
           <Button
             type="submit"
             className="bg-green-500 text-white hover:bg-green-600"
-            disabled={isLoading || error}
+            isDisabled={isLoading || error}
           >
             Añadir
           </Button>
