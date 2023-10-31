@@ -69,7 +69,7 @@ export default function SignUp({ paises = [] }: { paises: PaisFields[] }) {
         <Button
           type="button"
           className="flex items-center gap-2 bg-spotify-green text-white"
-          onClick={() => signIn("spotify", { callbackUrl })}
+          onPressEnd={() => signIn("spotify", { callbackUrl })}
         >
           <Image
             src={spotifyLogo}

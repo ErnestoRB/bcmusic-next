@@ -14,10 +14,14 @@ import { Button } from "../../components/Button";
 const LoginButton = function ({
   children,
   className,
-  onClick,
+  onPressEnd,
 }: React.ComponentProps<typeof Button>) {
   return (
-    <Button id="email-login" className={`h-12 ${className}`} onClick={onClick}>
+    <Button
+      id="email-login"
+      className={`h-12 ${className}`}
+      onPressEnd={onPressEnd}
+    >
       {children}
     </Button>
   );
@@ -135,7 +139,7 @@ export default function AuthError({
                       key={provider.id}
                       id="password-login"
                       className="bg-stone-700 text-white"
-                      onClick={() => setLoginMethod("credentials")}
+                      onPressEnd={() => setLoginMethod("credentials")}
                     >
                       Iniciar sesión con contraseña
                     </LoginButton>
@@ -146,7 +150,7 @@ export default function AuthError({
                       key={provider.id}
                       id="email-login"
                       className="bg-black text-white"
-                      onClick={() => setLoginMethod("email")}
+                      onPressEnd={() => setLoginMethod("email")}
                     >
                       Iniciar sesión con Email
                     </LoginButton>
@@ -157,7 +161,7 @@ export default function AuthError({
                       key={provider.id}
                       id="spotify-login"
                       className="flex items-center gap-2 justify-center bg-spotify-green text-white"
-                      onClick={() => signIn("spotify", { callbackUrl })}
+                      onPressEnd={() => signIn("spotify", { callbackUrl })}
                     >
                       <Image
                         src={spotifyLogo}

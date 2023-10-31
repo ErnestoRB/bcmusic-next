@@ -1,7 +1,7 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { SessionContextValue } from "next-auth/react";
-import NavBar from "../components/NavBar";
+import NavBar from "../components/Nav/NavBar";
 
 let useMediaQueryMock: jest.Mock = jest.fn();
 

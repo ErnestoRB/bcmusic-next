@@ -13,7 +13,7 @@ export function CopyToClipboards({ children }: { children: string }) {
       <span className="block ">{children}</span>
       <Button
         className="rounded-md bg-red-600 hover:bg-red-700"
-        onClick={() => {
+        onPressEnd={() => {
           if (window.navigator?.clipboard) {
             window.navigator.clipboard.writeText(children);
             toast("Copiado al portapapeles", {

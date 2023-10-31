@@ -4,6 +4,7 @@ import { perserveStatus, stringIsAValidUrl } from "../utils";
 import { toast } from "react-toastify";
 import { useRouter } from "next/router";
 import Alert from "./Alert";
+import { Button } from "./Button";
 
 export default function BannerForm({
   banner = undefined,
@@ -151,12 +152,12 @@ export default function BannerForm({
       <span>
         <b>* Campos obligatorios</b>
       </span>
-      <button
+      <Button
         type="submit"
         className="bg-blue-600 hover:bg-blue-700 text-white"
       >
         {`${banner ? "Editar" : "Crear"}`}
-      </button>
+      </Button>
     </form>
   );
 }
