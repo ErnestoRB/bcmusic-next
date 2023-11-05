@@ -111,7 +111,7 @@ export default function BannerPage({
                 {error && <Alert>{error}</Alert>}
                 <Button
                   className="bg-green-400 text-black"
-                  onClick={() => {
+                  onPress={() => {
                     if (isLoading) return;
                     if (!selected) return;
 

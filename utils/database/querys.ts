@@ -38,13 +38,10 @@ export const getTypeUserPermissions = async (
   });
 
   if (tipoUsuario) {
-    console.log(JSON.stringify(tipoUsuario.dataValues));
-
     let values = tipoUsuario.dataValues as TipoUsuarioPermissions;
     permissions = values.permisos
       .filter((permisoInfo) => isPermissionValid(permisoInfo))
       .map((p) => p.name);
   }
-  permissions.forEach(console.log);
   return permissions;
 };

@@ -10,6 +10,8 @@ export const { DATABASE_URL } = process.env;
 export const { GMAIL_ADDRESS } = process.env;
 export const { GMAIL_PASS } = process.env;
 
+export const { ORS_APIKEY } = process.env;
+
 export const { NEXT_PUBLIC_RECAPTCHA_CLIENT } = process.env;
 export const IS_DEVELOPMENT = process.env["NODE_ENV"] === "development";
 

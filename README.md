@@ -8,6 +8,12 @@ Los scripts son generados por usuarios con permisos especiales, sin embargo, al 
 
 Para manejar el inicio de sesiones, se usa [next-auth](https://next-auth.js.org/), y como ORM se usa [Sequelize](https://sequelize.org/)
 
+## Configurar servicio de mapas
+
+Para poder hacer consultas a la API de [OpenRouteService](https://openrouteservice.org/dev/#/api-docs/v2/) es necesario colocar en el archivo `.env.local` la API KEY, colocando una nueva linea ORS_APIKEY=
+
+La API_KEY se genera [aqui](https://openrouteservice.org/dev/#/login)
+
 ## Levantar app (desarrollo)
 
 1. Levantar base de datos MySQL para desarrollo con docker:
@@ -33,6 +39,7 @@ DATABASE_PORT=2020
 DATABASE_PASS=b4\$hcr4\$h3rs
 RECAPTCHA_SECRET=
 NEXT_PUBLIC_RECAPTCHA_CLIENT=
+ORS_APIKEY=
 ```
 
 3. Instalar dependencias (sólo primera vez)
