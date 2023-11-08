@@ -55,6 +55,10 @@ export default function NavBar() {
             route: "/politicas",
             node: "Políticas",
           },
+          {
+            route: "/generate-routes",
+            node: "Generar rutas",
+          },
         ],
       },
       {
