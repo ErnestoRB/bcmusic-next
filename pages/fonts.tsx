@@ -146,7 +146,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     authOptions(req, res)
   );
 
-  if (!session || !isAdmin(session.user.tipo_usuario?.nombre)) {
+  if (!session || !isAdmin(session.user.tipo_usuario)) {
     return {
       redirect: {
         destination: "/",

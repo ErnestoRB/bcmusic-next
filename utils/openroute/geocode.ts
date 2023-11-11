@@ -1,10 +1,5 @@
-/// @ts-ignore
-import Openrouteservice from "openrouteservice-js";
-import { ORS_APIKEY } from "../environment";
 import { orsReq } from "./base";
 import { LatLngCoords } from "../../pages/api/maps/route/[profile]";
-
-const Geocode = new Openrouteservice.Geocode({ api_key: ORS_APIKEY });
 
 export interface CoordRadius {
   lat_lang: LatLngCoords;
@@ -59,14 +54,4 @@ export async function generateRoute({ profile, coords }: RouteArgs) {
     method: "post",
     body,
   }).then((res) => res.json());
-}
-
-export async function reverseGeoCode({
-  point,
-  boundaryCountry = "MEX",
-}: ReverseGeoCodeArgs) {
-  return await Geocode.reverseGeocode({
-    point: point,
-    boundary_country: [boundaryCountry],
-  });
 }
