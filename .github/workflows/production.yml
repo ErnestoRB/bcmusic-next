@@ -1,6 +1,11 @@
 name: Production deploy
 on:
   push:
+    paths:
+      - "**.js"
+      - "**.tsx"
+      - "**.ts"
+      - "**.json"
     branches:
       - main
 
