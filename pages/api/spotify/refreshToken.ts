@@ -1,10 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { unstable_getServerSession } from "next-auth";
-import { Account } from "../../../utils/database/models";
 import { EmptyResponse } from "../../../types/definitions";
 import { refreshToken } from "../../../utils/spotify";
 import { authOptions } from "../auth/[...nextauth]";
 import logError from "../../../utils/log";
+import { Account } from "../../../utils/database/models/next-auth";
 
 export default async function handler(
   req: NextApiRequest,

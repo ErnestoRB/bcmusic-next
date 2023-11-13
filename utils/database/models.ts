@@ -1,256 +1,75 @@
-import { models } from "@next-auth/sequelize-adapter";
-import { DataTypes, Model } from "sequelize";
 import { sequelize } from "./connection";
-import { IS_DEVELOPMENT } from "../environment";
-export const Pais = sequelize.define<
-  Model<{
-    ID: string;
-    Nombre_Corto: string;
-    Nombre: string;
-  }>
->(
-  "pais",
-  {
-    ID: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    Nombre_Corto: DataTypes.STRING(2),
-    Nombre: DataTypes.STRING,
-  },
-  { tableName: "paises", createdAt: false, updatedAt: false }
-);
+import { User } from "./models/User";
+import { Account, Session, VerificationToken } from "./models/next-auth";
+import { TimeRanges } from "./models/TimeRanges";
+import { Banner } from "./models/Banner";
+import { UserType } from "./models/UserType";
+import { Permission } from "./models/Permission";
+import { Fonts } from "./models/Fonts";
+import { Country } from "./models/Country";
+import { BannerFonts } from "./models/BannerFonts";
+import { UserTypePermission } from "./models/UserTypePermission";
+import { GeneratedBanner } from "./models/GeneratedBanner";
 
-export interface TipoUsuarioType {
-  id: number;
-  nombre: string;
-}
-export const TipoUsuario = sequelize.define<Model<TipoUsuarioType>>(
-  "tipoUsuario",
-  {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
-    },
-    nombre: DataTypes.STRING,
-  },
-  { tableName: "tipo_usuario", createdAt: false, updatedAt: false }
-);
+// N:M thru defined model
+UserType.belongsToMany(Permission, { through: UserTypePermission });
+Permission.belongsToMany(UserType, { through: UserTypePermission });
 
-export interface PermisoType {
-  name: string;
-  active: boolean;
-}
-
-export const Permiso = sequelize.define<Model<PermisoType>>(
-  "permiso",
-  {
-    name: { type: DataTypes.STRING, primaryKey: true },
-    active: { type: DataTypes.BOOLEAN, defaultValue: true, allowNull: false },
-  },
-  { tableName: "permiso", createdAt: false, updatedAt: false }
-);
-
-export interface PermisoMeta {
-  active: boolean;
-  expirationDate: Date;
-  validFrom: Date;
-}
-
-export interface TipoUsuarioPermisoType extends PermisoMeta {
-  tipoUsuarioId: number;
-  permisoName: number;
-}
-
-export const TipoUsuarioPermiso = sequelize.define<
-  Model<TipoUsuarioPermisoType>
->(
-  "tipoUsuarioPermiso",
-  {
-    tipoUsuarioId: {
-      type: DataTypes.INTEGER,
-      references: {
-        model: TipoUsuario,
-        key: "id",
-      },
-    },
-    permisoName: {
-      type: DataTypes.STRING,
-      references: {
-        model: Permiso,
-        key: "name",
-      },
-    },
-    active: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: true,
-      allowNull: false,
-    },
-    expirationDate: {
-      type: DataTypes.DATE,
-      defaultValue: null,
-      allowNull: true,
-    },
-    validFrom: { type: DataTypes.DATE, defaultValue: null, allowNull: true },
-  },
-  { tableName: "tipo_usuario_permiso", createdAt: false, updatedAt: false }
-);
-
-TipoUsuario.belongsToMany(Permiso, { through: TipoUsuarioPermiso });
-Permiso.belongsToMany(TipoUsuario, { through: TipoUsuarioPermiso });
-
-export const TimeRanges = sequelize.define<
-  Model<{
-    id: number;
-    nombre: string;
-  }>
->(
-  "timeRanges",
-  {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
-    },
-    nombre: DataTypes.STRING,
-  },
-  { tableName: "time_ranges", createdAt: false, updatedAt: false }
-);
-
-export type FontsType = Model<{
-  id?: string;
-  nombre: string;
-  fileName: string;
-}>;
-
-export const Fonts = sequelize.define<FontsType>(
-  "fonts",
-  {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
-    },
-    nombre: { type: DataTypes.STRING(150), allowNull: false, unique: true },
-    fileName: { type: DataTypes.STRING(100), allowNull: false },
-  },
-  { tableName: "fonts", createdAt: false, updatedAt: false }
-);
-
-export type BannerRecordTypeObject = {
-  id: string;
-  minItems: number; // número minimo de items de datos, por defecto, 1.
-  width: number; // ancho en px del banner
-  height: number; // altura del banner
-  exampleUrl?: string; // url de imagen de ejemplo
-  description?: string; // descripción del banner
-  name: string; // nombre del banner
-  script: string;
-};
-export type BannerRecordModel = Model<BannerRecordTypeObject>;
-
-export const BannerRecord = sequelize.define<BannerRecordModel>(
-  "bannerRecord",
-  {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
-    },
-    minItems: DataTypes.INTEGER,
-    exampleUrl: DataTypes.STRING(500),
-    width: { type: DataTypes.INTEGER, allowNull: false },
-    height: { type: DataTypes.INTEGER, allowNull: false },
-    description: DataTypes.STRING(500),
-    name: { type: DataTypes.STRING, allowNull: false },
-    script: DataTypes.STRING(5000),
-  },
-  { tableName: "banner_record", createdAt: false, updatedAt: false }
-);
-
-BannerRecord.belongsTo(TimeRanges, {
-  foreignKey: { name: "timeRangeId", allowNull: false, defaultValue: 1 },
-});
-TimeRanges.hasMany(BannerRecord);
-export const BannerFonts = sequelize.define<Model<{}>>(
-  "banner_fonts",
-  {},
-  { timestamps: false }
-);
-BannerRecord.belongsToMany(Fonts, {
-  through: BannerFonts,
-  foreignKey: { name: "bannerId", allowNull: false, defaultValue: 1 },
-});
-Fonts.belongsToMany(BannerRecord, { through: BannerFonts });
-
-export interface UserType {
-  id?: string;
-  name: string;
-  email: string;
-  password: string;
-  nacimiento: string | Date;
-  apellido: string;
-  image?: string;
-  idPais: number;
-  tipoUsuarioId?: number;
-}
-
-export const User = sequelize.define<Model<UserType>>("user", {
-  ...models.User,
-  password: DataTypes.STRING(65),
-  nacimiento: DataTypes.DATE,
-  apellido: DataTypes.STRING,
-  idPais: {
-    type: DataTypes.INTEGER,
-    references: {
-      model: Pais,
-      key: "ID",
-    },
-  },
+// 1:N
+UserType.hasMany(User);
+User.belongsTo(UserType, {
+  foreignKey: { name: "userTypeId", defaultValue: 1, allowNull: true },
 });
 
-TipoUsuario.hasMany(User);
-User.belongsTo(TipoUsuario, {
-  foreignKey: { name: "tipoUsuarioId", defaultValue: 1, allowNull: true },
-});
-
-User.belongsToMany(BannerRecord, {
+// N:M
+User.belongsToMany(Banner, {
   through: "user_banner",
   foreignKey: "authorId",
 });
-
-BannerRecord.belongsToMany(User, {
+Banner.belongsToMany(User, {
   as: "authors",
+  foreignKey: "bannerId",
   through: "user_banner",
 });
 
-export const Account = sequelize.define("account", { ...models.Account });
-export const Session = sequelize.define("session", { ...models.Session });
-export const VerificationToken = sequelize.define("verificationToken", {
-  ...models.VerificationToken,
+// 1:N
+Banner.belongsTo(TimeRanges, {
+  foreignKey: { name: "timeRangeId", allowNull: false, defaultValue: 1 },
 });
-export const GeneratedBanner = sequelize.define("banner", {
-  id: {
-    type: DataTypes.UUID,
-    defaultValue: DataTypes.UUIDV4,
-    primaryKey: true,
-  },
-  fecha_generado: DataTypes.DATE,
-  idUsuario: {
-    type: DataTypes.UUID,
-    references: {
-      model: User,
-      key: "id",
-    },
-  },
-});
+TimeRanges.hasMany(Banner);
 
-GeneratedBanner.belongsTo(BannerRecord);
-BannerRecord.hasMany(GeneratedBanner, {
-  foreignKey: "bannerRecordId",
+// N:M
+Banner.belongsToMany(Fonts, {
+  through: BannerFonts,
+  foreignKey: { name: "bannerId", allowNull: false, defaultValue: 1 },
+});
+Fonts.belongsToMany(Banner, { through: BannerFonts });
+
+GeneratedBanner.belongsTo(Banner);
+Banner.hasMany(GeneratedBanner, {
+  foreignKey: "bannerId",
   onDelete: "cascade",
 });
 
-// sequelize.sync({ alter: true });
-// sequelize.sync({ force: true });
-if (IS_DEVELOPMENT) {
-  sequelize.sync();
-}
+const sync = async () => {
+  await TimeRanges.sync();
+  await Banner.sync();
+  await sequelize.sync();
+};
+
+export {
+  Banner,
+  Country,
+  TimeRanges,
+  Fonts,
+  BannerFonts,
+  User,
+  GeneratedBanner,
+  Account,
+  Session,
+  VerificationToken,
+  UserTypePermission,
+  UserType,
+  Permission,
+  sync,
+};

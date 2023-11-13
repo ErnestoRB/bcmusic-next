@@ -1,14 +1,13 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { ValidationError } from "joi";
-import {
-  BannerRecord,
-  BannerRecordTypeObject,
-  User,
-  UserType,
-} from "../../../utils/database/models";
-import { PaginationValidation } from "../../../utils/authorization/validation/pagination";
+
+import { PaginationValidation } from "../../../utils/authorization/validation/joi/pagination";
 import { Model } from "sequelize";
 import logError from "../../../utils/log";
+import { IUserType } from "../../../utils/database/models/UserType";
+import { Banner } from "../../../utils/database/models";
+import { IBanner } from "../../../utils/database/models/Banner";
+import { User } from "../../../utils/database/models";
 
 const PAGE_SIZE = 10;
 
@@ -21,7 +20,7 @@ export default async function handler(
       const { page } = await PaginationValidation.validateAsync(req.query, {
         allowUnknown: true,
       });
-      const records = (await BannerRecord.findAll({
+      const records = (await Banner.findAll({
         attributes: {
           exclude: ["script"],
         },
@@ -35,7 +34,7 @@ export default async function handler(
         },
         limit: PAGE_SIZE,
         offset: (page - 1) * PAGE_SIZE,
-      })) as Model<BannerRecordTypeObject & { authors: UserType[] }>[];
+      })) as Model<IBanner & { authors: IUserType[] }>[];
 
       // aplanar para que sea un arreglo de strings en vez de un objeto de usuarios
       records.forEach((banner) => {

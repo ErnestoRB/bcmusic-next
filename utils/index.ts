@@ -1,6 +1,6 @@
 import { error } from "console";
 import { SpotifyTopArtistData } from "../types/definitions";
-import { FontsType } from "./database/models";
+import { IFontType } from "./database/models/Fonts";
 
 export const perserveStatus = async (res: Response) => ({
   ok: res.ok,
@@ -8,11 +8,11 @@ export const perserveStatus = async (res: Response) => ({
 });
 
 export const loadFontsAsync = (
-  fonts: FontsType["dataValues"][]
+  fonts: IFontType["dataValues"][]
 ): Promise<FontFace[]> => {
   return Promise.all(
     fonts.map((f) => {
-      const fontFace = new FontFace(f.nombre, `url('/api/font/${f.nombre}')`);
+      const fontFace = new FontFace(f.name, `url('/api/font/${f.name}')`);
       return fontFace.load();
     })
   );

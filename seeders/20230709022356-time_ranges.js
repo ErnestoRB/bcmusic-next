@@ -15,9 +15,9 @@ module.exports = {
     await queryInterface.bulkInsert(
       "time_ranges",
       [
-        { id: 1, nombre: "short_term" },
-        { id: 2, nombre: "medium_term" },
-        { id: 3, nombre: "long_term" },
+        { id: 1, name: "short_term" },
+        { id: 2, name: "medium_term" },
+        { id: 3, name: "long_term" },
       ],
       {}
     );
@@ -31,7 +31,7 @@ module.exports = {
      * await queryInterface.bulkDelete('People', null, {});
      */
     await queryInterface.bulkDelete(
-      "users",
+      "time_ranges",
       {
         id: {
           [Sequelize.Op.between]: [1, 3],

@@ -1,6 +1,5 @@
 import useSWRInfinite from "swr/infinite";
 import fetcher from "../utils/swr";
-import { FontsType } from "../utils/database/models";
 import { perserveStatus } from "../utils";
 import { toast } from "react-toastify";
 import Alert from "./Alert";
@@ -9,8 +8,9 @@ import { ResponseData } from "../types/definitions";
 import Link from "./Link";
 import { Button } from "./Button";
 import { useSWRInfinitePagination } from "../utils/hooks/useSWRPagination";
+import { IFontType } from "../utils/database/models/Fonts";
 
-type FontsArray = FontsType["dataValues"][];
+type FontsArray = IFontType["dataValues"][];
 
 export default function AddFont({
   id,
@@ -23,14 +23,14 @@ export default function AddFont({
     useSWRInfinitePagination("/api/fonts");
 
   const availableFonts = useMemo(() => {
-    if (bannerFonts) {
+    if (bannerFonts && data) {
       return (data?.flat() as ResponseData<FontsArray>[])
         .map((data) => data.data)
         .flat()
         .filter(
           (font) =>
             bannerFonts.findIndex(
-              (bannerFont) => font?.nombre === bannerFont.nombre
+              (bannerFont) => font?.name === bannerFont.name
             ) === -1
         );
     }
@@ -76,8 +76,8 @@ export default function AddFont({
           <Alert>No hay fuentes en el banner aún</Alert>
         )}
         {bannerFonts.map((font) => (
-          <li className="" key={font.nombre}>
-            {font.nombre}{" "}
+          <li className="" key={font.name}>
+            {font.name}{" "}
             <Button
               type="button"
               className="bg-red-600 hover:bg-red-700 text-white p-1"
@@ -116,8 +116,8 @@ export default function AddFont({
             }}
           >
             {availableFonts.map((font) => (
-              <option key={font!.nombre} value={font!.nombre}>
-                {font!.nombre}
+              <option key={font!.name} value={font!.name}>
+                {font!.name}
               </option>
             ))}
             {!lastPage && (

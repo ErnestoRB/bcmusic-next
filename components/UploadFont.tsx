@@ -32,7 +32,7 @@ export default function UploadFont({ fontName }: UploadFontProps) {
           });
           data.append("name", name);
 
-          fetch(fontName ? `/api/font/${fontName}` : "/api/fonts", {
+          fetch(fontName ? `/api/font/${fontName}` : "/api/font", {
             body: data,
             method: fontName ? "PATCH" : "POST",
             credentials: "include",

@@ -3,15 +3,9 @@ import { unstable_getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]";
 import { ResponseData } from "../../../../types/definitions";
 import logError from "../../../../utils/log";
-import {
-  GeoCodeArgs,
-  TripProfile,
-  generateRoute,
-  geoCode,
-} from "../../../../utils/openroute/geocode";
 import Joi from "joi";
-
-export type LatLngCoords = [number, number];
+import { LatLngCoords } from "../../../../utils/openroute/base";
+import { TripProfile, generateRoute } from "../../../../utils/openroute/route";
 
 interface RouteRequest {
   coordinates: LatLngCoords[];

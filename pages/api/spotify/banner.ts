@@ -3,17 +3,16 @@ import { getSpotifyData } from "../../../utils";
 import { unstable_getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
 import { refreshToken } from "../../../utils/spotify";
-import {
-  Account,
-  BannerRecord,
-  Fonts,
-  GeneratedBanner,
-} from "../../../utils/database/models";
 import { ResponseData } from "../../../types/definitions";
 import { sequelize } from "../../../utils/database/connection";
 import { Op, Transaction } from "sequelize";
 import { executeBanner } from "../../../vm";
 import logError from "../../../utils/log";
+import { Banner } from "../../../utils/database/models";
+import { Fonts } from "../../../utils/database/models";
+import { Account } from "../../../utils/database/models/next-auth";
+import { GeneratedBanner } from "../../../utils/database/models";
+import { randomUUID } from "crypto";
 
 export default async function handler(
   req: NextApiRequest,
@@ -24,7 +23,7 @@ export default async function handler(
     res.status(400).json({ message: "Sólo especifica un valor para banner" });
     return;
   }
-  const record = await BannerRecord.findByPk(id, {
+  const record = await Banner.findByPk(id, {
     include: {
       model: Fonts,
       through: {
@@ -67,13 +66,13 @@ export default async function handler(
               sequelize.fn(
                 "TIMESTAMPDIFF",
                 sequelize.literal("MINUTE"),
-                sequelize.col("fecha_generado"),
+                sequelize.col("date"),
                 sequelize.fn("NOW")
               ),
               Op.lte,
               60
             ),
-            { idUsuario: session.user?.id },
+            { idUser: session.user?.id },
           ],
         },
       });
@@ -141,7 +140,7 @@ export default async function handler(
       let t: Transaction = await sequelize.transaction();
       try {
         const historyRecord = await GeneratedBanner.create(
-          { idUsuario: session?.user.id, fecha_generado: new Date() },
+          { id: randomUUID(), idUser: session?.user.id, date: new Date() },
           { transaction: t }
         );
         /// @ts-ignore

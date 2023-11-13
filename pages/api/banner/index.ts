@@ -1,20 +1,17 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import {
-  BannerRecord,
-  BannerRecordModel,
-  User,
-} from "../../../utils/database/models";
 import { ValidationError } from "joi";
-import { BannerRecordValidation } from "../../../utils/authorization/validation/bannerRecords";
 import { unstable_getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
 import logError from "../../../utils/log";
 import { sequelize } from "../../../utils/database/connection";
-import { apiUserHavePermission } from "../../../utils/authorization/validation/user/server";
+import { apiUserHavePermission } from "../../../utils/authorization/validation/permissions/server";
 import {
   API_BANNER_CREATE,
   API_BANNER_PATCH,
 } from "../../../utils/authorization/permissions";
+import { IBanner } from "../../../utils/database/models/Banner";
+import { User, Banner } from "../../../utils/database/models";
+import { BannerValidation } from "../../../utils/authorization/validation/joi/bannerRecords";
 const createCache: { userId: string; lastCreated: Date }[] = [];
 const updateCache: { userId: string; lastUpdated: Date }[] = [];
 
@@ -33,13 +30,11 @@ export default async function handler(
 
     const userId = session!.user.id;
     if (req.method?.toLowerCase() === "post") {
-      if (apiUserHavePermission(session, res, API_BANNER_CREATE)) {
+      if (!apiUserHavePermission(session, res, API_BANNER_CREATE)) {
         return;
       }
       const { body } = req;
-      const record = (await BannerRecordValidation.validateAsync(
-        body
-      )) as BannerRecordModel["dataValues"];
+      const record = (await BannerValidation.validateAsync(body)) as IBanner;
       const userRecord = await User.findByPk(userId);
       if (!userRecord) {
         res.status(400).send({
@@ -61,7 +56,7 @@ export default async function handler(
         return;
       }
 
-      const recordInstance = await BannerRecord.create(record, {
+      const recordInstance = await Banner.create(record, {
         transaction,
       });
       /// @ts-ignore
@@ -72,13 +67,11 @@ export default async function handler(
       }
       res.send({ message: `Record creado!`, id: recordInstance.dataValues.id });
     } else if (req.method?.toLowerCase() === "patch") {
-      if (apiUserHavePermission(session, res, API_BANNER_PATCH)) {
+      if (!(await apiUserHavePermission(session, res, API_BANNER_PATCH))) {
         return;
       }
       const { body } = req;
-      const record = (await BannerRecordValidation.validateAsync(
-        body
-      )) as BannerRecordModel["dataValues"];
+      const record = (await BannerValidation.validateAsync(body)) as IBanner;
       if (!record.id) {
         res.status(400).send({ message: `Incluye un ID en el cuerpo!` });
         return;
@@ -95,7 +88,7 @@ export default async function handler(
         });
         return;
       }
-      const result = await BannerRecord.update(record, {
+      const result = await Banner.update(record, {
         where: { id: record.id },
         transaction,
       });

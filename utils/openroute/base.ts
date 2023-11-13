@@ -7,6 +7,9 @@ interface BaseORSRequest {
   body?: RequestInit["body"];
   headers?: Record<string, string>;
 }
+
+export type LatLngCoords = [number, number];
+
 const APIKEY = ORS_APIKEY ?? "";
 
 export async function orsReq({

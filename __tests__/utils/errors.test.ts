@@ -1,4 +1,4 @@
-import { censureString, censureError } from "../../utils/errors";
+import { censureString, censureError } from "../../vm/errors";
 
 describe("Error utils", () => {
   const cwd = process.cwd();

@@ -1,17 +1,17 @@
 import { useForm } from "react-hook-form";
-import { BannerRecordModel } from "../utils/database/models";
 import { perserveStatus, stringIsAValidUrl } from "../utils";
 import { toast } from "react-toastify";
 import { useRouter } from "next/router";
 import Alert from "./Alert";
 import { Button } from "./Button";
+import { IBanner } from "../utils/database/models/Banner";
 
 export default function BannerForm({
   banner = undefined,
   redirectOnCreate = true,
   redirectOnUpdate = true,
 }: {
-  banner?: BannerRecordModel["dataValues"];
+  banner?: IBanner;
   redirectOnCreate?: boolean;
   redirectOnUpdate?: boolean;
 }) {

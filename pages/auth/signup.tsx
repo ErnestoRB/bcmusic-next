@@ -4,12 +4,12 @@ import { PaisFields } from "../../types/definitions";
 import Alert from "../../components/Alert";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { Pais } from "../../utils/database/models";
 import { callbackUrl } from "./login";
 import spotifyLogo from "../../images/spotify-white.png";
 import Image from "next/image";
 import { Button } from "../../components/Button";
 import Script from "next/script";
+import { Country } from "../../utils/database/models";
 
 export default function SignUp({ paises = [] }: { paises: PaisFields[] }) {
   const router = useRouter();
@@ -145,7 +145,7 @@ export default function SignUp({ paises = [] }: { paises: PaisFields[] }) {
 }
 
 export async function getServerSideProps() {
-  const paises = await Pais.findAll();
+  const paises = await Country.findAll();
 
   return {
     props: { paises: paises.map((pais) => pais.dataValues) },

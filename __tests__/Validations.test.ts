@@ -1,10 +1,10 @@
-import { BannerHistoryDate } from "../utils/authorization/validation/bannerRecords";
-import { PaginationValidation } from "../utils/authorization/validation/pagination";
+import { BannerHistoryDate } from "../utils/authorization/validation/joi/bannerRecords";
+import { PaginationValidation } from "../utils/authorization/validation/joi/pagination";
 import {
   isAdmin,
   onlyAllowAdmins,
   sessionRequired,
-} from "../utils/authorization/validation/user/browser";
+} from "../utils/authorization/validation/permissions/browser";
 
 describe("Utility functions", () => {
   describe("utils/validation/user.ts", () => {

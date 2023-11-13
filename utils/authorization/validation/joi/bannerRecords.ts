@@ -1,6 +1,6 @@
 import Joi from "joi";
 
-export const BannerRecordValidation = Joi.object({
+export const BannerValidation = Joi.object({
   id: Joi.number().optional(),
   minItems: Joi.number().required(),
   exampleUrl: Joi.string().uri().optional().allow(""),

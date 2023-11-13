@@ -1,9 +1,9 @@
-import { BannerRecordValidation } from "../utils/authorization/validation/bannerRecords";
+import { BannerValidation } from "../utils/authorization/validation/joi/bannerRecords";
 
 describe("BannerRecordValidation", () => {
   it("Fails when nothing is sent", async () => {
     try {
-      await BannerRecordValidation.validateAsync(undefined);
+      await BannerValidation.validateAsync(undefined);
     } catch (error: any) {
       expect(error).toBeDefined();
     }

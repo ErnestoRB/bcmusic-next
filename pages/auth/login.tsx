@@ -40,8 +40,6 @@ export default function AuthError({
 
   const [loginMethod, setLoginMethod] = useState("");
 
-  console.log({ providers });
-
   return (
     <div className={`w-full flex justify-center items-center `}>
       <Head>

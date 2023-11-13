@@ -14,12 +14,12 @@ module.exports = {
         image: null,
         password:
           "$2b$10$CTuHSxt9Q5tsIIPAMFWfnuPjBYV74E4tF2LsAu8c4fsKeBVq/.T6S",
-        nacimiento: "2002-05-23 00:00:00",
-        apellido: "Ramírez",
-        idPais: 146,
+        birth: "2002-05-23 00:00:00",
+        lastName: "Ramírez",
+        countryId: 146,
         createdAt: "2023-04-27 21:59:55",
         updatedAt: "2023-04-27 21:59:55",
-        tipoUsuarioId: 1,
+        userTypeId: 1,
       },
 
       {
@@ -30,12 +30,12 @@ module.exports = {
         image: null,
         password:
           "$2b$10$xn4EM0dQs2ZCJHEATR4pQOqF4h7fXmqgGCfayxci0HYpH/zlhWAJK",
-        nacimiento: "2002-05-23 00:00:00",
-        apellido: "Ramírez",
-        idPais: 146,
+        birth: "2002-05-23 00:00:00",
+        lastName: "Ramírez",
+        countryId: 146,
         createdAt: "2023-04-27 21:59:55",
         updatedAt: "2023-04-27 21:59:55",
-        tipoUsuarioId: 2,
+        userTypeId: 2,
       },
     ]);
   },

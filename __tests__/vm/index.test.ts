@@ -2,7 +2,7 @@
  * @jest-environment node
  */
 import { getBufferFromExecution, runInBannerContext } from "../../vm";
-import { ScriptReturn } from "../../utils/authorization/validation/vm";
+import { ScriptReturn } from "../../utils/authorization/validation/joi/vm";
 import { isPromise } from "util/types";
 
 describe("VM environment", () => {

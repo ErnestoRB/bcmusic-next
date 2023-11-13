@@ -1,17 +1,18 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { BannerRecord, Fonts } from "../../../utils/database/models";
 import { ValidationError } from "joi";
-import { UpdateScriptValidation } from "../../../utils/authorization/validation/bannerRecords";
+import { UpdateScriptValidation } from "../../../utils/authorization/validation/joi/bannerRecords";
 import { unstable_getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
 import type { Model } from "sequelize";
 import logError from "../../../utils/log";
-import { apiUserHavePermission } from "../../../utils/authorization/validation/user/server";
+import { apiUserHavePermission } from "../../../utils/authorization/validation/permissions/server";
 import {
   API_BANNER_DELETE,
   API_BANNER_GET,
   API_BANNER_PATCH,
 } from "../../../utils/authorization/permissions";
+import { Banner } from "../../../utils/database/models";
+import { Fonts } from "../../../utils/database/models";
 
 const MAX_FONTS_PER_BANNER = 10;
 
@@ -37,14 +38,14 @@ export default async function handler(
     }
 
     if (req.method?.toLowerCase() === "get") {
-      if (apiUserHavePermission(session, res, API_BANNER_GET)) {
+      if (!(await apiUserHavePermission(session, res, API_BANNER_GET))) {
         return;
       }
       if (script) {
-        const record = await BannerRecord.findByPk(id, {
+        const record = await Banner.findByPk(id, {
           include: {
             model: Fonts,
-            attributes: ["id", "nombre"],
+            attributes: ["id", "name"],
             through: {
               attributes: [],
             },
@@ -58,10 +59,10 @@ export default async function handler(
         return;
       }
       if (req.query.fonts) {
-        const record = (await BannerRecord.findByPk(id, {
+        const record = (await Banner.findByPk(id, {
           include: {
             model: Fonts,
-            attributes: ["id", "nombre"],
+            attributes: ["id", "name"],
 
             through: {
               attributes: [],
@@ -79,7 +80,7 @@ export default async function handler(
         });
         return;
       }
-      const record = await BannerRecord.findByPk(id, {
+      const record = await Banner.findByPk(id, {
         attributes: { exclude: ["script"] },
       });
       if (!record) {
@@ -88,10 +89,10 @@ export default async function handler(
       }
       res.send({ message: "Registro encontrado", data: record?.dataValues });
     } else if (req.method?.toLowerCase() === "patch") {
-      if (apiUserHavePermission(session, res, API_BANNER_PATCH)) {
+      if (!(await apiUserHavePermission(session, res, API_BANNER_PATCH))) {
         return;
       }
-      const record = await BannerRecord.findByPk(id, {
+      const record = await Banner.findByPk(id, {
         attributes: { exclude: ["script"] },
       });
       if (!record) {
@@ -110,7 +111,7 @@ export default async function handler(
         const fontName = req.query.addFont;
         const font = await Fonts.findOne({
           where: {
-            nombre: fontName,
+            name: fontName,
           },
         });
         if (!font) {
@@ -120,14 +121,14 @@ export default async function handler(
         /// @ts-ignore
         await record!.addFont(font);
         res.send({
-          message: `Se ha agregado la fuente ${font.dataValues.nombre} al banner ${record.dataValues.name}`,
+          message: `Se ha agregado la fuente ${font.dataValues.name} al banner ${record.dataValues.name}`,
         });
         return;
       }
       const updateRecord = (await UpdateScriptValidation.validateAsync(
         req.body
       )) as { script: string };
-      BannerRecord.update(
+      Banner.update(
         { script: updateRecord.script },
         {
           where: {
@@ -138,10 +139,10 @@ export default async function handler(
       res.send({ message: `Banner ${id} actualizado!` });
       return;
     } else if (req.method?.toLowerCase() === "delete") {
-      if (apiUserHavePermission(session, res, API_BANNER_DELETE)) {
+      if (!(await apiUserHavePermission(session, res, API_BANNER_DELETE))) {
         return;
       }
-      const record = await BannerRecord.findByPk(id, {
+      const record = await Banner.findByPk(id, {
         attributes: { exclude: ["script"] },
       });
       if (!record) {
@@ -162,7 +163,7 @@ export default async function handler(
         /// @ts-ignore
         await record!.removeFont(font);
         res.send({
-          message: `Se eliminado la fuente ${font.dataValues.nombre} al banner ${record.dataValues.name}`,
+          message: `Se eliminado la fuente ${font.dataValues.name} al banner ${record.dataValues.name}`,
         });
         return;
       }

@@ -2,14 +2,15 @@ import Head from "next/head";
 import Editor from "../../components/Editor";
 import { useRouter } from "next/router";
 import { GetServerSideProps } from "next";
-import { BannerRecord, Fonts } from "../../utils/database/models";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { BannerRecordWithFonts } from "../../types/definitions";
 import { unstable_getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]";
-import { userHavePermission } from "../../utils/authorization/validation/user/server";
+import { userHavePermission } from "../../utils/authorization/validation/permissions/server";
 import { VIEW_BANNER_CODE } from "../../utils/authorization/permissions";
+import { Fonts } from "../../utils/database/models";
+import { Banner } from "../../utils/database/models";
 
 export default function CodeEditor({
   banner = null,
@@ -66,7 +67,7 @@ export const getServerSideProps: GetServerSideProps = async ({
     authOptions(req, res)
   );
 
-  if (!userHavePermission(session, VIEW_BANNER_CODE)) {
+  if (!(await userHavePermission(session, VIEW_BANNER_CODE))) {
     return {
       redirect: {
         destination: "/",
@@ -81,7 +82,7 @@ export const getServerSideProps: GetServerSideProps = async ({
   } else {
     id = idParam as string;
   }
-  const bannerRecord = await BannerRecord.findByPk(id, {
+  const bannerRecord = await Banner.findByPk(id, {
     include: {
       model: Fonts,
       through: {

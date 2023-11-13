@@ -1,5 +1,4 @@
-import { orsReq } from "./base";
-import { LatLngCoords } from "../../pages/api/maps/route/[profile]";
+import { LatLngCoords, orsReq } from "./base";
 
 export interface CoordRadius {
   lat_lang: LatLngCoords;
@@ -10,13 +9,6 @@ export interface GeoCodeArgs {
   search: string;
   boundary?: CoordRadius;
   boundaryCountry?: string;
-}
-
-export type TripProfile = "foot-walking" | "driving-car" | "cycling-regular";
-
-export interface RouteArgs {
-  profile: TripProfile;
-  coords: LatLngCoords[];
 }
 
 export interface ReverseGeoCodeArgs {
@@ -42,16 +34,5 @@ export async function geoCode({
     path: "geocode/search",
     query,
     method: "GET",
-  }).then((res) => res.json());
-}
-
-export async function generateRoute({ profile, coords }: RouteArgs) {
-  const headers = { "Content-Type": "application/json" };
-  const body = JSON.stringify({ coordinates: coords });
-  return await orsReq({
-    headers,
-    path: `v2/directions/${profile}`,
-    method: "post",
-    body,
   }).then((res) => res.json());
 }
