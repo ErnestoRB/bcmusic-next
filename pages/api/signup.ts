@@ -1,11 +1,11 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { ResponseData, SignUpInput } from "../../types/definitions";
-import signup from "../../utils/authorization/validation/signup";
+import signup from "../../utils/authorization/validation/joi/signup";
 import { hash } from "bcrypt";
-import { User } from "../../utils/database/models";
 import { isDuplicateError } from "../../utils/database";
 import { validateRecaptchaToken } from "../../utils/recaptcha";
 import logError from "../../utils/log";
+import { User } from "../../utils/database/models";
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseData<undefined>>
@@ -29,10 +29,10 @@ export default async function handler(
     await User.create({
       email: Email,
       name: Nombre,
-      nacimiento: Nacimiento,
-      idPais: Pais,
+      birth: Nacimiento,
+      countryId: Pais,
       password: hashed,
-      apellido: Apellido,
+      lastName: Apellido,
     });
     res.send({ message: "Registro exitoso" });
   } catch (error: any) {

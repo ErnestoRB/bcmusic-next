@@ -1,26 +1,23 @@
-import { isPermissionValid } from "../authorization/querys";
-import {
-  Permiso,
-  PermisoMeta,
-  PermisoType,
-  TipoUsuario,
-  TipoUsuarioType,
-  User,
-} from "./models";
+import { isPermissionValid } from "../authorization/validation/permissions/server";
+import { Permission } from "./models";
+import { IPermission } from "./models/Permission";
+import { User } from "./models/User";
+import { IUserType } from "./models/UserType";
+import { UserType } from "./models";
+import { IPermissionStatus } from "./models/UserTypePermission";
 
-export type TipoUsuarioPermissions = TipoUsuarioType & {
-  permisos: (PermisoType & { tipoUsuarioPermiso: PermisoMeta })[];
+export type IUserTypePermissionData = IPermission & {
+  userTypePermission: IPermissionStatus;
+};
+
+export type TipoUsuarioPermissions = IUserType & {
+  permissions: IUserTypePermissionData[];
 };
 
 export const getTypeUser = async (id: string): Promise<string> => {
   return (
-    (
-      await TipoUsuario.findByPk(
-        (
-          await User.findByPk(id)
-        )?.dataValues.tipoUsuarioId
-      )
-    )?.dataValues.nombre || "default"
+    (await UserType.findByPk((await User.findByPk(id))?.dataValues.userTypeId))
+      ?.dataValues.name || "default"
   );
 };
 
@@ -28,9 +25,9 @@ export const getTypeUserPermissions = async (
   tipoUsuarioId: string
 ): Promise<string[]> => {
   let permissions: string[] = [];
-  const tipoUsuario = await TipoUsuario.findByPk(tipoUsuarioId, {
+  const tipoUsuario = await UserType.findByPk(tipoUsuarioId, {
     include: {
-      model: Permiso,
+      model: Permission,
       through: {
         attributes: ["active", "expirationDate", "validFrom"],
       },
@@ -39,7 +36,7 @@ export const getTypeUserPermissions = async (
 
   if (tipoUsuario) {
     let values = tipoUsuario.dataValues as TipoUsuarioPermissions;
-    permissions = values.permisos
+    permissions = values.permissions
       .filter((permisoInfo) => isPermissionValid(permisoInfo))
       .map((p) => p.name);
   }

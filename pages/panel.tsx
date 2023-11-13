@@ -12,7 +12,7 @@ import { AdminActions } from "../components/AdminActions";
 import {
   isAdminSession,
   isCollaboratorSession,
-} from "../utils/authorization/validation/user/browser";
+} from "../utils/authorization/validation/permissions/browser";
 
 export default function Panel() {
   const router = useRouter();

@@ -1,11 +1,47 @@
+import { NextApiResponse } from "next";
+import { sessionRequired } from "./browser";
+import { Session } from "next-auth";
 import {
-  Permiso,
-  PermisoMeta,
-  PermisoType,
-  TipoUsuario,
-  User,
-} from "../database/models";
-import { TipoUsuarioPermissions } from "../database/querys";
+  IUserTypePermissionData,
+  TipoUsuarioPermissions,
+} from "../../../database/querys";
+import { User } from "../../../database/models";
+import { UserType } from "../../../database/models";
+import { Permission } from "../../../database/models";
+import { IPermissionStatus } from "../../../database/models/UserTypePermission";
+
+/**
+ *
+ * @param session
+ * @param res
+ * @returns verdadero si tiene permiso y falso si se mando mensaje de no autorización
+ */
+export const apiUserHavePermission = async (
+  session: Session | null,
+  res: NextApiResponse,
+  permission: string
+): Promise<boolean> => {
+  if (sessionRequired(session, res)) {
+    return false;
+  }
+  return await havePermission(session!.user.id, permission);
+};
+
+/**
+ * Checks on database if the user have the specified permission
+ * @param session
+ * @param permission
+ * @returns true if user have permission
+ */
+export const userHavePermission = async (
+  session: Session | null,
+  permission: string
+): Promise<boolean> => {
+  if (!session) {
+    return false;
+  }
+  return await havePermission(session!.user.id, permission);
+};
 
 /**
  * Comprueba en la base de datos si el usuario tiene un permiso
@@ -21,14 +57,14 @@ export async function havePermission(
     where: { id: userId },
     include: [
       {
-        model: TipoUsuario,
-        include: [Permiso],
+        model: UserType,
+        include: [Permission],
       },
     ],
   });
   if (!user) return false;
   if (
-    (user.tipoUsuario as TipoUsuarioPermissions)?.permisos?.some(
+    (user.userType as TipoUsuarioPermissions)?.permissions?.some(
       (p) => likePermission(p.name, permisoEsperado) && isPermissionValid(p)
     )
   )
@@ -50,11 +86,9 @@ function likePermission(permission: string, expectedPermission: string) {
   );
 }
 
-export function isPermissionValid(
-  permiso: PermisoType & { tipoUsuarioPermiso: PermisoMeta }
-) {
+export function isPermissionValid(permiso: IUserTypePermissionData) {
   return (
-    permiso.active && isTipoUsuarioPermissionValid(permiso.tipoUsuarioPermiso)
+    permiso.active && isTipoUsuarioPermissionValid(permiso.userTypePermission)
   );
 }
 
@@ -63,9 +97,7 @@ export function isPermissionValid(
  * @param permisoInfo Record de base de datos
  * @returns Verdadero si un permiso es valido
  */
-export function isTipoUsuarioPermissionValid(
-  permisoInfo: PermisoMeta
-): boolean {
+function isTipoUsuarioPermissionValid(permisoInfo: IPermissionStatus): boolean {
   if (!permisoInfo.active) return false; // permiso no está activo
 
   if (!permisoInfo.expirationDate && !permisoInfo.validFrom) return true; // permiso está activo, no hay fechas limite

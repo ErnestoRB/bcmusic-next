@@ -1,24 +1,17 @@
 import Head from "next/head";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import {
-  BannerRecord,
-  BannerRecordModel,
-  Fonts,
-} from "../../../utils/database/models";
 import { GetServerSideProps } from "next";
 import BannerForm from "../../../components/BannerForm";
 import { unstable_getServerSession } from "next-auth";
 import { authOptions } from "../../api/auth/[...nextauth]";
 import Alert from "../../../components/Alert";
-import { userHavePermission } from "../../../utils/authorization/validation/user/server";
+import { userHavePermission } from "../../../utils/authorization/validation/permissions/server";
 import { VIEW_BANNER_EDIT } from "../../../utils/authorization/permissions";
+import { BannerModel, IBanner } from "../../../utils/database/models/Banner";
+import { Fonts, Banner } from "../../../utils/database/models";
 
-export default function BannerPage({
-  banner,
-}: {
-  banner?: BannerRecordModel["dataValues"];
-}) {
+export default function BannerPage({ banner }: { banner?: IBanner }) {
   useSession({ required: true });
 
   return (
@@ -62,7 +55,7 @@ export const getServerSideProps: GetServerSideProps = async ({
     authOptions(req, res)
   );
 
-  if (!userHavePermission(session, VIEW_BANNER_EDIT)) {
+  if (!(await userHavePermission(session, VIEW_BANNER_EDIT))) {
     return {
       redirect: {
         destination: "/",
@@ -77,7 +70,7 @@ export const getServerSideProps: GetServerSideProps = async ({
     id = query.id;
   }
 
-  const banner: BannerRecordModel | null = await BannerRecord.findByPk(id, {
+  const banner: BannerModel | null = await Banner.findByPk(id, {
     include: {
       model: Fonts,
       through: {

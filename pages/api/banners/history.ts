@@ -1,20 +1,14 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { ValidationError } from "joi";
-import {
-  BannerRecord,
-  BannerRecordTypeObject,
-  GeneratedBanner,
-  User,
-  UserType,
-} from "../../../utils/database/models";
-import { PaginationValidation } from "../../../utils/authorization/validation/pagination";
-import { Model, Op } from "sequelize";
+import { Op } from "sequelize";
 import logError from "../../../utils/log";
-import { BannerHistoryDate } from "../../../utils/authorization/validation/bannerRecords";
-import { sessionRequired } from "../../../utils/authorization/validation/user/browser";
+import { BannerHistoryDate } from "../../../utils/authorization/validation/joi/bannerRecords";
+import { sessionRequired } from "../../../utils/authorization/validation/permissions/browser";
 import { unstable_getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
 import { sequelize } from "../../../utils/database/connection";
+import { GeneratedBanner } from "../../../utils/database/models";
+import { Banner } from "../../../utils/database/models";
 
 const PAGE_SIZE = 10;
 
@@ -40,46 +34,21 @@ export default async function handler(
 
       const idUsuario = session?.user.id;
       const bannerModels = await GeneratedBanner.findAll({
-        attributes: ["id", "fecha_generado", "idUsuario"],
+        attributes: ["id", "date", "idUser"],
         include: {
-          model: BannerRecord,
+          model: Banner,
           attributes: ["name"],
         },
         where: {
           [Op.and]: [
-            { idUsuario },
+            { idUser: idUsuario },
+            sequelize.where(sequelize.fn("YEAR", sequelize.col("date")), year),
             sequelize.where(
-              sequelize.fn("YEAR", sequelize.col("fecha_generado")),
-              year
-            ),
-            sequelize.where(
-              sequelize.fn("MONTH", sequelize.col("fecha_generado")),
+              sequelize.fn("MONTH", sequelize.col("date")),
               month
             ),
           ],
         },
-        /*  include: [
-          {
-            model: BannerRecord,
-            attributes: ["name"],
-            through: { attributes: [] },
-          },
-        ], */
-        /* attributes: [
-          [sequelize.fn("COUNT", sequelize.col("*")), "cantidad"],
-          [sequelize.fn("MONTH", sequelize.col("fecha_generado")), "mes"],
-        ],
-        group: "mes",
-        order: ["mes"],
-        where: {
-          [Op.and]: [
-            { idUsuario },
-            sequelize.where(
-              sequelize.fn("YEAR", sequelize.fn("CURDATE")),
-              sequelize.fn("YEAR", sequelize.col("fecha_generado"))
-            ),
-          ],
-        }, */
       });
       const banners = bannerModels.map((banner) => banner.dataValues);
       res.send({ message: `Historial de banners generados`, data: banners });

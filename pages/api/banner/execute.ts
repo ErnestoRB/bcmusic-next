@@ -1,12 +1,13 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { executeBanner } from "../../../vm";
-import { BannerRecord, Fonts } from "../../../utils/database/models";
 import { unstable_getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
 import logError from "../../../utils/log";
-import { censureError } from "../../../utils/errors";
-import { apiUserHavePermission } from "../../../utils/authorization/validation/user/server";
+import { censureError } from "../../../vm/errors";
+import { apiUserHavePermission } from "../../../utils/authorization/validation/permissions/server";
 import { API_BANNER_EXECUTE } from "../../../utils/authorization/permissions";
+import { Banner } from "../../../utils/database/models";
+import { Fonts } from "../../../utils/database/models";
 
 const artistSample = [
   { name: "Duck Fizz", images: [] },
@@ -31,7 +32,7 @@ export default async function handler(
   console.log({ body: req.body });
 
   const artists = Array.isArray(req.body) ? req.body : artistSample;
-  if (apiUserHavePermission(session, res, API_BANNER_EXECUTE)) {
+  if (!(await apiUserHavePermission(session, res, API_BANNER_EXECUTE))) {
     return;
   }
 
@@ -40,7 +41,7 @@ export default async function handler(
     res.status(400).json({ message: "Sólo especifica un valor para banner" });
     return;
   }
-  const record = await BannerRecord.findByPk(id, {
+  const record = await Banner.findByPk(id, {
     include: {
       model: Fonts,
       through: {

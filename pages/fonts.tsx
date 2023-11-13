@@ -1,17 +1,17 @@
 import { GetServerSideProps } from "next";
-import { FontsType } from "../utils/database/models";
 import { unstable_getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]";
 import useSWR from "swr";
 import { useEffect, useState } from "react";
 import fetcher from "../utils/swr";
 import Alert from "../components/Alert";
-import { isAdmin } from "../utils/authorization/validation/user/browser";
+import { isAdmin } from "../utils/authorization/validation/permissions/browser";
 import { CopyToClipboards } from "../components/CopyToClipboard";
 import { loadFontsAsync, perserveStatus } from "../utils";
 import { Button } from "../components/Button";
 import { toast } from "react-toastify";
 import Link from "../components/Link";
+import { IFontType } from "../utils/database/models/Fonts";
 
 export default function FontsComponent() {
   const [page, setPage] = useState(1);
@@ -31,7 +31,7 @@ export default function FontsComponent() {
 
   useEffect(() => {
     if (data && data.data && Array.isArray(data.data)) {
-      loadFontsAsync(data.data as FontsType["dataValues"][]).then((fonts) => {
+      loadFontsAsync(data.data as IFontType["dataValues"][]).then((fonts) => {
         setFontsLoaded(fonts);
       });
     }
@@ -51,16 +51,16 @@ export default function FontsComponent() {
         {data && data.data && Array.isArray(data.data) && fontFacesLoaded && (
           <>
             <div className="flex flex-col gap-y-2">
-              {(data.data as FontsType["dataValues"][]).map((font) => (
+              {(data.data as IFontType["dataValues"][]).map((font) => (
                 <div
-                  key={font.nombre}
+                  key={font.name}
                   className="flex flex-col rounded-sm border-l-4 border-l-rose-600 bg-stone-50 p-2 md:p-4 gap-y-2"
                 >
-                  <h4>{font.nombre} </h4>
+                  <h4>{font.name} </h4>
                   <hr />
 
                   <div className="flex flew-wrap justify-end">
-                    <Link href={`/font/${font.nombre}`}>
+                    <Link href={`/font/${font.name}`}>
                       <Button className="bg-blue-600 hover:bg-blue-700 text-white">
                         Editar
                       </Button>
@@ -68,7 +68,7 @@ export default function FontsComponent() {
                     <Button
                       className="bg-red-600 hover:bg-red-700 text-white"
                       onPressEnd={() => {
-                        fetch(`/api/font/${font.nombre}`, { method: "DELETE" })
+                        fetch(`/api/font/${font.name}`, { method: "DELETE" })
                           .then(perserveStatus)
                           .then((res) => {
                             if (res.ok) {
@@ -89,14 +89,14 @@ export default function FontsComponent() {
                   <div
                     className="p-2 bg-stone-700 rounded-lg text-white text-lg"
                     style={{
-                      fontFamily: font.nombre,
+                      fontFamily: font.name,
                     }}
                   >
                     <span>ABCDEFGHIJKLMNOPQRSTUVWXYZ</span>
                     <br />
                     <span
                       style={{
-                        fontFamily: font.nombre,
+                        fontFamily: font.name,
                       }}
                     >
                       abcdefghijklmnopqrstuvwxyz
@@ -105,7 +105,7 @@ export default function FontsComponent() {
 
                   <span>
                     Copiar nombre
-                    <CopyToClipboards>{font.nombre}</CopyToClipboards>
+                    <CopyToClipboards>{font.name}</CopyToClipboards>
                   </span>
                 </div>
               ))}

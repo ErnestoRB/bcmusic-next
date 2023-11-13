@@ -7,8 +7,8 @@ import { Loading } from "./Loading";
 
 interface BannerHistory {
   id: string;
-  fecha_generado: string;
-  bannerRecord: { name: string } | null;
+  date: string;
+  banner: { name: string } | null;
 }
 
 export function BannerHistorial() {
@@ -83,10 +83,10 @@ export function BannerHistorial() {
                 {(data.data as BannerHistory[]).map((item) => {
                   return (
                     <tr key={item.id}>
-                      <td>{shortDateFormat(new Date(item.fecha_generado))}</td>
+                      <td>{shortDateFormat(new Date(item.date))}</td>
                       <td>
-                        {item.bannerRecord && item.bannerRecord.name}
-                        {!item.bannerRecord && (
+                        {item.banner && item.banner.name}
+                        {!item.banner && (
                           <b>No hay información de este banner </b>
                         )}
                       </td>

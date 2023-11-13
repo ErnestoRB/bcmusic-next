@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 import {
   isAdminSession,
   isCollaboratorSession,
-} from "../utils/authorization/validation/user/browser";
+} from "../utils/authorization/validation/permissions/browser";
 
 export default function BannerPreview({
   bannerData,

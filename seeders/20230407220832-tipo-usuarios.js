@@ -8,11 +8,11 @@ module.exports = {
      * Add seed commands here.
      */
     await queryInterface.bulkInsert(
-      "tipo_usuario",
+      "user_type",
       [
-        { id: 1, nombre: "default" },
-        { id: 2, nombre: "admin" },
-        { id: 3, nombre: "colab" },
+        { id: 1, name: "Default" },
+        { id: 2, name: "Admin" },
+        { id: 3, name: "Colab" },
       ],
       {}
     );
@@ -26,7 +26,7 @@ module.exports = {
      * await queryInterface.bulkDelete('People', null, {});
      */
     await queryInterface.bulkDelete(
-      "tipo_usuario",
+      "user_type",
       {
         id: {
           [Op.between]: [1, 3],

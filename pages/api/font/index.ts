@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { copyFile, mkdir, readFile, rm, stat } from "fs/promises";
+import { copyFile, mkdir, rm, stat } from "fs/promises";
 import path from "path";
 import { FONTS_PATH } from "../../../vm/fonts/path";
 import { unstable_getServerSession } from "next-auth";
@@ -7,13 +7,8 @@ import { authOptions } from "../auth/[...nextauth]";
 import logError from "../../../utils/log";
 import { parse } from "../../../utils/forms/formidable";
 import { apiUserHavePermission } from "../../../utils/authorization/validation/permissions/server";
-import {
-  API_FONT_DELETE,
-  API_FONT_GET,
-  API_FONT_PATCH,
-} from "../../../utils/authorization/permissions";
+import { API_FONTS_POST } from "../../../utils/authorization/permissions";
 import { Fonts } from "../../../utils/database/models";
-
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<{ message: string; data?: any } | Buffer>
@@ -24,44 +19,19 @@ export default async function handler(
       res,
       authOptions(req, res)
     );
-    const { name } = req.query;
-
-    const font = await Fonts.findOne({ where: { name } });
-    if (!font) {
-      res.status(404).send({ message: "Fuente no existe" });
-      return;
-    }
-    if (req.method?.toLowerCase() === "get") {
-      if (!(await apiUserHavePermission(session, res, API_FONT_GET))) {
-        return;
-      }
-      try {
-        const fontBinary = await readFile(
-          path.join(FONTS_PATH, font.dataValues.fileName)
-        );
-        res.send(fontBinary);
-      } catch (error) {
-        res.status(404).send({ message: "Fuente no existe" });
-        return;
-      }
-      return;
-    }
-    if (req.method?.toLowerCase() === "delete") {
-      if (!(await apiUserHavePermission(session, res, API_FONT_DELETE))) {
-        return;
-      }
-      await font.destroy();
-      res.send({
-        message: `Fuente "${name}" eliminada`,
-      });
-      return;
-    }
-    if (req.method?.toLowerCase() === "patch") {
-      if (!(await apiUserHavePermission(session, res, API_FONT_PATCH))) {
+    if (req.method?.toLowerCase() === "post") {
+      if (!(await apiUserHavePermission(session, res, API_FONTS_POST))) {
         return;
       }
       const { files, fields } = await parse(req);
-
+      if (!fields.name) {
+        res.status(400).send({ message: "No especificaste un nombre" });
+        return;
+      }
+      if (Array.isArray(fields.name)) {
+        res.status(400).send({ message: "Solo puedes especificar un nombre" });
+        return;
+      }
       if (!files.font) {
         res.status(400).send({ message: "No incluiste una fuente!" });
         return;
@@ -79,6 +49,7 @@ export default async function handler(
         res.status(400).send({ message: "Sólo puedes subir un archivo TTF!" });
         return;
       }
+
       let folderExists: boolean = false;
       try {
         folderExists = !!(await stat(FONTS_PATH));
@@ -96,8 +67,12 @@ export default async function handler(
         path.join(FONTS_PATH, files.font.newFilename)
       );
       await rm(files.font.filepath);
-      await font.update({ fileName: files.font.newFilename });
-      res.send({ message: `Fuente "${fields.name}" actualizada` });
+
+      await Fonts.create({
+        name: fields.name,
+        fileName: files.font.newFilename,
+      });
+      res.send({ message: `Fuente "${fields.name}" registrada` });
       return;
     }
     res.status(400).send({ message: "Metodo no implementado" });

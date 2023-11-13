@@ -1,16 +1,17 @@
 import { GetServerSideProps } from "next";
 import { useSession } from "next-auth/react";
-import { BannerRecord, BannerRecordModel } from "../utils/database/models";
 import UploadFont from "../components/UploadFont";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import { unstable_getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]";
-import { userHavePermission } from "../utils/authorization/validation/user/server";
+import { userHavePermission } from "../utils/authorization/validation/permissions/server";
 import { VIEW_FONTS } from "../utils/authorization/permissions";
+import { BannerModel } from "../utils/database/models/Banner";
+import { Banner } from "../utils/database/models";
 
 export default function UploadFontPage({}: {
-  availableBanners: BannerRecordModel["dataValues"][] | undefined;
+  availableBanners: BannerModel["dataValues"][] | undefined;
   banners: { mes: number; cantidad: number }[];
 }) {
   const router = useRouter();
@@ -43,7 +44,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     authOptions(req, res)
   );
 
-  if (!session || !userHavePermission(session, VIEW_FONTS)) {
+  if (!(await userHavePermission(session, VIEW_FONTS))) {
     return {
       redirect: {
         destination: "/",
@@ -52,7 +53,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     };
   }
 
-  const availableBanners: BannerRecordModel[] = await BannerRecord.findAll();
+  const availableBanners: BannerModel[] = await Banner.findAll();
   return {
     props: { availableBanners: availableBanners.map((a) => a.dataValues) },
   };

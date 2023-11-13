@@ -13,14 +13,7 @@ import {
   IS_DEVELOPMENT,
 } from "../../../utils/environment";
 import Cookies from "cookies";
-import {
-  User,
-  Account,
-  Session as SessionModel,
-  VerificationToken,
-  Pais,
-  TipoUsuario,
-} from "../../../utils/database/models";
+
 import { randomBytes, randomUUID } from "crypto";
 import {
   GetServerSidePropsContext,
@@ -32,6 +25,14 @@ import { sendVerificationRequest } from "../../../utils/email";
 import { validateRecaptchaToken } from "../../../utils/recaptcha";
 import logError from "../../../utils/log";
 import { getTypeUserPermissions } from "../../../utils/database/querys";
+import { User } from "../../../utils/database/models";
+import { Country } from "../../../utils/database/models";
+import { UserType } from "../../../utils/database/models";
+import {
+  Account,
+  Session as SessionModel,
+  VerificationToken,
+} from "../../../utils/database/models/next-auth";
 
 const generateSessionToken = () => {
   return randomUUID?.() ?? randomBytes(32).toString("hex");
@@ -193,18 +194,18 @@ export const authOptions: (
           expires: session.expires,
         };
         if (user.idPais) {
-          const pais = await Pais.findOne({ where: { ID: user.idPais } });
+          const pais = await Country.findOne({ where: { id: user.idPais } });
           if (pais) {
-            otherSession.user.pais = pais.dataValues.Nombre;
+            otherSession.user.pais = pais.dataValues.name;
           }
         }
         if (user.tipoUsuarioId) {
-          const tipo = await TipoUsuario.findByPk(user.tipoUsuarioId);
+          const tipo = await UserType.findByPk(user.tipoUsuarioId);
           if (tipo) {
             const permisos = await getTypeUserPermissions(
               String(user.tipoUsuarioId)
             );
-            otherSession.user.tipo_usuario = tipo.dataValues.nombre;
+            otherSession.user.tipo_usuario = tipo.dataValues.name;
             otherSession.user.permisos = permisos;
           }
         }

@@ -1,4 +1,5 @@
-import { BannerRecordModel } from "../utils/database/models";
+import { IBanner } from "../utils/database/models/Banner";
+import { IFontType } from "../utils/database/models/Fonts";
 
 declare global {
   interface Window {
@@ -6,11 +7,11 @@ declare global {
   }
 }
 
-export type BannerRecordWithFonts = BannerRecordModel["dataValues"] & {
-  fonts: FontsType["dataValues"][];
+export type BannerRecordWithFonts = IBanner & {
+  fonts: IFontType[];
 };
 
-export type BannerRecordWithAuthors = BannerRecordModel["dataValues"] & {
+export type BannerRecordWithAuthors = IBanner & {
   authors: string[];
 };
 

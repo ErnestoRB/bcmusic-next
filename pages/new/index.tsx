@@ -5,7 +5,7 @@ import BannerForm from "../../components/BannerForm";
 import { unstable_getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]";
 import { GetServerSideProps } from "next";
-import { userHavePermission } from "../../utils/authorization/validation/user/server";
+import { userHavePermission } from "../../utils/authorization/validation/permissions/server";
 import { VIEW_BANNER_NEW } from "../../utils/authorization/permissions";
 
 export default function CreateBannerCode() {
@@ -40,7 +40,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     authOptions(req, res)
   );
 
-  if (!session || !userHavePermission(session, VIEW_BANNER_NEW)) {
+  if (!(await userHavePermission(session, VIEW_BANNER_NEW))) {
     return {
       redirect: {
         destination: "/",

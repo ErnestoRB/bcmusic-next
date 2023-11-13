@@ -46,3 +46,6 @@ cypress/videos
 
 # sequelize-cli
 sequelizeData.*.json
+
+# npm run sequelize
+.env.setup

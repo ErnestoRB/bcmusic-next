@@ -1,11 +1,11 @@
 export function Footer() {
   return (
     <footer className="text-center py-4 bg-stone-900 text-white">
-      Aplicación creada por{" "}
+      Aplicación creada con 💖 por{" "}
       <a href="https://ernestorb.com" className="text-bc-pink-1">
-        Ernesto Ramírez
+        Ernesto Ramírez & BashCrashers
       </a>
-      <p>Con datos de la API de Spotify.</p>
+      <p>Con datos de la API de Spotify & OpenRouteService.</p>
     </footer>
   );
 }
