@@ -24,7 +24,7 @@ export async function geoCode({
   const query: Record<string, any> = { text: search };
   if (boundary) {
     query["boundary.circle.lat"] = boundary.lat_lang[0];
-    query["boundary.circle.lng"] = boundary.lat_lang[1];
+    query["boundary.circle.lon"] = boundary.lat_lang[1];
     query["boundary.circle.radius"] = boundary.radius;
   } else {
     query["boundary.country"] = boundaryCountry;
