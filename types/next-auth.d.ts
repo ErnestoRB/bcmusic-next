@@ -21,13 +21,13 @@ declare module "next-auth" {
 
   interface User extends DefaultUser {
     id: string;
-    name?: string;
-    apellido?: string;
+    name: string;
     email: string;
+    birth?: string;
+    lastName?: string;
     image?: string;
-    nacimiento?: string;
-    idPais?: string;
-    tipoUsuarioId?: number;
+    countryId?: number;
+    userTypeId?: number;
   }
 
   interface SpotifyProfile extends Profile {
