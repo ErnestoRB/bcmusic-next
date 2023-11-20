@@ -14,12 +14,12 @@ describe("registerBannerFont()", () => {
   });
 
   it("calls registerFont from 'canvas'", () => {
-    registerBannerFont({ fileName: "algo", nombre: "algo" });
+    registerBannerFont({ fileName: "algo", name: "algo" });
     expect(registerFont).toHaveBeenCalledTimes(1);
   });
 
   it("deosn't calls registerFont from 'canvas' when font has been already registered", () => {
-    registerBannerFont({ fileName: "algo", nombre: "algo" });
+    registerBannerFont({ fileName: "algo", name: "algo" });
     expect(registerFont).not.toHaveBeenCalled();
   });
 });

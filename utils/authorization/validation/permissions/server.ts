@@ -27,6 +27,9 @@ export const apiUserHavePermission = async (
   return await havePermission(session!.user.id, permission);
 };
 
+export function verifyPermissionSyntax(permission: string) {
+  return /^([a-zA-Z0-9_]+|\*)(\.([a-zA-Z0-9_]+|\*))*$/.test(permission);
+}
 /**
  * Checks on database if the user have the specified permission
  * @param session
@@ -80,10 +83,17 @@ export async function havePermission(
  * @returns Verdadero si el permiso esperado es igual o de una especificidad mayor
  */
 function likePermission(permission: string, expectedPermission: string) {
-  return (
-    permission.toLowerCase() == expectedPermission.toLowerCase() ||
-    expectedPermission.toLowerCase().includes(permission.toLowerCase())
-  );
+  // Escapamos caracteres especiales para usarlos literalmente en la expresión regular
+  const escapedPattern = permission.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&");
+
+  // Reemplazamos el asterisco (*) con una expresión regular para cualquier carácter (excepto saltos de línea)
+  const regexPattern = escapedPattern.replace(/\\\*/g, ".*");
+
+  // Creamos una expresión regular con la cadena de búsqueda modificada
+  const regex = new RegExp(`^${regexPattern}$`);
+
+  // Probamos si la cadena coincide con el patrón
+  return regex.test(expectedPermission);
 }
 
 export function isPermissionValid(permiso: IUserTypePermissionData) {

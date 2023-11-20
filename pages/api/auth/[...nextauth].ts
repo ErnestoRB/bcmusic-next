@@ -193,26 +193,26 @@ export const authOptions: (
           user: { id: user.id, email: user.email, permisos: [] },
           expires: session.expires,
         };
-        if (user.idPais) {
-          const pais = await Country.findOne({ where: { id: user.idPais } });
+        if (user.countryId) {
+          const pais = await Country.findOne({ where: { id: user.countryId } });
           if (pais) {
             otherSession.user.pais = pais.dataValues.name;
           }
         }
-        if (user.tipoUsuarioId) {
-          const tipo = await UserType.findByPk(user.tipoUsuarioId);
+        if (user.userTypeId) {
+          const tipo = await UserType.findByPk(user.userTypeId);
           if (tipo) {
             const permisos = await getTypeUserPermissions(
-              String(user.tipoUsuarioId)
+              String(user.userTypeId)
             );
             otherSession.user.tipo_usuario = tipo.dataValues.name;
             otherSession.user.permisos = permisos;
           }
         }
-        const { name, nacimiento, image, apellido } = user;
+        const { name, birth, image, lastName } = user;
         otherSession.user.name = name;
-        otherSession.user.apellido = apellido;
-        otherSession.user.nacimiento = nacimiento;
+        otherSession.user.apellido = lastName;
+        otherSession.user.nacimiento = birth;
         otherSession.user.image = image;
         return otherSession;
       },

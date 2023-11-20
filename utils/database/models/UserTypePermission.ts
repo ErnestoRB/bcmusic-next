@@ -14,7 +14,7 @@ export interface IUserTypePermission extends IPermissionStatus {
 }
 
 export const UserTypePermission = sequelize.define<Model<IUserTypePermission>>(
-  "UserTypePermiso",
+  "userTypePermission",
   {
     userTypeId: {
       type: DataTypes.INTEGER,
