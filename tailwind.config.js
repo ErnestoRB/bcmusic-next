@@ -1,39 +1,36 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: ["class"],
   content: [
-    "./pages/**/*.{js,ts,jsx,tsx}",
-    "./components/**/*.{js,ts,jsx,tsx}",
-    "./utils/styles.{js,ts,jsx,tsx}",
-  ],
+    './pages/**/*.{ts,tsx}',
+    './components/**/*.{ts,tsx}',
+    './app/**/*.{ts,tsx}',
+    './src/**/*.{ts,tsx}',
+	],
   theme: {
+    container: {
+      center: true,
+      padding: "2rem",
+      screens: {
+        "2xl": "1400px",
+      },
+    },
     extend: {
-      colors: {
-        spotify: {
-          green: "#2ebd59",
+      keyframes: {
+        "accordion-down": {
+          from: { height: 0 },
+          to: { height: "var(--radix-accordion-content-height)" },
         },
-        bc: {
-          purple: {
-            1: "#e31cff",
-            2: "#b517cb",
-            3: "#871197",
-          },
-          pink: {
-            1: "#ff1cdd",
-            2: "#ff1cfc",
-            3: "#cc16c9",
-          },
-          red: {
-            1: "#f51a36",
-            2: "#ff1cfc",
-            3: "#ff1830",
-          },
+        "accordion-up": {
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: 0 },
         },
       },
-      fontFamily: {
-        blade: ["var(--font-blade)"],
-        inconsolata: ["'Inconsolata', monospace"],
+      animation: {
+        "accordion-down": "accordion-down 0.2s ease-out",
+        "accordion-up": "accordion-up 0.2s ease-out",
       },
     },
   },
-  plugins: [require("tailwindcss-react-aria-components")],
-};
+  plugins: [require("tailwindcss-animate")],
+}
