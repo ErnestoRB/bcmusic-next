@@ -3,6 +3,7 @@ import { useEffect, useState, useRef } from "react";
 import { MyComboBox } from "../Combobox";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
+import { ComboboxDemo } from "../ui/comboBox";
 
 interface InputMapsProps {
   onGenerateRoute: (coords: {
@@ -16,7 +17,9 @@ export default function InputMaps({ onGenerateRoute }: InputMapsProps) {
   const [startResults, setStartResults] = useState<any[]>([]);
   const [startSearch, setStartSearch] = useState<string>("");
   const [start, setStart] = useState<[number, number] | undefined>(undefined);
-  const [destinationResults, setDestinationResults] = useState<any[] | null>([]);
+  const [destinationResults, setDestinationResults] = useState<any[] | null>(
+    []
+  );
   const router = useRouter();
   const { status } = useSession({
     required: true,
@@ -80,14 +83,23 @@ export default function InputMaps({ onGenerateRoute }: InputMapsProps) {
         label="Direccion 1"
         items={startResults}
         value={startSearch}
-        onChange={(v:any) => {
+        onChange={(v: any) => {
           setStartSearch(v);
           handleGeocode(v).then(setStartResults);
         }}
-        onSelect={(i:any) => {
+        onSelect={(i: any) => {
           setStart(i.geometry?.coordinates);
           setStartSearch(i.properties.name);
         }}
+      />
+      <ComboboxDemo
+        items={startResults}
+        value={startSearch}
+        onChange={(v: any) => {
+          setStartSearch(v);
+          handleGeocode(v).then(setStartResults);
+        }}
+        ref={startComboBoxRef}
       />
       {start && (
         <div>

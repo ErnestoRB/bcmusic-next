@@ -1,5 +1,5 @@
-import * as React from "react"
 import { Check, ChevronsUpDown } from "lucide-react"
+import React, { useEffect, useRef, useState, MutableRefObject } from 'react';
 
 import { cn } from "../../utils/lib/utils"
 import { Button } from "./button"
@@ -39,7 +39,14 @@ const frameworks = [
   },
 ]
 
-export function ComboboxDemo() {
+interface IComboBoxProps {
+  items?: any[];
+  value: string;
+  onChange: (v: any) => any;
+  ref?: MutableRefObject<any>;
+}
+
+export const ComboboxDemo = React.forwardRef((props: IComboBoxProps, ref) =>{
   const [open, setOpen] = React.useState(false)
   const [value, setValue] = React.useState("")
 
@@ -53,20 +60,20 @@ export function ComboboxDemo() {
           className="w-[200px] justify-between"
         >
           {value
-            ? frameworks.find((framework) => framework.value === value)?.label
-            : "Select framework..."}
+            ? props.items?.find((item) => item.value === value)?.label
+            : "Select your Location..."}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[200px] p-0">
         <Command>
-          <CommandInput placeholder="Search framework..." />
-          <CommandEmpty>No framework found.</CommandEmpty>
+          <CommandInput placeholder="Search Location..." />
+          <CommandEmpty>No Location found.</CommandEmpty>
           <CommandGroup>
-            {frameworks.map((framework) => (
+            {props.items?.map((item) => (
               <CommandItem
-                key={framework.value}
-                value={framework.value}
+                key={item.properties?.name}
+                value={item.value}
                 onSelect={(currentValue) => {
                   setValue(currentValue === value ? "" : currentValue)
                   setOpen(false)
@@ -75,10 +82,10 @@ export function ComboboxDemo() {
                 <Check
                   className={cn(
                     "mr-2 h-4 w-4",
-                    value === framework.value ? "opacity-100" : "opacity-0"
+                    value === item.value ? "opacity-100" : "opacity-0"
                   )}
                 />
-                {framework.label}
+                {item.properties?.name}
               </CommandItem>
             ))}
           </CommandGroup>
@@ -86,4 +93,4 @@ export function ComboboxDemo() {
       </PopoverContent>
     </Popover>
   )
-}
+});
