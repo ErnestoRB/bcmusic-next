@@ -6,6 +6,9 @@ import logError from "../../../../utils/log";
 import Joi from "joi";
 import { LatLngCoords } from "../../../../utils/openroute/base";
 import { TripProfile, generateRoute } from "../../../../utils/openroute/route";
+import { join } from "path";
+import { ROUTES_PATH } from "../../../../utils/paths";
+import { mkdir, writeFile } from "fs/promises";
 
 interface RouteRequest {
   coordinates: LatLngCoords[];
@@ -20,7 +23,7 @@ const validationSchema = Joi.object({
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ResponseData<undefined> | Buffer>
+  res: NextApiResponse<ResponseData<any>>
 ) {
   try {
     const session = await unstable_getServerSession(
@@ -49,6 +52,16 @@ export default async function handler(
       coords,
       profile: profile as TripProfile,
     });
+    try {
+      const folder = join(ROUTES_PATH, session?.user.id ?? "anonymous");
+      await mkdir(folder, { recursive: true });
+      await writeFile(
+        join(folder, `${Date.now()}.json`),
+        JSON.stringify(result)
+      );
+    } catch (error: any) {
+      logError("No se pudo guardar la ruta");
+    }
     res.send(result);
   } catch (error: any) {
     if (error.isJoi) {

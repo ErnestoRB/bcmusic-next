@@ -13,6 +13,9 @@ import { Fonts } from "../../../utils/database/models";
 import { Account } from "../../../utils/database/models/next-auth";
 import { GeneratedBanner } from "../../../utils/database/models";
 import { randomUUID } from "crypto";
+import { mkdir, stat, writeFile } from "fs/promises";
+import path, { join } from "path";
+import { BANNERS_PATH } from "../../../utils/paths";
 
 export default async function handler(
   req: NextApiRequest,
@@ -70,7 +73,7 @@ export default async function handler(
                 sequelize.fn("NOW")
               ),
               Op.lte,
-              60
+              10
             ),
             { idUser: session.user?.id },
           ],
@@ -79,7 +82,7 @@ export default async function handler(
       if (banner) {
         res
           .status(400)
-          .send({ message: "Sólo puedes crear un banner por hora." });
+          .send({ message: "Sólo puedes crear un banner cada 10 minutos." });
         return;
       }
     }
@@ -136,26 +139,36 @@ export default async function handler(
       });
       return;
     }
-    if (process.env.NODE_ENV === "production") {
-      let t: Transaction = await sequelize.transaction();
-      try {
-        const historyRecord = await GeneratedBanner.create(
-          { id: randomUUID(), idUser: session?.user.id, date: new Date() },
-          { transaction: t }
-        );
-        /// @ts-ignore
-        historyRecord.setBannerRecord(record);
-        await t.commit();
-        res.send(img);
-      } catch (error: any) {
-        logError(error);
-        await t.rollback();
-        if (error.isBanner) {
-          res.status(400).send({ message: error.message });
-          return;
-        }
-        res.status(400).send({ message: "Error" });
+    const bannerUUID = randomUUID();
+    try {
+      const folder = join(
+        BANNERS_PATH,
+        session.user.id,
+        `${record.dataValues.id}`
+      );
+      await mkdir(folder, { recursive: true });
+      await writeFile(join(folder, `${bannerUUID}.png`), img);
+    } catch (error: any) {
+      logError("No se pudo guardar el banner");
+    }
+    let t: Transaction = await sequelize.transaction();
+    try {
+      const historyRecord = await GeneratedBanner.create(
+        { id: bannerUUID, idUser: session?.user.id, date: new Date() },
+        { transaction: t }
+      );
+      /// @ts-ignore
+      historyRecord.setBanner(record);
+      await t.commit();
+      res.send(img);
+    } catch (error: any) {
+      logError(error);
+      await t.rollback();
+      if (error.isBanner) {
+        res.status(400).send({ message: error.message });
+        return;
       }
+      res.status(400).send({ message: "Error" });
       return;
     }
     res.send(img);
