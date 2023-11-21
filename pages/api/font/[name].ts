@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { copyFile, mkdir, readFile, rm, stat } from "fs/promises";
 import path from "path";
-import { FONTS_PATH } from "../../../vm/fonts/path";
+import { FONTS_PATH } from "../../../utils/paths";
 import { unstable_getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
 import logError from "../../../utils/log";

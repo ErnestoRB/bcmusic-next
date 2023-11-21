@@ -1,5 +1,5 @@
 import { registerFont } from "canvas";
-import { FONTS_PATH } from "./path";
+import { FONTS_PATH } from "../../utils/paths";
 import path from "path";
 
 export interface BannerFont {
