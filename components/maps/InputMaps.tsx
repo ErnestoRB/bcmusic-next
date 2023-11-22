@@ -1,9 +1,8 @@
 // InputMaps.tsx
 import { useEffect, useState, useRef } from "react";
-import { MyComboBox } from "../Combobox";
+import { ComboboxDemo } from "../ui/comboBox";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { ComboboxDemo } from "../ui/comboBox";
 
 interface InputMapsProps {
   onGenerateRoute: (coords: {
@@ -17,9 +16,9 @@ export default function InputMaps({ onGenerateRoute }: InputMapsProps) {
   const [startResults, setStartResults] = useState<any[]>([]);
   const [startSearch, setStartSearch] = useState<string>("");
   const [start, setStart] = useState<[number, number] | undefined>(undefined);
-  const [destinationResults, setDestinationResults] = useState<any[] | null>(
-    []
-  );
+  const [endResults, setEndResults] = useState<any[]>([]);
+  const [endSearch, setEndSearch] = useState<string>("");
+  const [end, setEnd] = useState<[number, number] | undefined>(undefined);
   const router = useRouter();
   const { status } = useSession({
     required: true,
@@ -30,6 +29,7 @@ export default function InputMaps({ onGenerateRoute }: InputMapsProps) {
   });
 
   const startComboBoxRef = useRef(null);
+  const endComboBoxRef = useRef(null);
 
   useEffect(() => {
     // Obtener la ubicación del usuario
@@ -50,6 +50,7 @@ export default function InputMaps({ onGenerateRoute }: InputMapsProps) {
   ): Promise<number[]> => {
     if (userLocation) {
       const [latitude, longitude] = userLocation;
+      console.log(search);
       const response = await fetch(
         `/api/maps/geocode?search=${search}&lat=${latitude}&lng=${longitude}&radius=${radius}`,
         { credentials: "include" }
@@ -69,18 +70,29 @@ export default function InputMaps({ onGenerateRoute }: InputMapsProps) {
     }
   };
 
-  const handleInputChange = (
+  const handleStartInputChange = (
     value: string,
     setValue: React.Dispatch<React.SetStateAction<string>>
   ) => {
     setValue(value);
   };
 
+  const handleEndInputChange = (
+    value: string,
+    setValue: React.Dispatch<React.SetStateAction<string>>
+  ) => {
+    setValue(value);
+  };
+
+  useEffect(() => {
+    if (start && end) {
+      onGenerateRoute({ startCoords: start, destinationCoords: end });
+    }
+  }, [start, end, onGenerateRoute]);
+
   return (
-    <div className="flex flex-col items-center space-y-4">
-      <MyComboBox
-        ref={startComboBoxRef}
-        label="Direccion 1"
+    <div className="m-10">
+      <ComboboxDemo
         items={startResults}
         value={startSearch}
         onChange={(v: any) => {
@@ -91,19 +103,37 @@ export default function InputMaps({ onGenerateRoute }: InputMapsProps) {
           setStart(i.geometry?.coordinates);
           setStartSearch(i.properties.name);
         }}
-      />
-      <ComboboxDemo
-        items={startResults}
-        value={startSearch}
-        onChange={(v: any) => {
-          setStartSearch(v);
-          handleGeocode(v).then(setStartResults);
+        handleInputChange={(value: string) => {
+          setStartSearch(value);
+          handleStartInputChange(value, setStartSearch);
         }}
         ref={startComboBoxRef}
       />
       {start && (
         <div>
           Coordenadas de la Dirección 1: {start[0]}, {start[1]}
+        </div>
+      )}
+      <ComboboxDemo
+        items={endResults}
+        value={endSearch}
+        onChange={(v: any) => {
+          setEndSearch(v);
+          handleGeocode(v).then(setEndResults);
+        }}
+        onSelect={(i: any) => {
+          setEnd(i.geometry?.coordinates);
+          setEndSearch(i.properties.name);
+        }}
+        handleInputChange={(value: string) => {
+          setEndSearch(value);
+          handleEndInputChange(value, setEndSearch);
+        }}
+        ref={endComboBoxRef}
+      />
+      {end && (
+        <div>
+          Coordenadas de la Dirección 2: {end[0]}, {end[1]}
         </div>
       )}
     </div>

@@ -20,8 +20,6 @@ export default function MapsExample() {
 
   const [routeGeometry, setRouteGeometry] = useState<string | null>(null);
 
-
-
   const handleGenerateRoute = async ({
     startCoords,
     destinationCoords,
@@ -40,7 +38,9 @@ export default function MapsExample() {
 
     if (response.ok) {
       const result = await response.json();
-      setRouteGeometry(result.routeGeometry);
+      console.log(result);
+      console.log(result.routes[0].geometry);
+      setRouteGeometry(result.routes[0].geometry);
     } else {
       console.error("Error al llamar a la API de ruta");
     }
