@@ -102,7 +102,9 @@ export default async function handler(
         );
         data = await getSpotifyData(access_token as string, "long_term");
       } catch (error: any) {
-        res.send({ message: "Error al renovar el token de acceso" });
+        res
+          .status(400)
+          .send({ message: "Error al renovar el token de acceso" });
         return;
       }
     }
@@ -113,7 +115,7 @@ export default async function handler(
       return;
     }
     if (data.error) {
-      console.error(data);
+      logError(JSON.stringify(data));
       if (data.error.status === 403) {
         res.status(400).send({
           message:
