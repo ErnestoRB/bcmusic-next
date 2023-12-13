@@ -10,8 +10,6 @@ import { sequelize } from "../../../utils/database/connection";
 import { GeneratedBanner } from "../../../utils/database/models";
 import { Banner } from "../../../utils/database/models";
 
-const PAGE_SIZE = 10;
-
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<{ message: string; data?: any; id?: string }>

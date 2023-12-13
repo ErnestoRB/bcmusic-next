@@ -20,62 +20,62 @@ export default async function handler(
       authOptions(req, res)
     );
     if (req.method?.toLowerCase() === "post") {
-      if (!(await apiUserHavePermission(session, res, API_FONTS_POST))) {
-        return;
-      }
-      const { files, fields } = await parse(req);
-      if (!fields.name) {
-        res.status(400).send({ message: "No especificaste un nombre" });
-        return;
-      }
-      if (Array.isArray(fields.name)) {
-        res.status(400).send({ message: "Solo puedes especificar un nombre" });
-        return;
-      }
-      if (!files.font) {
-        res.status(400).send({ message: "No incluiste una fuente!" });
-        return;
-      }
-      if (Array.isArray(files.font)) {
-        res.status(400).send({ message: "Sólo puedes subir un archivo " });
-        return;
-      }
-      if (
-        !(
-          /font\/ttf/.test(files.font.mimetype || "") ||
-          files.font.originalFilename?.toLowerCase().endsWith(".ttf")
-        )
-      ) {
-        res.status(400).send({ message: "Sólo puedes subir un archivo TTF!" });
-        return;
-      }
-
-      let folderExists: boolean = false;
-      try {
-        folderExists = !!(await stat(FONTS_PATH));
-      } catch (error) {
-        await mkdir(FONTS_PATH, { recursive: true })
-          .then(() => (folderExists = true))
-          .catch(() => (folderExists = false));
-      }
-      if (!folderExists) {
-        res.status(400).send({ message: `No se pudo guardar la fuente` });
-        return;
-      }
-      await copyFile(
-        files.font.filepath,
-        path.join(FONTS_PATH, files.font.newFilename)
-      );
-      await rm(files.font.filepath);
-
-      await Fonts.create({
-        name: fields.name,
-        fileName: files.font.newFilename,
-      });
-      res.send({ message: `Fuente "${fields.name}" registrada` });
+      return res.status(400).send({ message: "Metodo no implementado" });
+    }
+    if (!(await apiUserHavePermission(session, res, API_FONTS_POST))) {
       return;
     }
-    res.status(400).send({ message: "Metodo no implementado" });
+    const { files, fields } = await parse(req);
+    if (!fields.name) {
+      res.status(400).send({ message: "No especificaste un nombre" });
+      return;
+    }
+    if (Array.isArray(fields.name)) {
+      res.status(400).send({ message: "Solo puedes especificar un nombre" });
+      return;
+    }
+    if (!files.font) {
+      res.status(400).send({ message: "No incluiste una fuente!" });
+      return;
+    }
+    if (Array.isArray(files.font)) {
+      res.status(400).send({ message: "Sólo puedes subir un archivo " });
+      return;
+    }
+    if (
+      !(
+        /font\/ttf/.test(files.font.mimetype || "") ||
+        files.font.originalFilename?.toLowerCase().endsWith(".ttf")
+      )
+    ) {
+      res.status(400).send({ message: "Sólo puedes subir un archivo TTF!" });
+      return;
+    }
+
+    let folderExists: boolean = false;
+    try {
+      folderExists = !!(await stat(FONTS_PATH));
+    } catch (error) {
+      await mkdir(FONTS_PATH, { recursive: true })
+        .then(() => (folderExists = true))
+        .catch(() => (folderExists = false));
+    }
+    if (!folderExists) {
+      res.status(400).send({ message: `No se pudo guardar la fuente` });
+      return;
+    }
+    await copyFile(
+      files.font.filepath,
+      path.join(FONTS_PATH, files.font.newFilename)
+    );
+    await rm(files.font.filepath);
+
+    await Fonts.create({
+      name: fields.name,
+      fileName: files.font.newFilename,
+    });
+    res.send({ message: `Fuente "${fields.name}" registrada` });
+    return;
   } catch (error: any) {
     logError(error);
     res.status(500).send({ message: "Error interno" });

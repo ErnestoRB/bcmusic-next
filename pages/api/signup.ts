@@ -6,7 +6,8 @@ import { isDuplicateError } from "../../utils/database";
 import { validateRecaptchaToken } from "../../utils/recaptcha";
 import logError from "../../utils/log";
 import { User } from "../../utils/database/models";
-export default async function handler(
+
+export default validate(async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseData<undefined>>
 ) {
@@ -48,4 +49,4 @@ export default async function handler(
     }
     res.status(500).send({ message: "Error interno" });
   }
-}
+});
