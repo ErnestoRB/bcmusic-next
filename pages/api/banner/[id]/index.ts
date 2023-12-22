@@ -1,18 +1,18 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { ValidationError } from "joi";
-import { UpdateScriptValidation } from "../../../utils/authorization/validation/joi/bannerRecords";
+import { UpdateScriptValidation } from "../../../../utils/authorization/validation/joi/bannerRecords";
 import { unstable_getServerSession } from "next-auth";
-import { authOptions } from "../auth/[...nextauth]";
+import { authOptions } from "../../auth/[...nextauth]";
 import type { Model } from "sequelize";
-import logError from "../../../utils/log";
-import { apiUserHavePermission } from "../../../utils/authorization/validation/permissions/server";
+import logError from "../../../../utils/log";
+import { apiUserHavePermission } from "../../../../utils/authorization/validation/permissions/server";
 import {
   API_BANNER_DELETE,
   API_BANNER_GET,
   API_BANNER_PATCH,
-} from "../../../utils/authorization/permissions";
-import { Banner } from "../../../utils/database/models";
-import { Fonts } from "../../../utils/database/models";
+} from "../../../../utils/authorization/permissions";
+import { Banner } from "../../../../utils/database/models";
+import { Fonts } from "../../../../utils/database/models";
 
 const MAX_FONTS_PER_BANNER = 10;
 
@@ -58,28 +58,7 @@ export default async function handler(
         res.send({ message: "Registro encontrado", data: record?.dataValues });
         return;
       }
-      if (req.query.fonts) {
-        const record = (await Banner.findByPk(id, {
-          include: {
-            model: Fonts,
-            attributes: ["id", "name"],
 
-            through: {
-              attributes: [],
-            },
-          },
-        })) as Model;
-        if (!record) {
-          res.status(400).send({ message: `Banner ${id} no existe!` });
-          return;
-        }
-        const recordFonts = record.dataValues.fonts;
-        res.send({
-          message: `Fuentes del banner "${record.dataValues.name}"`,
-          data: recordFonts,
-        });
-        return;
-      }
       const record = await Banner.findByPk(id, {
         attributes: { exclude: ["script"] },
       });

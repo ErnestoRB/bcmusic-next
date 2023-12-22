@@ -19,7 +19,7 @@ export default async function handler(
       res,
       authOptions(req, res)
     );
-    if (req.method?.toLowerCase() === "post") {
+    if (req.method?.toLowerCase() !== "post") {
       return res.status(400).send({ message: "Metodo no implementado" });
     }
     if (!(await apiUserHavePermission(session, res, API_FONTS_POST))) {

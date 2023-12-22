@@ -22,7 +22,7 @@ export default function CreateBannerCode() {
       <Head>
         <title>Programar nuevo banner</title>
       </Head>
-      <div className="bg-white p-2 md:p-4 shadow-lg rounded max-w-7xl w-full">
+      <div className="bg-white p-2 md:p-4 my-8 shadow-lg rounde w-max flex flex-col items-center">
         <>
           <h1 className="mb-4">Programar nuevo banner</h1>
           <hr />

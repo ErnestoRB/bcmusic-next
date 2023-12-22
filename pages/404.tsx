@@ -4,7 +4,7 @@ import notFound from "../images/not-found.gif";
 export default function NotFound() {
   return (
     <div className="grid place-items-center w-full">
-      <div className="w-max flex flex-col items-center gap-2">
+      <div className="w-max flex flex-col items-center bg-white p-4 gap-2">
         <h1 className="font-bold">Ooops!</h1>
         <p>Página no encontrada, vuelve pronto!</p>
         <Image

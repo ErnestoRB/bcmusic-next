@@ -34,7 +34,7 @@ export default async function handler(
       return;
     }
     const { refresh_token, id } = spotifyToken?.dataValues;
-    const { access_token, error } = await refreshToken(refresh_token);
+    const { access_token, error } = await refreshToken(refresh_token!);
     if (error) {
       res.status(400).send({ message: "Error con la API de Spotify " });
       return;

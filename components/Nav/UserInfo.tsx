@@ -16,7 +16,6 @@ export default function UserInfo() {
         ></Image>
       )}
       <span>
-        Sesión iniciada como:{" "}
         <b>
           {session.data?.user?.email && !session.data?.user?.name && (
             <>{session.data.user.email}</>

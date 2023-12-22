@@ -6,12 +6,12 @@ import Image from "next/image";
 import fetcher from "../utils/swr";
 import useSWR from "swr";
 import Alert from "./Alert";
-import AddFont from "./AddFont";
-import { Loading } from "./Loading";
+import AddFont from "./BannerFonts";
 import playIcon from "../images/play.svg";
 import saveIcon from "../images/save-floppy-disk.svg";
 import javascriptIcon from "../images/javascript.svg";
 import { Button } from "./Button";
+import { Spinner } from "./Spinner";
 
 export interface EditorFileDescription {
   name: string;
@@ -102,11 +102,11 @@ export default function BannerEditor({ id }: { id: string }) {
       {data && data.data && !error && !isLoading && (
         <>
           <h1>Banner {`"${data.data?.name}"`}</h1>
-          <AddFont id={id} bannerFonts={data.data.fonts}></AddFont>
+          <AddFont id={id}></AddFont>
           <div>
             <div className="flex gap-x-2 p-2 bg-stone-800">
               <Button
-                className="bg-green-600 text-sm p-2 rounded-lg"
+                className="bg-green-400 text-sm p-2 rounded-lg"
                 onPressEnd={() => {
                   if (editorText !== oldCode.current) {
                     toast(
@@ -143,7 +143,7 @@ export default function BannerEditor({ id }: { id: string }) {
                 ></Image>
               </Button>
               <Button
-                className="bg-blue-600 text-white text-sm p-2  rounded-lg"
+                className="bg-blue-500 text-white text-sm p-2  rounded-lg"
                 onPressEnd={() => {
                   if (!id) {
                     toast("Aún no estableces los datos del banner!", {
@@ -226,8 +226,8 @@ export default function BannerEditor({ id }: { id: string }) {
         </>
       )}
       {isLoading && (
-        <div className="w-ful flex justify-center">
-          <Loading></Loading>
+        <div className="w-full flex flex-col items-center justify-center">
+          <Spinner></Spinner>
           Cargando...
         </div>
       )}

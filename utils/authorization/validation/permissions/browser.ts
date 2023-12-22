@@ -34,7 +34,7 @@ export const isCollaborator = (cadena?: string) => {
 export const sessionRequired = (
   session: Session | null,
   res: NextApiResponse
-): boolean => {
+): session is null => {
   if (!session) {
     res.status(401).json({ message: "Inicia sesión primero!" });
     return true;

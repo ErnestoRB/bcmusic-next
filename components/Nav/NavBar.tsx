@@ -6,6 +6,9 @@ import NavItem from "../Menu/MenuItem";
 import UserInfo from "./UserInfo";
 import Link from "../Link";
 import ButtonNav from "../Menu/ButtonNav";
+import Image from "next/image";
+import logoutIcon from "../../images/logout.svg";
+import barsIcon from "../../images/bars.svg";
 
 interface NavItem {
   type?: "authenticated" | "unauthenticated";
@@ -61,18 +64,28 @@ export default function NavBar() {
         type: "authenticated",
         items: [
           {
-            route: "/panel",
-            node: <UserInfo></UserInfo>,
+            route: "/maps/route",
+            node: "Crear playlist",
           },
           {
             route: "/new",
             node: "Crear banner",
           },
           {
-            node: "Cerrar sesion",
+            route: "/panel",
+            node: <UserInfo></UserInfo>,
+          },
+          {
+            node: (
+              <Image
+                src={logoutIcon}
+                width={24}
+                height={24}
+                alt="logout from account"
+              ></Image>
+            ),
             onClick: () => signOut(),
-            className:
-              "bg-red-600 text-white font-semibold grid place-items-center px-2 py-1",
+            className: "bg-red-600 hover:bg-red-700 grid place-items-center",
           },
         ],
       },
@@ -130,7 +143,14 @@ export default function NavBar() {
             })}
         {!desktopNavbar && (
           <ButtonNav
-            buttonContent="Menu"
+            buttonContent={
+              <Image
+                src={barsIcon}
+                alt="app navbar"
+                width={12}
+                height={12}
+              ></Image>
+            }
             popoverClass="flex flex-col"
             buttonClass="p-2 bg-stone-900 hover:bg-stone-900 text-white border-white border"
           >
