@@ -4,6 +4,7 @@ import fetcher from "../utils/swr";
 import Alert from "./Alert";
 import useSWR from "swr";
 import { Loading } from "./Loading";
+import { Spinner } from "./Spinner";
 
 interface BannerHistory {
   id: string;
@@ -27,9 +28,8 @@ export function BannerHistorial() {
 
   return (
     <>
-      <h2 className="text-xl font-semibold">Historial de banners generados</h2>
-      <form className="flex flex-col gap-1">
-        <div className="flex gap-2">
+      <form className="flex flex-col gap-1 py-8">
+        <div className="flex gap-2 items-center">
           <label htmlFor="mes">Mes</label>
           <select
             name="mes"
@@ -46,7 +46,7 @@ export function BannerHistorial() {
             ))}
           </select>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-center">
           <label htmlFor="year">Año</label>
           <input
             type="number"
@@ -61,13 +61,13 @@ export function BannerHistorial() {
         </div>
       </form>
       {isLoading && (
-        <div className="w-ful flex justify-center">
-          <Loading></Loading>
+        <div className="w-full flex-col flex items-center">
+          <Spinner></Spinner>
           Cargando...
         </div>
       )}
       {!isLoading && error && (
-        <Alert>Error al obtener el historial de banners</Alert>
+        <Alert type="error">Error al obtener el historial de banners</Alert>
       )}
       {data && (data.data as BannerHistory[]) && (
         <>

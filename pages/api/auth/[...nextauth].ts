@@ -63,7 +63,8 @@ const providers: AuthOptions["providers"] = [
     authorization:
       "https://accounts.spotify.com/authorize?" +
       new URLSearchParams({
-        scope: "user-top-read user-read-email",
+        scope:
+          "user-top-read playlist-modify-public playlist-modify-private user-read-email user-read-private",
       }).toString(),
   }),
   Credentials({

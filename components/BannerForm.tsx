@@ -26,7 +26,7 @@ export default function BannerForm({
 
   return (
     <form
-      className="flex flex-col gap-y-4"
+      className="flex flex-col gap-y-4 max-w-lg"
       onSubmit={handleSubmit((values) => {
         fetch("/api/banner", {
           method: banner ? "PATCH" : "POST",
@@ -59,7 +59,7 @@ export default function BannerForm({
         {...register("name", { required: true, value: banner?.name })}
       />
       {errors.name && <Alert>El nombre es obligatorio</Alert>}
-      <label htmlFor="description" className="text-xl">
+      <label htmlFor="description" className="text-lg">
         Descripción del banner
       </label>
       <input
@@ -67,7 +67,7 @@ export default function BannerForm({
         placeholder="Descripción del banner"
         {...register("description", { value: banner?.description })}
       />
-      <label htmlFor="exampleUrl" className="text-xl">
+      <label htmlFor="exampleUrl" className="text-lg">
         URL de imágen de ejemplo
       </label>
       <input
@@ -83,7 +83,7 @@ export default function BannerForm({
       />
 
       {errors.exampleUrl && <Alert>Existen errores en el URL!</Alert>}
-      <label htmlFor="width" className="text-xl">
+      <label htmlFor="width" className="text-lg">
         Ancho del banner (px)<b>*</b>
       </label>
       <input
@@ -105,7 +105,7 @@ export default function BannerForm({
       {errors.width?.type === "max" && (
         <Alert>El ancho máximo es de 3000px</Alert>
       )}
-      <label htmlFor="height" className="text-xl">
+      <label htmlFor="height" className="text-lg">
         Alto del banner (px)<b>*</b>
       </label>
       <input
@@ -127,7 +127,7 @@ export default function BannerForm({
       {errors.height?.type === "max" && (
         <Alert>El alto máximo es de 3000px</Alert>
       )}
-      <label htmlFor="minItems" className="text-xl">
+      <label htmlFor="minItems" className="text-lg">
         Artistas mínimos para generar el banner<b>*</b>
       </label>
       <input

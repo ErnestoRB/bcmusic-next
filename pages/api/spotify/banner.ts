@@ -91,7 +91,7 @@ export default async function handler(
     let data = await getSpotifyData(access_token as string, "long_term");
     if (data.error && data.error.status == 401) {
       try {
-        const { access_token } = await refreshToken(refresh_token);
+        const { access_token } = await refreshToken(refresh_token!);
         await Account.update(
           { access_token },
           {

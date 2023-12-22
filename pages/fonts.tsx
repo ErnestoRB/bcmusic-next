@@ -12,6 +12,7 @@ import { Button } from "../components/Button";
 import { toast } from "react-toastify";
 import Link from "../components/Link";
 import { IFontType } from "../utils/database/models/Fonts";
+import { Spinner } from "../components/Spinner";
 
 export default function FontsComponent() {
   const [page, setPage] = useState(1);
@@ -41,10 +42,11 @@ export default function FontsComponent() {
   return (
     <div className={`flex flex-col items-center justify-center w-full`}>
       <div className="flex flex-col gap-4 bg-white p-4 md:p-8 rounded-sm">
-        <h2 className="text-lg font-bold">Fuentes disponibles:</h2>
+        <h2 className="text-xl font-bold">Fuentes disponibles:</h2>
         <p>
           Añadir nueva fuente <Link href={"font"}>aquí</Link>
         </p>
+        {isLoading && !data && !error && <Spinner></Spinner>}
         {error && !isLoading && (
           <Alert inline={false}>Error al cargar las fuentes</Alert>
         )}
