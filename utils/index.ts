@@ -1,5 +1,13 @@
 import { error } from "console";
-import { SpotifyTopArtistData } from "../types/definitions";
+import {
+  SpotifyCreatedPlaylistTracks,
+  SpotifyGeneratedPlaylist,
+  SpotifyPlaylistSnapshotID,
+  SpotifyRecommendationsData,
+  SpotifyTopArtistData,
+  SpotifyTopTracksData,
+  SpotifyUserDataID,
+} from "../types/definitions";
 import { IFontType } from "./database/models/Fonts";
 
 export const perserveStatus = async (res: Response) => ({
@@ -10,12 +18,12 @@ export const perserveStatus = async (res: Response) => ({
 export const loadFontsAsync = (
   fonts: IFontType["dataValues"][]
 ): Promise<FontFace[]> => {
-  return Promise.all(
-    fonts.map((f) => {
-      const fontFace = new FontFace(f.name, `url('/api/font/${f.name}')`);
-      return fontFace.load();
-    })
-  );
+  return Promise.all(fonts.map(async (f) => await loadFontAsync(f.name)));
+};
+
+export const loadFontAsync = (fontName: string): Promise<FontFace> => {
+  const fontFace = new FontFace(fontName, `url('/api/font/${fontName}')`);
+  return fontFace.load();
 };
 
 export const availableSpotifyTimeRanges = [
@@ -48,7 +56,7 @@ export const getSpotifyData = async (
   );
   if (!res.ok) {
     try {
-      return res.json();
+      return await res.json();
     } catch (e) {
       return {
         error: {
@@ -58,7 +66,183 @@ export const getSpotifyData = async (
       };
     }
   }
-  return res.json();
+  return await res.json();
+};
+
+export const getTopTracks = async (
+  Token: string,
+  time: "medium_term" | "short_term" | "long_term"
+): Promise<SpotifyTopTracksData> => {
+  const res = await fetch(
+    "https://api.spotify.com/v1/me/top/tracks?time_range=" + time + "&limit=5", //limite a 5 para conseguir recomendaciones
+    {
+      headers: {
+        Authorization: "Bearer " + Token,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  if (!res.ok) {
+    try {
+      return await res.json();
+    } catch (e) {
+      return {
+        error: {
+          status: res.status,
+          message: "",
+        },
+      };
+    }
+  }
+  return await res.json();
+};
+
+export const getRecommendations = async (
+  Token: string,
+  seed: string[]
+): Promise<SpotifyRecommendationsData> => {
+  const res = await fetch(
+    "https://api.spotify.com/v1/recommendations?limit=20&seed_tracks=" +
+      seed.join(","),
+    {
+      headers: {
+        Authorization: "Bearer " + Token,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  if (!res.ok) {
+    try {
+      return await res.json();
+    } catch (e) {
+      return {
+        error: {
+          status: res.status,
+          message: "",
+        },
+      };
+    }
+  }
+  return await res.json();
+};
+
+export const getProfile = async (Token: string): Promise<SpotifyUserDataID> => {
+  const res = await fetch("https://api.spotify.com/v1/me", {
+    headers: {
+      Authorization: "Bearer " + Token,
+      "Content-Type": "application/json",
+    },
+  });
+  if (!res.ok) {
+    try {
+      return await res.json();
+    } catch (e) {
+      return {
+        error: {
+          status: res.status,
+          message: "",
+        },
+      };
+    }
+  }
+  return await res.json();
+};
+
+export const getPlaylistTracks = async (
+  Token: string,
+  id: string
+): Promise<SpotifyCreatedPlaylistTracks> => {
+  const res = await fetch(
+    "https://api.spotify.com/v1/playlists/" + id + "/tracks",
+    {
+      headers: {
+        Authorization: "Bearer " + Token,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  if (!res.ok) {
+    try {
+      return await res.json();
+    } catch (e) {
+      return {
+        error: {
+          status: res.status,
+          message: "",
+        },
+      };
+    }
+  }
+  return await res.json();
+};
+
+export const makePlaylist = async (
+  Token: string,
+  userID: string,
+  playlistName: string
+): Promise<SpotifyGeneratedPlaylist> => {
+  const res = await fetch(
+    "https://api.spotify.com/v1/users/" + userID + "/playlists",
+    {
+      method: "POST",
+      headers: {
+        Authorization: "Bearer " + Token,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: playlistName,
+        description: "Playlist generada por BCMusic para un viaje.",
+        public: true,
+      }),
+    }
+  );
+  if (!res.ok) {
+    try {
+      return await res.json();
+    } catch (e) {
+      return {
+        error: {
+          status: res.status,
+          message: "",
+        },
+      };
+    }
+  }
+  return await res.json();
+};
+
+export const addItemsToPlaylist = async (
+  Token: string,
+  playlistID: string,
+  tracksURI: string[]
+): Promise<SpotifyPlaylistSnapshotID> => {
+  const res = await fetch(
+    "https://api.spotify.com/v1/playlists/" + playlistID + "/tracks",
+    {
+      method: "POST",
+      headers: {
+        Authorization: "Bearer " + Token,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        uris: tracksURI,
+        position: 0,
+      }),
+    }
+  );
+  if (!res.ok) {
+    try {
+      return await res.json();
+    } catch (e) {
+      return {
+        error: {
+          status: res.status,
+          message: "",
+        },
+      };
+    }
+  }
+  return await res.json();
 };
 
 export const meses = [

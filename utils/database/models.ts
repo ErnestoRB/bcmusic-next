@@ -10,6 +10,11 @@ import { Country } from "./models/Country";
 import { BannerFonts } from "./models/BannerFonts";
 import { UserTypePermission } from "./models/UserTypePermission";
 import { GeneratedBanner } from "./models/GeneratedBanner";
+import { Feedback } from "./models/Feedback";
+import { Playlist } from "./models/Playlist";
+import { Song } from "./models/Song";
+import { Route } from "./models/Route";
+import { models } from "@next-auth/sequelize-adapter";
 
 // N:M thru defined model
 UserType.belongsToMany(Permission, { through: UserTypePermission });
@@ -51,10 +56,43 @@ Banner.hasMany(GeneratedBanner, {
   onDelete: "cascade",
 });
 
+// 1:N
+Playlist.belongsTo(User, {
+  foreignKey: "userId",
+  targetKey: "id",
+  keyType: models.Account.userId.type,
+});
+User.hasMany(Playlist);
+
+// 1:N
+Song.belongsTo(Playlist, { foreignKey: "playlistId", targetKey: "id" });
+Playlist.hasMany(Song);
+
+// 1:N
+Route.belongsTo(User, {
+  foreignKey: "userId",
+  targetKey: "id",
+  keyType: models.Account.userId.type,
+});
+User.hasMany(Route);
+
+// 1:N
+Feedback.belongsTo(Playlist);
+Playlist.hasMany(Feedback);
+
+// 1:N
+Feedback.belongsTo(User);
+User.hasMany(Feedback);
+
 const sync = async () => {
-  await TimeRanges.sync();
+  /*   await TimeRanges.sync();
   await Banner.sync();
-  await sequelize.sync();
+  await Route.sync();
+  await Playlist.sync();
+  await Song.sync(); */
+  await Feedback.sync();
+  /*   await sequelize.sync();
+   */
 };
 
 export {

@@ -2,20 +2,38 @@ import { GetServerSideProps } from "next";
 import { unstable_getServerSession } from "next-auth";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
-import Alert from "../components/Alert";
-import { BannerHistorial } from "../components/BannerHistorial";
 import { authOptions } from "./api/auth/[...nextauth]";
-import { Loading } from "../components/Loading";
-import { AdminActions } from "../components/AdminActions";
-import {
-  isAdminSession,
-  isCollaboratorSession,
-} from "../utils/authorization/validation/permissions/browser";
+import { UserCard } from "../components/UserCard";
+import { Tab, TabPanel, Tabs, TabsList } from "@mui/base";
+import { useState } from "react";
+import { PanelPlaylists } from "../components/panel/Playlists";
+import { PanelInicio } from "../components/panel/Inicio";
+import { BannerHistorial } from "../components/BannerHistorial";
+
+interface ITab {
+  display: React.ReactNode;
+  title: React.ReactNode;
+}
+
+const tabs: ITab[] = [
+  {
+    display: <PanelInicio></PanelInicio>,
+    title: "Inicio",
+  },
+  {
+    display: <PanelPlaylists></PanelPlaylists>,
+    title: "Playlists generadas",
+  },
+  {
+    display: <BannerHistorial></BannerHistorial>,
+    title: "Banners generados",
+  },
+];
 
 export default function Panel() {
   const router = useRouter();
+  const [selectedMenu, setSelectedMenu] = useState(0);
   const session = useSession({
     required: true,
     onUnauthenticated: () => {
@@ -24,65 +42,51 @@ export default function Panel() {
   });
 
   return (
-    <div className={`w-full flex justify-center items-center`}>
-      <div className="max-w-md p-2 md:p-4 rounded-sm bg-white flex flex-col gap-y-2 shadow-lg">
-        <Head>
-          <title>Panel de usuario</title>
-        </Head>
-        {session.status === "loading" && (
-          <div className="w-ful flex justify-center">
-            <Loading></Loading>
-            Cargando...
+    <div className={`w-full flex-1`}>
+      <Head>
+        <title>Panel de usuario</title>
+      </Head>
+      <Tabs
+        defaultValue={0}
+        value={selectedMenu}
+        className="flex md:flex-row flex-col h-full"
+        onChange={(e, i) => setSelectedMenu(i as number)}
+      >
+        <TabsList className="flex flex-col md:flex-row bg-stone-100  md:w-40 w-full h-fit md:h-full">
+          <div className="flex flex-row md:flex-col w-full bg-stone-100  overflow-auto items-stretch">
+            <div className="grid place-items-center">
+              <h3 className="text-center px-4 md:py-4 font-extrabold">Panel</h3>
+            </div>
+            {tabs.map((t, i) => {
+              return (
+                <Tab
+                  key={i}
+                  value={i}
+                  className={`p-2 transition-all w-fit bg-stone-100 px-2 md:pt-2  border-black hover:bg-stone-50 md:w-full ${
+                    selectedMenu == i
+                      ? "md:border-l-8 border-t-8 md:border-t-0 bg-white"
+                      : ""
+                  }`}
+                >
+                  {t.title}
+                </Tab>
+              );
+            })}
           </div>
-        )}
-        {session.status != "loading" && session.data && (
-          <>
-            <h1>Panel de usuario</h1>
-            <h2>Tipo de usuario: {session?.data?.user.tipo_usuario}</h2>
-            {(isCollaboratorSession(session.data) ||
-              isAdminSession(session.data)) && (
-              <>
-                <AdminActions></AdminActions>
-              </>
-            )}
-            <Alert type="warning">
-              Si no aparece información extra en este panel quiere decir que no
-              hemos recolectado información al respecto
-            </Alert>
-            <span>
-              Imagen de usuario:{" "}
-              {session?.data?.user?.image && (
-                <Image
-                  className="max-w-[64px] inline mx-px"
-                  width={32}
-                  height={32}
-                  src={session.data.user.image}
-                  alt="user photo"
-                ></Image>
-              )}
-            </span>
-            <span>
-              Nombre:{" "}
-              {`${session?.data?.user?.name || ""} ${
-                session?.data?.user?.apellido || ""
-              }`}
-            </span>
-            <span>E-mail: {`${session?.data?.user?.email || ""}`}</span>
-            <span>
-              Fecha de nacimiento:{" "}
-              {session?.data?.user?.nacimiento &&
-                `${
-                  new Intl.DateTimeFormat().format(
-                    new Date(session?.data?.user?.nacimiento || new Date())
-                  ) || ""
-                }`}
-            </span>
-            <span>País de origen: {`${session?.data?.user?.pais || ""}`}</span>
-            <hr />
-            <BannerHistorial></BannerHistorial>
-          </>
-        )}
-      </div>
+        </TabsList>
+        {tabs.map((t, i) => {
+          return (
+            <TabPanel
+              className="bg-white py-2 px-4 flex-1 shadow-lg"
+              key={i}
+              value={i}
+            >
+              <h1 className="block py-4">{t.title}</h1>
+              {t.display}
+            </TabPanel>
+          );
+        })}
+      </Tabs>
     </div>
   );
 }

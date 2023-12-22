@@ -6,13 +6,24 @@ import logError from "../../../../utils/log";
 import Joi from "joi";
 import { LatLngCoords } from "../../../../utils/openroute/base";
 import { TripProfile, generateRoute } from "../../../../utils/openroute/route";
-import { join } from "path";
-import { ROUTES_PATH } from "../../../../utils/paths";
-import { mkdir, writeFile } from "fs/promises";
 import { validate } from "../../../../utils/middleware/validation";
+import { Route } from "../../../../utils/database/models/Route";
 
 interface RouteRequest {
   coordinates: LatLngCoords[];
+}
+export interface IGeneratedRoute {
+  id: number;
+  from: LatLngCoords;
+  to: LatLngCoords;
+  userId: string;
+  date: string;
+  geometry: string;
+  summary: {
+    distance: number;
+    duration: number;
+  };
+  profile?: string;
 }
 
 const validationSchema = Joi.object({
@@ -27,7 +38,7 @@ export default validate(
   { body: validationSchema },
   async function handler(
     req: NextApiRequest,
-    res: NextApiResponse<ResponseData<any>>
+    res: NextApiResponse<ResponseData<IGeneratedRoute>>
   ) {
     try {
       const session = await unstable_getServerSession(
@@ -43,26 +54,68 @@ export default validate(
         res.status(401).json({ message: "Debes iniciar sesión" });
         return;
       }
-      const { coordinates: coords } = req.body;
+      const { coordinates: coords } = req.body as RouteRequest;
       const profile = await validateProfile.validateAsync(req.query.profile, {
         allowUnknown: true,
       });
+
+      const storedRoute = await Route.findOne({
+        where: {
+          fromLat: coords[0][0],
+          fromLng: coords[0][1],
+          toLat: coords[1][0],
+          toLng: coords[1][1],
+          profile,
+        },
+      });
+      if (storedRoute) {
+        res.send({
+          message: "Ruta generada",
+          data: {
+            userId: session.user.id,
+            date: storedRoute.dataValues.date!.toISOString(),
+            from: coords[0],
+            to: coords[1],
+            geometry: storedRoute.dataValues.geometry,
+            summary: {
+              distance: storedRoute.dataValues.distance,
+              duration: storedRoute.dataValues.duration,
+            },
+            profile,
+            id: storedRoute.dataValues.id!,
+          },
+        });
+      }
 
       const result = await generateRoute({
         coords,
         profile: profile as TripProfile,
       });
-      try {
-        const folder = join(ROUTES_PATH, session?.user.id ?? "anonymous");
-        await mkdir(folder, { recursive: true });
-        await writeFile(
-          join(folder, `${Date.now()}.json`),
-          JSON.stringify(result)
-        );
-      } catch (error: any) {
-        logError("No se pudo guardar la ruta");
-      }
-      res.send(result);
+
+      const createdRoute = await Route.create({
+        userId: session.user.id,
+        distance: result.routes[0].summary.distance,
+        fromLat: coords[0][0],
+        fromLng: coords[0][1],
+        toLat: coords[1][0],
+        toLng: coords[1][1],
+        geometry: result.routes[0].geometry,
+        duration: result.routes[0].summary.duration,
+        profile: profile as string,
+      });
+
+      const generatedRoute: IGeneratedRoute = {
+        userId: session.user.id,
+        date: new Date().toISOString(),
+        from: coords[0],
+        to: coords[1],
+        geometry: result.routes[0].geometry,
+        summary: result.routes[0].summary,
+        profile: profile as string,
+        id: createdRoute.dataValues.id!,
+      };
+
+      res.send({ message: "Ruta generada", data: generatedRoute });
     } catch (error: any) {
       if (error.isJoi) {
         res.status(400).json({

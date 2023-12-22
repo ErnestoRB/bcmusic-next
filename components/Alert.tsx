@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import { Card } from "./Card";
 
 const colors = {
   error: "bg-red-500 border-red-600 text-white",
@@ -18,12 +19,12 @@ export default function Alert({
   inline?: boolean;
 }) {
   return (
-    <span
-      className={`rounded-sm ${colors[type]} ${
-        inline ? "inline" : "inline-block"
+    <Card
+      className={`rounded-sm bg-blue-200 ${colors[type]} ${
+        inline ? "inline-block" : "block"
       } border px-4 py-2`}
     >
-      {children}
-    </span>
+      <p>{children}</p>
+    </Card>
   );
 }
