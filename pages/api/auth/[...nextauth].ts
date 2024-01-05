@@ -143,6 +143,8 @@ const events: AuthOptions["events"] = {
   },
 };
 
+const cookiePrefix = "";
+
 export const authOptions: (
   req: NextApiRequest | GetServerSidePropsContext["req"],
   res: NextApiResponse | GetServerSidePropsContext["res"]
@@ -156,7 +158,71 @@ export const authOptions: (
     adapter,
     providers,
     events,
+    cookies: {
+      sessionToken: {
+        name: `next-auth.session-token`,
+        options: {
+          httpOnly: true,
+          sameSite: "lax",
+          path: "/",
+          secure: !IS_DEVELOPMENT,
+        },
+      },
+      callbackUrl: {
+        name: `next-auth.callback-url`,
+        options: {
+          sameSite: "lax",
+          path: "/",
+          secure: !IS_DEVELOPMENT,
+        },
+      },
+      csrfToken: {
+        name: `next-auth.csrf-token`,
+        options: {
+          httpOnly: true,
+          sameSite: "lax",
+          path: "/",
+          secure: !IS_DEVELOPMENT,
+        },
+      },
+      pkceCodeVerifier: {
+        name: `${cookiePrefix}next-auth.pkce.code_verifier`,
+        options: {
+          httpOnly: true,
+          sameSite: "lax",
+          path: "/",
+          secure: true,
+          maxAge: 900,
+        },
+      },
+      state: {
+        name: `${cookiePrefix}next-auth.state`,
+        options: {
+          httpOnly: true,
+          sameSite: "lax",
+          path: "/",
+          secure: true,
+          maxAge: 900,
+        },
+      },
+      nonce: {
+        name: `${cookiePrefix}next-auth.nonce`,
+        options: {
+          httpOnly: true,
+          sameSite: "lax",
+          path: "/",
+          secure: true,
+        },
+      },
+    },
     callbacks: {
+      async redirect({ url, baseUrl }) {
+        // Allows relative callback URLs
+        if (url.startsWith("/")) return `${baseUrl}${url}`;
+        // Allows callback URLs on the same origin
+        else if (new URL(url).origin === baseUrl) return url;
+        return baseUrl;
+      },
       signIn: async function ({ account, user, profile }) {
         try {
           if (account?.provider === "credentials") {
