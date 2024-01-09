@@ -50,7 +50,7 @@ export async function getServerSideProps(context: NextPageContext) {
     Array.isArray(redirectUrl) ? redirectUrl[0] : redirectUrl,
     {
       expires: new Date(Date.now() + 60 * 1000 * 5),
-      sameSite: true,
+      sameSite: "lax",
     }
   );
 

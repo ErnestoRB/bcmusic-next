@@ -11,6 +11,8 @@ export default async function handler(
   const sessionCookieName = getSessionCookie(getRefererProtocol(req));
   const appUrl = cookies.get(NATIVE_URL_COOKIE);
   const sessionToken = cookies.get(sessionCookieName);
+  console.log({ sessionToken, appUrl });
+
   if (!appUrl || !sessionToken) {
     res.redirect(
       "/auth/login?" +
