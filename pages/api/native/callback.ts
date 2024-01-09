@@ -13,7 +13,7 @@ export default async function handler(
   const sessionToken = cookies.get(sessionCookieName);
   if (!appUrl || !sessionToken) {
     res.redirect(
-      "/login?" +
+      "/auth/login?" +
         new URLSearchParams({
           error: "Error while logging in from native plataform ",
         })
@@ -34,8 +34,8 @@ export function getRefererProtocol(req: NextApiRequest) {
 }
 
 export function getSessionCookie(context: string) {
-  if (context === "https") {
+  /* if (context === "https") {
     return "__Secure-next-auth.session-token";
-  }
+  } */
   return "next-auth.session-token";
 }
