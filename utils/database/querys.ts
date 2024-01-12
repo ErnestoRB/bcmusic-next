@@ -1,5 +1,5 @@
 import { isPermissionValid } from "../authorization/validation/permissions/server";
-import { Banner, Permission } from "./models";
+import { Account, Banner, Permission } from "./models";
 import { IPermission } from "./models/Permission";
 import { User, UserModel } from "./models/User";
 import { IUserType } from "./models/UserType";
@@ -88,3 +88,11 @@ export async function isPlaylistAuthor(
     return false;
   }
 }
+
+export const hasAccountLinked = async (userId: string) =>
+  (await Account.count({
+    where: {
+      userId: userId,
+      provider: "spotify",
+    },
+  })) > 0;

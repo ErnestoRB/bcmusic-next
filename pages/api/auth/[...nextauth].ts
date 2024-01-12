@@ -24,7 +24,10 @@ import { decode, encode } from "next-auth/jwt";
 import { sendVerificationRequest } from "../../../utils/email";
 import { validateRecaptchaToken } from "../../../utils/recaptcha";
 import logError from "../../../utils/log";
-import { getTypeUserPermissions } from "../../../utils/database/querys";
+import {
+  getTypeUserPermissions,
+  hasAccountLinked,
+} from "../../../utils/database/querys";
 import { User } from "../../../utils/database/models";
 import { Country } from "../../../utils/database/models";
 import { UserType } from "../../../utils/database/models";
@@ -259,6 +262,7 @@ export const authOptions: (
         const otherSession: Session = {
           user: { id: user.id, email: user.email, permisos: [] },
           expires: session.expires,
+          isLinked: false,
         };
         if (user.countryId) {
           const pais = await Country.findOne({ where: { id: user.countryId } });
@@ -281,6 +285,7 @@ export const authOptions: (
         otherSession.user.apellido = lastName;
         otherSession.user.nacimiento = birth;
         otherSession.user.image = image;
+        otherSession.isLinked = await hasAccountLinked(user.id);
         return otherSession;
       },
     },
