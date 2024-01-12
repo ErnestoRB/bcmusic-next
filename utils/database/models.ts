@@ -81,6 +81,10 @@ Feedback.belongsTo(Playlist);
 Playlist.hasMany(Feedback);
 
 // 1:N
+Playlist.belongsTo(Route);
+Route.hasMany(Playlist);
+
+// 1:N
 Feedback.belongsTo(User);
 User.hasMany(Feedback);
 
