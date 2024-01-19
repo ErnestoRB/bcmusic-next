@@ -1,4 +1,4 @@
-import { LatLngCoords, orsReq } from "./base";
+import { LatLngCoords, orsReq } from "../base";
 
 export interface CoordRadius {
   lat_lang: LatLngCoords;
