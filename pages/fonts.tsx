@@ -14,6 +14,10 @@ import Link from "../components/Link";
 import { IFontType } from "../utils/database/models/Fonts";
 import { Spinner } from "../components/Spinner";
 
+const filterFullfiled = (
+  r: PromiseSettledResult<unknown>
+): r is PromiseFulfilledResult<unknown> => r.status == "fulfilled";
+
 export default function FontsComponent() {
   const [page, setPage] = useState(1);
   const { data, error, isLoading } = useSWR(`/api/fonts?page=${page}`, (url) =>
@@ -33,7 +37,14 @@ export default function FontsComponent() {
   useEffect(() => {
     if (data && data.data && Array.isArray(data.data)) {
       loadFontsAsync(data.data as IFontType["dataValues"][]).then((fonts) => {
-        setFontsLoaded(fonts);
+        setFontsLoaded(
+          fonts
+            .filter(filterFullfiled)
+            .map(
+              (result) =>
+                (result as unknown as PromiseFulfilledResult<FontFace>).value
+            )
+        );
       });
     }
     return () => setFontsLoaded(undefined);

@@ -29,7 +29,9 @@ export default function AddFont({ id }: { id: string }) {
     isLoading: isLoadingFonts,
     isValidating: isValidatingFonts,
     mutate: mutateFonts,
-  } = useSWR<IBannerFont[]>(() => id && `/api/banner/${id}/fonts`, fetcherMap);
+  } = useSWR<IBannerFont[]>(() => id && `/api/banner/${id}/fonts`, fetcherMap, {
+    errorRetryCount: 3,
+  });
 
   const { isCompatible, toClipboard } = useClipboard();
   const [openModal, setModal] = useState<boolean>(false);
