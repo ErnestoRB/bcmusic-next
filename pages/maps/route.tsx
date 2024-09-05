@@ -16,6 +16,9 @@ import { authOptions } from "../api/auth/[...nextauth]";
 import { userHavePermission } from "../../utils/authorization/validation/permissions/server";
 import { VIEW_BANNER_NEW } from "../../utils/authorization/permissions";
 import Head from "next/head";
+import LocationIcon from "../../components/LocateIcon";
+import { LatLngTuple } from "leaflet";
+import { Location } from "../../types/definitions";
 
 export default function Route() {
   const Map = useMemo(
@@ -28,7 +31,7 @@ export default function Route() {
   );
 
   const geoLocation = useGeolocation();
-
+  const [locations, setLocations] = useState<Location[]>([]);
   const [startCoords, setStartCoords] = useState<number[] | undefined>(
     undefined
   );
@@ -46,6 +49,47 @@ export default function Route() {
 
   // Error state
   const [error, setError] = useState<string | null>(null);
+
+
+  const fetchPossibleRoutes = async (userLocation: LatLngTuple | undefined) => {
+    if (!userLocation) {
+      toast.error("No se pudo obtener la ubicación del usuario");
+      return;
+    }
+    const [lat, lon] = userLocation;
+    const apiKey = process.env.NEXT_PUBLIC_ORS_APIKEY;
+    const radius = 50;
+    if (!apiKey) {
+      toast.error("API key is missing");
+      return;
+    }
+
+    try {
+      const response = await fetch(`https://api.openrouteservice.org/geocode/reverse?api_key=${apiKey}&point.lon=${lon}&point.lat=${lat}&boundary.circle.radius=${radius}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (response.ok) {
+        const json = await response.json();
+        console.log(json);
+        const fetchedLocations: Location[] = json.features.map((feature: any) => ({
+          lat: feature.geometry.coordinates[1],
+          lon: feature.geometry.coordinates[0],
+          label: feature.properties.label
+        }));
+        console.log(fetchedLocations);
+        setLocations(fetchedLocations);
+        toast.success("Rutas generadas!");
+      } else {
+        toast.error("No se pudo generar rutas cercanas");
+      }
+    } catch (error) {
+      console.error("Error fetching possible routes:", error);
+      throw new Error("Failed to fetch possible routes");
+    }
+  };
 
   const handleGenerateRoute = async () => {
     console.log("handleGenerateRoute called");
@@ -166,13 +210,28 @@ export default function Route() {
       </Head>
       <div className="flex flex-1 flex-col justify-center items-center p-8 space-y-4  order-last md:order-1">
         <div className="max-w-80 z-50">
-          <RouteInput
-            label="Origen"
-            userLocation={geoLocation.userLocation}
-            onGenerateRoute={(start) => {
-              setStartCoords(start);
-            }}
-          />
+          <div className="flex flex-row gap-4">
+            <div>
+              <RouteInput
+                label="Origen"
+                userLocation={geoLocation.userLocation}
+                onGenerateRoute={(start) => {
+                  setStartCoords(start);
+                }}
+              />
+            </div>
+            <div className="flex justify-center items-center">
+              <Button
+                onPress={() =>
+                  fetchPossibleRoutes(geoLocation.userLocation)
+                }
+                isDisabled={loading}
+                className="w-auto h-auto bg-gray-800 text-white px-4 py-2 rounded cursor-pointer tra nsition duration-300 hover:bg-gray-500"
+              >
+                <LocationIcon />
+              </Button>
+            </div>
+          </div>
         </div>
         <div className="max-w-80">
           <RouteInput
@@ -213,6 +272,7 @@ export default function Route() {
         <Map
           routeGeometry={route?.geometry ?? ""}
           location={geoLocation.userLocation}
+          locations={locations}
         />
       </div>
     </div>

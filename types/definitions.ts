@@ -259,6 +259,11 @@ export interface Usuario {
   Nacimiento: Date;
   Pais: string;
 }
+export interface Location {
+  lat: number;
+  lon: number;
+  label: string;
+}
 
 export type ResponseData<T> = {
   message: string;

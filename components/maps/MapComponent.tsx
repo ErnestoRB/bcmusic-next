@@ -10,13 +10,14 @@ import { LatLngExpression } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
-
+import { Location } from "../../types/definitions";
 export interface MapProps {
   routeGeometry: string;
   location?: LatLngExpression;
+  locations?: Location[];
 }
 
-export default function MapComponent({ routeGeometry, location }: MapProps) {
+export default function MapComponent({ routeGeometry, location, locations }: MapProps) {
   const routePoints = polyline.decode(routeGeometry);
 
   return (
@@ -31,6 +32,11 @@ export default function MapComponent({ routeGeometry, location }: MapProps) {
           <Marker position={location}>
             <Popup>Te encuentras aqui</Popup>
           </Marker>
+          {locations?.map((location, index) => (
+            <Marker key={index} position={[location.lat, location.lon]}>
+              <Popup>{location.label}</Popup>
+            </Marker>
+          ))}
         </MapContainer>
       )}
     </>
