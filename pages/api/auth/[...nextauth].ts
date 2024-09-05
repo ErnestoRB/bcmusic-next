@@ -24,7 +24,10 @@ import { decode, encode } from "next-auth/jwt";
 import { sendVerificationRequest } from "../../../utils/email";
 import { validateRecaptchaToken } from "../../../utils/recaptcha";
 import logError from "../../../utils/log";
-import { getTypeUserPermissions } from "../../../utils/database/querys";
+import {
+  getTypeUserPermissions,
+  hasAccountLinked,
+} from "../../../utils/database/querys";
 import { User } from "../../../utils/database/models";
 import { Country } from "../../../utils/database/models";
 import { UserType } from "../../../utils/database/models";
@@ -143,6 +146,8 @@ const events: AuthOptions["events"] = {
   },
 };
 
+const cookiePrefix = "";
+
 export const authOptions: (
   req: NextApiRequest | GetServerSidePropsContext["req"],
   res: NextApiResponse | GetServerSidePropsContext["res"]
@@ -156,7 +161,71 @@ export const authOptions: (
     adapter,
     providers,
     events,
+    cookies: {
+      sessionToken: {
+        name: `next-auth.session-token`,
+        options: {
+          httpOnly: true,
+          sameSite: "lax",
+          path: "/",
+          secure: !IS_DEVELOPMENT,
+        },
+      },
+      callbackUrl: {
+        name: `next-auth.callback-url`,
+        options: {
+          sameSite: "lax",
+          path: "/",
+          secure: !IS_DEVELOPMENT,
+        },
+      },
+      csrfToken: {
+        name: `next-auth.csrf-token`,
+        options: {
+          httpOnly: true,
+          sameSite: "lax",
+          path: "/",
+          secure: !IS_DEVELOPMENT,
+        },
+      },
+      pkceCodeVerifier: {
+        name: `${cookiePrefix}next-auth.pkce.code_verifier`,
+        options: {
+          httpOnly: true,
+          sameSite: "lax",
+          path: "/",
+          secure: true,
+          maxAge: 900,
+        },
+      },
+      state: {
+        name: `${cookiePrefix}next-auth.state`,
+        options: {
+          httpOnly: true,
+          sameSite: "lax",
+          path: "/",
+          secure: true,
+          maxAge: 900,
+        },
+      },
+      nonce: {
+        name: `${cookiePrefix}next-auth.nonce`,
+        options: {
+          httpOnly: true,
+          sameSite: "lax",
+          path: "/",
+          secure: true,
+        },
+      },
+    },
     callbacks: {
+      async redirect({ url, baseUrl }) {
+        // Allows relative callback URLs
+        if (url.startsWith("/")) return `${baseUrl}${url}`;
+        // Allows callback URLs on the same origin
+        else if (new URL(url).origin === baseUrl) return url;
+        return baseUrl;
+      },
       signIn: async function ({ account, user, profile }) {
         try {
           if (account?.provider === "credentials") {
@@ -193,6 +262,7 @@ export const authOptions: (
         const otherSession: Session = {
           user: { id: user.id, email: user.email, permisos: [] },
           expires: session.expires,
+          isLinked: false,
         };
         if (user.countryId) {
           const pais = await Country.findOne({ where: { id: user.countryId } });
@@ -215,6 +285,7 @@ export const authOptions: (
         otherSession.user.apellido = lastName;
         otherSession.user.nacimiento = birth;
         otherSession.user.image = image;
+        otherSession.isLinked = await hasAccountLinked(user.id);
         return otherSession;
       },
     },

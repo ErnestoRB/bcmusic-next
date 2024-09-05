@@ -24,14 +24,15 @@ module.exports = {
           },
           red: {
             1: "#f51a36",
-            2: "#ff1cfc",
-            3: "#ff1830",
+            2: "#E7223B",
+            3: "#D22739",
           },
         },
       },
       fontFamily: {
         blade: ["var(--font-blade)"],
         inconsolata: ["'Inconsolata', monospace"],
+        raleway: ["'Raleway', sans-serif"],
       },
     },
   },

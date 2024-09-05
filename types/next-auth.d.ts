@@ -17,6 +17,7 @@ declare module "next-auth" {
       tipo_usuario?: string;
       permisos: string[];
     } & DefaultSession["user"];
+    isLinked: boolean;
   }
 
   interface User extends DefaultUser {

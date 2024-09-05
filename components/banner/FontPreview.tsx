@@ -15,6 +15,7 @@ export default function FontPreview({ fontName, type = "name" }: IFontPreview) {
   useEffect(() => {
     if (loading) return;
     if (fontName === loaded) return;
+    if (error) return;
     setError(false);
     setLoading(true);
     loadFontAsync(fontName)
@@ -29,9 +30,13 @@ export default function FontPreview({ fontName, type = "name" }: IFontPreview) {
   return (
     <div
       className="p-2 bg-stone-700  text-white text-md"
-      style={{
-        fontFamily: fontName,
-      }}
+      style={
+        loaded
+          ? {
+              fontFamily: fontName,
+            }
+          : undefined
+      }
     >
       {loading && <Spinner size="sm" />}
       {error && <Alert type="error">Error al cargar la fuente</Alert>}

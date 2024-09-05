@@ -1,7 +1,5 @@
 import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../connection";
-import { User } from "./User";
-import { models } from "@next-auth/sequelize-adapter";
 
 export interface IRoute {
   id?: number;

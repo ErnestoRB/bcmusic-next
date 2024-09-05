@@ -17,8 +17,10 @@ export const perserveStatus = async (res: Response) => ({
 
 export const loadFontsAsync = (
   fonts: IFontType["dataValues"][]
-): Promise<FontFace[]> => {
-  return Promise.all(fonts.map(async (f) => await loadFontAsync(f.name)));
+): Promise<PromiseSettledResult<FontFace>[]> => {
+  return Promise.allSettled(
+    fonts.map(async (f) => await loadFontAsync(f.name))
+  );
 };
 
 export const loadFontAsync = (fontName: string): Promise<FontFace> => {

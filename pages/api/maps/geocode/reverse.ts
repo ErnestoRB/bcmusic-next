@@ -1,24 +1,24 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { unstable_getServerSession } from "next-auth";
-import { authOptions } from "../auth/[...nextauth]";
-import { ResponseData } from "../../../types/definitions";
-import logError from "../../../utils/log";
-import { GeoCodeArgs, geoCode } from "../../../utils/openroute/geocode";
+import { authOptions } from "../../auth/[...nextauth]";
+import { ResponseData } from "../../../../types/definitions";
+import logError from "../../../../utils/log";
+import { GeoCodeArgs, geoCode } from "../../../../utils/openroute/geocode";
 import Joi from "joi";
-import { validate } from "../../../utils/middleware/validation";
+import { validate } from "../../../../utils/middleware/validation";
+import {
+  ReverseGeoCodeArgs,
+  reverseGeocode,
+} from "../../../../utils/openroute/geocode/reverse";
 
-interface GeocodeRequest {
-  search: string;
-  lat?: number;
-  lng?: number;
-  radius?: number;
+interface ReverseGeocodeRequest {
+  lat: number;
+  lng: number;
 }
 
 const validationSchema = Joi.object({
-  search: Joi.string().required(),
-  lat: Joi.number(),
-  lng: Joi.number(),
-  radius: Joi.number(),
+  lat: Joi.number().required(),
+  lng: Joi.number().required(),
 });
 
 export default validate(
@@ -37,23 +37,15 @@ export default validate(
         res.status(401).json({ message: "Debes iniciar sesión" });
         return;
       }
-      const { lat, lng, search, radius } =
-        (await validationSchema.validateAsync(req.query, {
-          allowUnknown: true,
-        })) as GeocodeRequest;
+      const { lat, lng } = (await validationSchema.validateAsync(req.query, {
+        allowUnknown: true,
+      })) as ReverseGeocodeRequest;
 
-      const searchObject: GeoCodeArgs = {
-        search,
+      const searchObject: ReverseGeoCodeArgs = {
+        point: [lat, lng],
       };
 
-      if (lat && lng && radius) {
-        searchObject.boundary = {
-          lat_lang: [lat, lng],
-          radius,
-        };
-      }
-
-      const result = await geoCode(searchObject);
+      const result = await reverseGeocode(searchObject);
       res.send(result);
     } catch (error: any) {
       if (error.isJoi) {
