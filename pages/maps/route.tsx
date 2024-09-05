@@ -57,15 +57,9 @@ export default function Route() {
       return;
     }
     const [lat, lon] = userLocation;
-    const apiKey = process.env.NEXT_PUBLIC_ORS_APIKEY;
-    const radius = 50;
-    if (!apiKey) {
-      toast.error("API key is missing");
-      return;
-    }
 
     try {
-      const response = await fetch(`https://api.openrouteservice.org/geocode/reverse?api_key=${apiKey}&point.lon=${lon}&point.lat=${lat}&boundary.circle.radius=${radius}`, {
+      const response = await fetch(`/api/maps/geocode/reverse?lat=${lat}&lng=${lon}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
