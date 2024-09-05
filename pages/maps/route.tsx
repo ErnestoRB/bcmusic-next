@@ -29,8 +29,9 @@ export default function Route() {
       }),
     []
   );
-
+  
   const geoLocation = useGeolocation();
+  const [shouldPassLocations, setShouldPassLocations] = useState(false);
   const [locations, setLocations] = useState<Location[]>([]);
   const [startCoords, setStartCoords] = useState<number[] | undefined>(
     undefined
@@ -75,6 +76,7 @@ export default function Route() {
         }));
         console.log(fetchedLocations);
         setLocations(fetchedLocations);
+        setShouldPassLocations(true);
         toast.success("Rutas generadas!");
       } else {
         toast.error("No se pudo generar rutas cercanas");
@@ -209,6 +211,7 @@ export default function Route() {
               <RouteInput
                 label="Origen"
                 userLocation={geoLocation.userLocation}
+                {...(shouldPassLocations ? { locations } : {locations})}
                 onGenerateRoute={(start) => {
                   setStartCoords(start);
                 }}
@@ -231,6 +234,7 @@ export default function Route() {
           <RouteInput
             label="Destino"
             userLocation={geoLocation.userLocation}
+            {...(shouldPassLocations ? { locations } : {locations})}
             onGenerateRoute={(destination) => {
               setDestinationCoords(destination);
             }}

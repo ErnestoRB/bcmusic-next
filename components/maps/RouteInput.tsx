@@ -2,12 +2,14 @@ import React, { useEffect, useState } from "react";
 import AutoComplete from "../AutoComplete";
 import { LatLngTuple } from "leaflet";
 import { toast } from "react-toastify";
+import { Location } from "../../types/definitions";
 
 interface IRoute extends IRouteItems {
   id: string;
   label: string;
   coordinates: [number, number];
 }
+
 interface IRouteItems {
   region: string;
   country_a: string;
@@ -17,12 +19,14 @@ interface RouteInputProps {
   label: string;
   onGenerateRoute: (coords: [number, number] | undefined) => void;
   userLocation?: LatLngTuple;
+  locations?: Location[];
 }
 
 export default function RouteInput({
   label,
   onGenerateRoute,
   userLocation,
+  locations = [],
 }: RouteInputProps) {
   const [items, setItems] = useState<IRoute[]>([]);
   const [selected, setSelected] = useState<IRoute | null>(null);
@@ -90,6 +94,7 @@ export default function RouteInput({
         items={items}
         label={label}
         disabled={error}
+        locations={locations}
         loading={isLoading}
         onChange={(e, v) => {
           setSelected(v);

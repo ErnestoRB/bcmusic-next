@@ -1,6 +1,7 @@
 import { useAutocomplete } from "@mui/base";
 import { useState } from "react";
 import { Spinner } from "./Spinner";
+import { Location } from "../types/definitions";
 
 interface IAutocompleteOption {
   label: string;
@@ -15,6 +16,7 @@ interface IAutoCompleteProps<T extends IAutocompleteOption> {
   id: string;
   loading?: boolean;
   disabled?: boolean;
+  locations?: Location[];
   onChange: Parameters<typeof useAutocomplete<T>>[0]["onChange"];
   onInputChange: Parameters<typeof useAutocomplete<T>>[0]["onInputChange"];
 }
@@ -25,6 +27,7 @@ export default function UseAutocomplete<T extends IAutocompleteOption>({
   id,
   loading,
   disabled = false,
+  locations = [],
   onChange,
   onInputChange,
 }: IAutoCompleteProps<T>) {
@@ -100,7 +103,11 @@ export default function UseAutocomplete<T extends IAutocompleteOption>({
                     index,
                   })}
                 >
-                  <span className="block p-2 truncate">{`${option.label}, ${option.region}, ${option.country_a}`}</span>
+                  <span className="block p-2 truncate">
+                    {locations.length > 0
+                      ? `${locations.map(loc => loc.label).join(', ')}, ${option.label}, ${option.region}, ${option.country_a}`
+                      : `${option.label}, ${option.region}, ${option.country_a}`}
+                  </span>
                 </li>
               );
             }
