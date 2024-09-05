@@ -1,10 +1,10 @@
 {
   "development": {
     "username": "root",
-    "password": "b4$hcr4$h3rs",
-    "database": "musica",
-    "host": "127.0.0.1",
-    "port": "2020",
+    "password": "..m4ybe4n0th3rBUG..",
+    "database": "bcmusic_dev",
+    "host": "bc.ernestorb.com",
+    "port": "17425",
     "dialect": "mysql",
     "seederStorage": "json",
     "seederStoragePath": "sequelizeData.dev.json"
