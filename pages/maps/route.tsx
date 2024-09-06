@@ -1,5 +1,5 @@
 import dynamic from "next/dynamic";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useDebounce } from "use-debounce";
 import RouteInput from "../../components/maps/RouteInput";
 import { toast } from "react-toastify";
@@ -14,29 +14,26 @@ import { useGeolocation } from "../../utils/hooks/useGeoLocation";
 import { GetServerSideProps } from "next";
 import { unstable_getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]";
-import { userHavePermission } from "../../utils/authorization/validation/permissions/server";
-import { VIEW_BANNER_NEW } from "../../utils/authorization/permissions";
 import Head from "next/head";
+import { Spinner } from "../../components/Spinner";
 
 export default function Route() {
   const Map = useMemo(
     () =>
       dynamic(() => import("../../components/maps/MapComponent"), {
         loading: () => {
-          // Muestra un toast indicando que el mapa está cargando
-          toast.info("Cargando el mapa...", {
-            position: "top-right",
-            hideProgressBar: true,
-            closeOnClick: false,
-            draggable: false,
-          });
-          return null; // No es necesario renderizar ningún contenido visual adicional
+          return (
+            <div className="grid place-items-center text-white">
+              <Spinner></Spinner>
+              Cargando..
+            </div>
+          );
         },
         ssr: false,
       }),
     []
   );
-  
+
   const geoLocation = useGeolocation();
 
   const [startCoords, setStartCoords] = useState<number[] | undefined>(
@@ -47,13 +44,9 @@ export default function Route() {
   >(undefined);
   const [route, setRoute] = useState<IGeneratedRoute | null>(null);
 
-  const [debouncedStartCoords] = useDebounce(startCoords, 500); // Aplica debounce a las coordenadas de inicio
-  const [debouncedDestinationCoords] = useDebounce(destinationCoords, 500); // Aplica debounce a las coordenadas de destino
-
   // Loading state
   const [loading, setLoading] = useState(false);
   const [playlist, setPlaylist] = useState<StoredPlaylist | null>(null);
-  
 
   // UserID state
   const [userId, setUserId] = useState<string | null>(null);
@@ -75,7 +68,7 @@ export default function Route() {
 
     let generatedRouteId = null;
 
-    if (debouncedStartCoords && debouncedDestinationCoords) {
+    if (startCoords && destinationCoords) {
       try {
         const response = await fetch(`/api/maps/route/driving-car`, {
           method: "POST",
@@ -83,7 +76,7 @@ export default function Route() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            coordinates: [debouncedStartCoords, debouncedDestinationCoords],
+            coordinates: [startCoords, destinationCoords],
           }),
         });
 
@@ -223,7 +216,7 @@ export default function Route() {
           </div>
         )}
       </div>
-      <div className="flex flex-1 order-1 md:order-last min-h-[1/2] bg-black">
+      <div className="flex justify-center items-center flex-1 order-1 md:order-last min-h-[1/2] bg-black">
         <Map
           routeGeometry={route?.geometry ?? ""}
           location={geoLocation.userLocation}
