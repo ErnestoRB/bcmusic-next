@@ -1,5 +1,6 @@
 import dynamic from "next/dynamic";
 import { useEffect, useMemo, useState } from "react";
+import { useDebounce } from "use-debounce";
 import RouteInput from "../../components/maps/RouteInput";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -21,12 +22,21 @@ export default function Route() {
   const Map = useMemo(
     () =>
       dynamic(() => import("../../components/maps/MapComponent"), {
-        loading: () => <p>A map is loading</p>,
+        loading: () => {
+          // Muestra un toast indicando que el mapa está cargando
+          toast.info("Cargando el mapa...", {
+            position: "top-right",
+            hideProgressBar: true,
+            closeOnClick: false,
+            draggable: false,
+          });
+          return null; // No es necesario renderizar ningún contenido visual adicional
+        },
         ssr: false,
       }),
     []
   );
-
+  
   const geoLocation = useGeolocation();
 
   const [startCoords, setStartCoords] = useState<number[] | undefined>(
@@ -37,9 +47,13 @@ export default function Route() {
   >(undefined);
   const [route, setRoute] = useState<IGeneratedRoute | null>(null);
 
+  const [debouncedStartCoords] = useDebounce(startCoords, 500); // Aplica debounce a las coordenadas de inicio
+  const [debouncedDestinationCoords] = useDebounce(destinationCoords, 500); // Aplica debounce a las coordenadas de destino
+
   // Loading state
   const [loading, setLoading] = useState(false);
   const [playlist, setPlaylist] = useState<StoredPlaylist | null>(null);
+  
 
   // UserID state
   const [userId, setUserId] = useState<string | null>(null);
@@ -61,7 +75,7 @@ export default function Route() {
 
     let generatedRouteId = null;
 
-    if (startCoords && destinationCoords) {
+    if (debouncedStartCoords && debouncedDestinationCoords) {
       try {
         const response = await fetch(`/api/maps/route/driving-car`, {
           method: "POST",
@@ -69,7 +83,7 @@ export default function Route() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            coordinates: [startCoords, destinationCoords],
+            coordinates: [debouncedStartCoords, debouncedDestinationCoords],
           }),
         });
 
