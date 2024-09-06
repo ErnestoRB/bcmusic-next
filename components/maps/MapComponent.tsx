@@ -21,18 +21,18 @@ export default function MapComponent({ routeGeometry, location }: MapProps) {
 
   return (
     <>
-      {location && (
-        <MapContainer center={location} zoom={13} className="w-full">
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
-          <Polyline positions={routePoints} color="blue" />
+      <MapContainer center={location} zoom={13} className="w-full h-full">
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+        <Polyline positions={routePoints} color="blue" />
+        {location && (
           <Marker position={location}>
             <Popup>Te encuentras aqui</Popup>
           </Marker>
-        </MapContainer>
-      )}
+        )}
+      </MapContainer>
     </>
   );
 }

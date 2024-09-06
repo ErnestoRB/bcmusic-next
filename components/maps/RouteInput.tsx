@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import AutoComplete from "../AutoComplete";
 import { LatLngTuple } from "leaflet";
 import { toast } from "react-toastify";
+import { useDebounce } from "use-debounce";
 
 interface IRoute extends IRouteItems {
   id: string;
@@ -24,6 +25,8 @@ export default function RouteInput({
   onGenerateRoute,
   userLocation,
 }: RouteInputProps) {
+  const [text, setText] = useState<string>();
+  const [debouncedText] = useDebounce(text, 500);
   const [items, setItems] = useState<IRoute[]>([]);
   const [selected, setSelected] = useState<IRoute | null>(null);
   const [isLoading, setLoading] = useState<boolean>(false);
@@ -33,43 +36,58 @@ export default function RouteInput({
     undefined
   );
 
-  const handleGeocode = async (
-    search: string,
-    radius: number = 1000
-  ): Promise<void> => {
-    if (isLoading) return;
-    try {
-      let geocodeUrl = `/api/maps/geocode?search=${search}`;
-      if (userLocation) {
-        const [latitude, longitude] = userLocation;
-        geocodeUrl += `&lat=${latitude}&lng=${longitude}&radius=${radius}`;
-      }
-      setLoading(true);
-      const response = await fetch(geocodeUrl, { credentials: "include" });
-      if (response.ok) {
-        const result = await response.json();
-        // Mapear los resultados a un formato IRoute
-        const newItems: IRoute[] =
-          result.features?.map((feature: any) => ({
-            label: feature.properties.name,
-            coordinates: feature.geometry.coordinates,
-            region: feature.properties.region,
-            country_a: feature.properties.country_a,
-          })) ?? [];
+  useEffect(() => {
+    console.log(debouncedText);
+  }, [debouncedText]);
 
-        // Actualizar los items
-        setItems(newItems);
-      } else {
-        toast.error("No se pudo contactar con la API de geocodificacion");
-        setError(true);
-      }
-    } catch (error) {
-      toast.error("No se pudo contactar con la API de geocodificacion");
-      setError(true);
-    } finally {
-      setLoading(false);
+  useEffect(() => {
+    if (!debouncedText) return;
+    const search = debouncedText;
+    let geocodeUrl = `/api/maps/geocode?search=${search}`;
+    if (userLocation) {
+      const [latitude, longitude] = userLocation;
+      geocodeUrl += `&lat=${latitude}&lng=${longitude}&radius=${1000}`;
     }
-  };
+    const controller = new AbortController();
+    const signal = controller.signal;
+
+    setLoading(true);
+    fetch(geocodeUrl, { credentials: "include", signal })
+      .then(async (response) => {
+        if (response.ok) {
+          const result = await response.json();
+          // Mapear los resultados a un formato IRoute
+          const newItems: IRoute[] =
+            result.features?.map((feature: any) => ({
+              label: feature.properties.name,
+              coordinates: feature.geometry.coordinates,
+              region: feature.properties.region,
+              country_a: feature.properties.country_a,
+            })) ?? [];
+
+          // Actualizar los items
+          setItems(newItems);
+        } else {
+          toast.error("No se pudo contactar con la API de geocodificacion");
+          setError(true);
+        }
+      })
+      .catch((error) => {
+        if (error.name === "AbortError") {
+          // Handle cancellation
+          setLoading(false);
+        } else {
+          toast.error("No se pudo contactar con la API de geocodificacion");
+          setError(true);
+        }
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+    return () => {
+      controller.abort();
+    };
+  }, [debouncedText, userLocation]);
 
   useEffect(() => {
     if (selected) {
@@ -99,7 +117,7 @@ export default function RouteInput({
           if (!inputValue) {
             return;
           }
-          handleGeocode(inputValue);
+          setText(inputValue);
         }}
       ></AutoComplete>
     </>

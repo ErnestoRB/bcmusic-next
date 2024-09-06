@@ -59,6 +59,7 @@
     "three": "0.139.2",
     "three-stdlib": "^2.20.5",
     "typescript": "4.9.4",
+    "use-debounce": "^10.0.3",
     "vm2": "^3.9.14"
   },
   "devDependencies": {

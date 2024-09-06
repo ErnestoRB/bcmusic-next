@@ -1,5 +1,6 @@
 import dynamic from "next/dynamic";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
+import { useDebounce } from "use-debounce";
 import RouteInput from "../../components/maps/RouteInput";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -13,15 +14,21 @@ import { useGeolocation } from "../../utils/hooks/useGeoLocation";
 import { GetServerSideProps } from "next";
 import { unstable_getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]";
-import { userHavePermission } from "../../utils/authorization/validation/permissions/server";
-import { VIEW_BANNER_NEW } from "../../utils/authorization/permissions";
 import Head from "next/head";
+import { Spinner } from "../../components/Spinner";
 
 export default function Route() {
   const Map = useMemo(
     () =>
       dynamic(() => import("../../components/maps/MapComponent"), {
-        loading: () => <p>A map is loading</p>,
+        loading: () => {
+          return (
+            <div className="grid place-items-center text-white">
+              <Spinner></Spinner>
+              Cargando..
+            </div>
+          );
+        },
         ssr: false,
       }),
     []
@@ -209,7 +216,7 @@ export default function Route() {
           </div>
         )}
       </div>
-      <div className="flex flex-1 order-1 md:order-last min-h-[1/2] bg-black">
+      <div className="flex justify-center items-center flex-1 order-1 md:order-last min-h-[1/2] bg-black">
         <Map
           routeGeometry={route?.geometry ?? ""}
           location={geoLocation.userLocation}
