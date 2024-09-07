@@ -3,6 +3,8 @@ import AutoComplete from "../AutoComplete";
 import { LatLngTuple } from "leaflet";
 import { toast } from "react-toastify";
 import { useDebounce } from "use-debounce";
+import { Button } from "../Button";
+import { LocationIcon } from "../icons/LocationIcon";
 
 interface IRoute extends IRouteItems {
   id: string;
@@ -37,10 +39,6 @@ export default function RouteInput({
   );
 
   useEffect(() => {
-    console.log(debouncedText);
-  }, [debouncedText]);
-
-  useEffect(() => {
     if (!debouncedText) return;
     const search = debouncedText;
     let geocodeUrl = `/api/maps/geocode?search=${search}`;
@@ -63,6 +61,7 @@ export default function RouteInput({
               coordinates: feature.geometry.coordinates,
               region: feature.properties.region,
               country_a: feature.properties.country_a,
+              id: feature.properties.id,
             })) ?? [];
 
           // Actualizar los items
@@ -101,25 +100,78 @@ export default function RouteInput({
     onGenerateRoute(coordinates);
   }, [coordinates, onGenerateRoute]);
 
+  const fetchPossibleRoutes = async () => {
+    if (!userLocation) {
+      toast.error("No se pudo obtener la ubicación del usuario");
+      return;
+    }
+    const [lat, lon] = userLocation;
+    const controller = new AbortController();
+    const signal = controller.signal;
+    try {
+      setLoading(true);
+      const response = await fetch(
+        `/api/maps/geocode/reverse?lat=${lat}&lng=${lon}`,
+        {
+          signal,
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (response.ok) {
+        const json = await response.json();
+        console.log(json);
+        // Mapear los resultados a un formato IRoute
+        const newItems: IRoute[] =
+          json.features?.map((feature: any) => ({
+            label: feature.properties.name,
+            coordinates: feature.geometry.coordinates,
+            region: feature.properties.region,
+            country_a: feature.properties.country_a,
+            id: feature.properties.id,
+          })) ?? [];
+
+        setItems(newItems);
+        toast.success("Rutas generadas!");
+      } else {
+        toast.error("No se pudo generar rutas cercanas");
+      }
+    } catch (error) {
+      console.error("Error fetching possible routes:", error);
+      throw new Error("Failed to fetch possible routes");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <>
-      <AutoComplete<IRoute>
-        id={`${label.toLowerCase()}-autocomplete`}
-        items={items}
-        label={label}
-        disabled={error}
-        loading={isLoading}
-        onChange={(e, v) => {
-          setSelected(v);
-        }}
-        onInputChange={(e) => {
-          const inputValue = (e.target as HTMLInputElement).value;
-          if (!inputValue) {
-            return;
-          }
-          setText(inputValue);
-        }}
-      ></AutoComplete>
-    </>
+    <AutoComplete<IRoute>
+      id={`${label.toLowerCase()}-autocomplete`}
+      items={items}
+      label={label}
+      disabled={error}
+      right={
+        <Button
+          onPress={() => fetchPossibleRoutes()}
+          isDisabled={isLoading}
+          className="w-auto h-auto bg-gray-800 text-white px-4 py-2 rounded cursor-pointer tra nsition duration-300 hover:bg-gray-500"
+        >
+          <LocationIcon />
+        </Button>
+      }
+      loading={isLoading}
+      onChange={(e, v) => {
+        setSelected(v);
+      }}
+      onInputChange={(e) => {
+        const inputValue = (e.target as HTMLInputElement).value;
+        if (!inputValue) {
+          return;
+        }
+        setText(inputValue);
+      }}
+    ></AutoComplete>
   );
 }

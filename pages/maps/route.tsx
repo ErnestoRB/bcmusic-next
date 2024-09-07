@@ -171,8 +171,8 @@ export default function Route() {
       <Head>
         <title>Generar playlist</title>
       </Head>
-      <div className="flex flex-1 flex-col justify-center items-center p-8 space-y-4  order-last md:order-1">
-        <div className="max-w-80 z-50">
+      <div className="flex flex-1 flex-col justify-center items-center p-4 md:p-8 space-y-0 md:space-y-4  order-last md:order-1">
+        <div className="w-full max-w-[16rem] z-50">
           <RouteInput
             label="Origen"
             userLocation={geoLocation.userLocation}
@@ -181,7 +181,7 @@ export default function Route() {
             }}
           />
         </div>
-        <div className="max-w-80">
+        <div className="">
           <RouteInput
             label="Destino"
             userLocation={geoLocation.userLocation}

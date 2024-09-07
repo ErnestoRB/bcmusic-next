@@ -14,6 +14,7 @@ interface IAutoCompleteProps<T extends IAutocompleteOption> {
   items: T[];
   id: string;
   loading?: boolean;
+  right?: React.ReactNode;
   disabled?: boolean;
   onChange: Parameters<typeof useAutocomplete<T>>[0]["onChange"];
   onInputChange: Parameters<typeof useAutocomplete<T>>[0]["onInputChange"];
@@ -24,6 +25,7 @@ export default function UseAutocomplete<T extends IAutocompleteOption>({
   label,
   id,
   loading,
+  right,
   disabled = false,
   onChange,
   onInputChange,
@@ -66,7 +68,7 @@ export default function UseAutocomplete<T extends IAutocompleteOption>({
           focused ? "focused" : ""
         }`}
       >
-        <div className="relative flex items-center just">
+        <div className="relative flex items-center flex-1">
           <input
             {...getInputProps()}
             value={inputValue}
@@ -79,21 +81,19 @@ export default function UseAutocomplete<T extends IAutocompleteOption>({
             />
           )}
         </div>
+        {right}
       </div>
       {groupedOptions.length > 0 && (
         <ul
-          className="absolute bg-white opacity-95 list-none m-0 max-h-48 text-sm overflow-y-auto w-80"
+          className="absolute bg-white opacity-95 list-none m-0 max-h-48 text-xs md:text-sm overflow-y-auto w-80"
           {...getListboxProps()}
         >
           {groupedOptions.map((option, index) => {
-            if (
-              "label" in option &&
-              "region" in option &&
-              "country_a" in option
-            ) {
+            // console.log(option);
+            if ("id" in option) {
               return (
                 <li
-                  className="hover:bg-gray-300 cursor-pointer"
+                  className="hover:bg-gray-300 sm:max-w-xs cursor-pointer"
                   key={index}
                   {...getOptionProps({
                     option,
