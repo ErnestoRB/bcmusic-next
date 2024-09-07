@@ -11,6 +11,11 @@ const nextConfig = {
         hostname: "platform-lookaside.fbsbx.com",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "**",
+        pathname: "/**",
+      },
     ],
   },
   /* webpack: (
