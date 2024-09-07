@@ -1,10 +1,8 @@
-import { ResponseData } from "../../types/definitions";
 import { StoredPlaylist } from "../../utils/database/models/Playlist";
 import { fetcherMap } from "../../utils/swr";
 import { Button } from "../Button";
 import { Card } from "../Card";
 import { Spinner } from "../Spinner";
-import { UserCard } from "../UserCard";
 import Image from "next/image";
 import spotifyLogo from "../../images/spotify-white.png";
 import useSWR, { mutate } from "swr";
@@ -54,7 +52,6 @@ export function PanelPlaylists() {
                   height={32}
                   alt={"spotify logo"}
                 ></Image>
-                Ver en Spotify
               </Button>
             </a>
             <Button

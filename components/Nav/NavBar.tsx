@@ -152,7 +152,7 @@ export default function NavBar() {
               ></Image>
             }
             popoverClass="flex flex-col"
-            buttonClass="p-2 bg-stone-900 hover:bg-stone-900 text-white border-white border"
+            buttonClass="p-2 bg-stone-900 hover:bg-stone-900 text-white border-white border-b"
           >
             {menuItems
               .filter((item) => !item.type || item.type === session.status)

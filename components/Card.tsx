@@ -17,7 +17,7 @@ export const Card = React.forwardRef<HTMLDivElement, ICardProps>(function Card(
       className={`block p-6 border border-gray-200 rounded-lg shadow  ${className}`}
     >
       {title && typeof title === "string" && (
-        <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+        <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 ">
           {title}
         </h5>
       )}

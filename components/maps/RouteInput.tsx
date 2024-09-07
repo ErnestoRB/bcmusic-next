@@ -100,7 +100,7 @@ export default function RouteInput({
     onGenerateRoute(coordinates);
   }, [coordinates, onGenerateRoute]);
 
-  const fetchPossibleRoutes = async () => {
+  const fetchPossiblePlaces = async () => {
     if (!userLocation) {
       toast.error("No se pudo obtener la ubicación del usuario");
       return;
@@ -134,7 +134,11 @@ export default function RouteInput({
           })) ?? [];
 
         setItems(newItems);
-        toast.success("Rutas generadas!");
+        if (newItems.length == 1) {
+          toast.warn("No se encontraron lugares cercanos");
+        } else {
+          toast.success("Lugares cercanos encontrados!");
+        }
       } else {
         toast.error("No se pudo generar rutas cercanas");
       }
@@ -154,7 +158,7 @@ export default function RouteInput({
       disabled={error}
       right={
         <Button
-          onPress={() => fetchPossibleRoutes()}
+          onPress={() => fetchPossiblePlaces()}
           isDisabled={isLoading}
           className="w-auto h-auto bg-gray-800 text-white px-4 py-2 rounded cursor-pointer tra nsition duration-300 hover:bg-gray-500"
         >
