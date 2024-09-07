@@ -83,13 +83,18 @@ export default validate(
             spotifyAccount.set({ access_token: refreshResult.access_token });
             await spotifyAccount.save();
             data = await getTopTracks(access_token, "long_term");
+            if (data.total == 0) {
+              res.status(400).send({
+                message:
+                  "No pudimos obtener suficientes recomendaciones. ¿Usas tu cuenta regularmente?",
+              });
+              return;
+            }
             if (data.error) {
-              res
-                .status(400)
-                .send({
-                  message:
-                    "Hubo un problema con el token, vuelve a intentarlo más tarde",
-                });
+              res.status(400).send({
+                message:
+                  "Hubo un problema con el token, vuelve a intentarlo más tarde",
+              });
               return;
             }
           } catch (error: any) {
@@ -105,6 +110,15 @@ export default validate(
           });
           return;
         } else {
+          console.log({ data });
+
+          if (data.total == 0) {
+            res.status(400).send({
+              message:
+                "No pudimos obtener suficientes recomendaciones. ¿Usas tu cuenta regularmente?",
+            });
+            return;
+          }
           res
             .status(400)
             .send({ message: "Error al contactar la API De Spotify" });

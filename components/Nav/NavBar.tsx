@@ -95,7 +95,7 @@ export default function NavBar() {
 
   return (
     <nav
-      className=" bg-gradient-to-br from-black/80 to-black/70 flex flex-col sm:flex-row flex-wrap w-full h-24 
+      className=" bg-gradient-to-br dark:from-gray-900/80 dark:to-gray-900/90 from-black/80 to-black/70 flex flex-col sm:flex-row flex-wrap w-full h-24 
     text-white gap-x-4 items-center sm:items-center place-items-center px-1 md:px-4"
     >
       <Link
@@ -119,7 +119,7 @@ export default function NavBar() {
               if (route) {
                 return (
                   <Link
-                    className="grid h-full px-2 py-1 border-b-0 lg:border-b-2 border-stone-200 shadow-md bg-stone-800 hover:bg-stone-900 text-white place-items-center"
+                    className="grid h-full px-2 py-1 border-b-0 lg:border-b-2 border-stone-200 shadow-md bg-stone-800 dark:bg-gray-900 dark:hover:bg-gray-950 hover:bg-stone-900 text-white place-items-center"
                     key={index}
                     href={route}
                   >
@@ -152,7 +152,7 @@ export default function NavBar() {
               ></Image>
             }
             popoverClass="flex flex-col"
-            buttonClass="p-2 bg-stone-900 hover:bg-stone-900 text-white border-white border-b"
+            buttonClass="p-2 bg-stone-900 hover:bg-stone-900 dark:bg-gray-900 dark:hover:bg-gray-950 text-white border-white border-b"
           >
             {menuItems
               .filter((item) => !item.type || item.type === session.status)
@@ -161,7 +161,7 @@ export default function NavBar() {
                 if (route) {
                   return (
                     <Link
-                      className="grid h-full px-2 py-1 border-l-4 border-stone-200 shadow-md bg-stone-800 hover:bg-stone-900 text-white place-items-center"
+                      className="grid h-full px-2 py-1 border-l-4 border-stone-200 shadow-md bg-stone-800 dark:bg-gray-900  dark:hover:bg-gray-950 hover:bg-stone-900 text-white place-items-center"
                       key={index}
                       href={route}
                     >

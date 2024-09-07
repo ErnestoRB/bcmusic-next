@@ -28,36 +28,40 @@ export function BannerHistorial() {
 
   return (
     <>
-      <form className="flex flex-col gap-1 py-8">
-        <div className="flex gap-2 items-center">
-          <label htmlFor="mes">Mes</label>
-          <select
-            name="mes"
-            id="mes"
-            value={month}
-            onChange={(e) => {
-              setMonth(Number(e.target.value));
-            }}
-          >
-            {meses.map((mes, index) => (
-              <option key={mes} value={index + 1}>
-                {mes}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="flex gap-2 items-center">
-          <label htmlFor="year">Año</label>
-          <input
-            type="number"
-            name="year"
-            id="yaer"
-            min={0}
-            value={year}
-            onChange={(e) => {
-              setYear(Number(e.target.value));
-            }}
-          />
+      <form className="flex flex-col gap-1 py-8 text-black dark:text-white">
+        <div className="flex flex-col w-max">
+          <div className="flex gap-2 items-center flex-1">
+            <label htmlFor="mes">Mes</label>
+            <select
+              className="text-black dark:text-black flex-1"
+              name="mes"
+              id="mes"
+              value={month}
+              onChange={(e) => {
+                setMonth(Number(e.target.value));
+              }}
+            >
+              {meses.map((mes, index) => (
+                <option key={mes} value={index + 1}>
+                  {mes}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="flex gap-2 items-center flex-1">
+            <label htmlFor="year">Año</label>
+            <input
+              className="text-black dark:text-black"
+              type="number"
+              name="year"
+              id="yaer"
+              min={0}
+              value={year}
+              onChange={(e) => {
+                setYear(Number(e.target.value));
+              }}
+            />
+          </div>
         </div>
       </form>
       {isLoading && (
@@ -96,10 +100,12 @@ export function BannerHistorial() {
               </tbody>
             </table>
           )}
-          <p>
-            Se han generado <b>{(data.data as BannerHistory[]).length}</b>{" "}
-            banners en este mes
-          </p>
+          {(data.data as BannerHistory[]).length > 0 && (
+            <p>
+              Se han generado <b>{(data.data as BannerHistory[]).length}</b>{" "}
+              banners en este mes
+            </p>
+          )}
 
           {(data.data as BannerHistory[]).length == 0 && (
             <Alert type="info">Aún no se generan banners este mes.</Alert>

@@ -1,6 +1,6 @@
 export function Footer() {
   return (
-    <footer className="text-center py-4 bg-stone-900 text-white">
+    <footer className="text-center py-4 dark:bg-gray-950 bg-stone-900 text-white">
       Aplicación creada con 💖 por{" "}
       <a href="https://ernestorb.com" className="text-bc-pink-1">
         Ernesto Ramírez & BashCrashers

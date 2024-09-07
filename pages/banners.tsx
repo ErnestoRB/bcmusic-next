@@ -20,7 +20,7 @@ export default function BannerPage({}: {
       <Head>
         <title>Banners disponibles</title>
       </Head>
-      <div className="flex flex-col  bg-white max-w-7xl w-max bg-opacity-80 p-2 md:p-4">
+      <div className="flex flex-col  bg-white dark:bg-gray-900 text-black md:text-white dark:w-full md:max-w-7xl h-full p-2 md:p-4">
         <h1 className="text-center text-3xl font-bold py-4">Banners</h1>
         {isLoading && !data && (
           <div className="w-full grid place-items-center">
@@ -32,7 +32,7 @@ export default function BannerPage({}: {
         {data && data.data && data.data.length > 0 && (
           <div className="grid gap-y-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-3 place-items-center">
             {data.data.map((banner: BannerRecordWithAuthors) => (
-              <div key={banner.id} className="grid place-items-cente bg-white">
+              <div key={banner.id} className="grid place-items-center">
                 <BannerPreview bannerData={banner}></BannerPreview>
               </div>
             ))}

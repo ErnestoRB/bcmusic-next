@@ -52,8 +52,8 @@ export default function Panel() {
         className="flex md:flex-row flex-col h-full"
         onChange={(e, i) => setSelectedMenu(i as number)}
       >
-        <TabsList className="flex flex-col md:flex-row bg-stone-100  md:w-40 w-full h-fit md:h-full">
-          <div className="flex flex-row md:flex-col w-full bg-stone-100  overflow-auto items-stretch">
+        <TabsList className="flex flex-col opacity-95 md:flex-row bg-stone-100 dark:bg-gray-900 text-black dark:text-white  md:w-40 w-full h-fit md:h-full">
+          <div className="flex flex-row md:flex-col w-full bg-stone-100  dark:bg-gray-900 overflow-auto items-stretch">
             <div className="grid place-items-center">
               <h3 className="text-center px-4 md:py-4 font-extrabold">Panel</h3>
             </div>
@@ -62,9 +62,9 @@ export default function Panel() {
                 <Tab
                   key={i}
                   value={i}
-                  className={`p-2 transition-all w-fit bg-stone-100 px-2 md:pt-2  border-black hover:bg-stone-50 md:w-full ${
+                  className={`p-2 transition-all w-fit bg-stone-100 dark:bg-gray-800 px-2 md:pt-2  border-black dark:border-white dark:hover:bg-gray-900 hover:bg-stone-50 md:w-full ${
                     selectedMenu == i
-                      ? "md:border-l-8 border-t-8 md:border-t-0 bg-white"
+                      ? "md:border-l-8 border-t-8 md:border-t-0 bg-white dark:bg-gray-900"
                       : ""
                   }`}
                 >
@@ -77,7 +77,7 @@ export default function Panel() {
         {tabs.map((t, i) => {
           return (
             <TabPanel
-              className="bg-white py-2 px-4 flex-1 shadow-lg"
+              className="bg-white dark:bg-gray-900 bg-opacity-90 text-black dark:text-white py-2 px-4 flex-1 shadow-lg"
               key={i}
               value={i}
             >

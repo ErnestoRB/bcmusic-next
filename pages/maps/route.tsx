@@ -156,11 +156,12 @@ export default function Route() {
         console.log(json);
         toast.success("Playlist generada!");
       } else {
-        toast.error("No se pudo obtener enlace a la playlist creada");
+        const data = await response.json();
+        toast.error("Error al generar playlist: " + data.message);
       }
     } catch (error) {
       console.error("Error en handlePlaylistCreation:", error);
-      toast.error("No se pudo obtener enlace a la playlist creada");
+      toast.error("Error al generar playlist");
     } finally {
       setLoading(false);
     }

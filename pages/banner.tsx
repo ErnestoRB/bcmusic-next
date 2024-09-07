@@ -38,7 +38,7 @@ export default function BannerPage({
   }, []);
 
   return (
-    <div className="w-full flex flex-col md:flex-row justify-center gap-8 items-center">
+    <div className="w-full p-4  flex flex-col md:flex-row justify-center gap-8 items-center">
       <Head>
         <title>Generar banner</title>
       </Head>

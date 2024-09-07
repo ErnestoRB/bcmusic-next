@@ -28,7 +28,12 @@ export function PanelPlaylists() {
 
   return (
     <div>
-      {isLoading && <Spinner></Spinner>}
+      {isLoading && (
+        <div className="w-full flex flex-col items-center justify-center text-black dark:text-white">
+          <Spinner></Spinner>
+          Cargando...
+        </div>
+      )}
       <AppModal title="Previsualizar playlist" open={open} setOpen={setOpen}>
         <Spotify link={playlist?.url!}></Spotify>
       </AppModal>
@@ -41,7 +46,11 @@ export function PanelPlaylists() {
         ></Feedback>
       </AppModal>
       {(playlists as (StoredPlaylist & { feedbacks: number })[])?.map((p) => (
-        <Card key={p.uri} title={p.name}>
+        <Card
+          key={p.uri}
+          className="border-gray-700 bg-gray-900"
+          title={p.name}
+        >
           <div>Generada el día {shortDateFormat(new Date(p.date!))}</div>
           <div className="pt-4 flex">
             <a href={p.url}>

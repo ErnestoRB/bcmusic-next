@@ -17,7 +17,7 @@ export default function BannerPreview({
   const session = useSession();
 
   return (
-    <div className="border border-stone-400 w-64  bg-white rounded shadow-lg">
+    <div className="border border-stone-400 dark:border-gray-600 w-64  bg-white dark:bg-gray-950 rounded shadow-lg">
       {session.data &&
         (isCollaboratorSession(session.data) ||
           isAdminSession(session.data)) && (
@@ -27,14 +27,13 @@ export default function BannerPreview({
               href={`/code/${bannerData.id}`}
               className="bg-green-600 hover:bg-green-700 text-white"
             >
-              <Button> Ver código</Button>
+              <Button>Ver</Button>
             </Link>
-
             <Link
               href={`/admin/banner/${bannerData.id}`}
               className="bg-blue-600 hover:bg-blue-700 text-white"
             >
-              <Button>Editar metadatos</Button>
+              <Button>Editar</Button>
             </Link>
             <Button
               className="bg-red-600 hover:bg-red-700 text-white"
@@ -50,7 +49,7 @@ export default function BannerPreview({
             </Button>
           </div>
         )}
-      <div className="flex flex-col gap-y-4 items-center justify-center w-full h-64 bg-black">
+      <div className="flex flex-col gap-y-4 items-center justify-center w-full h-64 bg-black dark:bg-black dark:border-y dark:border-gray-600">
         {(bannerData.exampleUrl && (
           <picture className="w-full h-full">
             <img
@@ -62,7 +61,7 @@ export default function BannerPreview({
         )) || <Alert type="error-darker">No hay vista previa</Alert>}
       </div>
       <div className="p-2">
-        <h3 className="text-xl font-bold decoration-red-600 decoration-4 underline">
+        <h3 className="text-xl font-extrabold decoration-red-600">
           {bannerData.name}
         </h3>
         {bannerData.authors && bannerData.authors.length >= 1 && (
